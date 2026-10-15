@@ -1,0 +1,18 @@
+{
+  "id": "./",
+  "name": "Carnet d'entretien",
+  "short_name": "Carnet",
+  "description": "Entretien, carburant, factures et rappels de vos voitures et de votre moto.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EBEFF2",
+  "theme_color": "#13202C",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

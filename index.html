@@ -1,0 +1,1392 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#13202C"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Carnet"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Carnet d'entretien</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* Mise en page : une colonne étroite comme un carnet posé sur l'établi. Onglets de véhicules en haut, journal daté par année en dessous, barre d'ajout fixe en bas. */
+:root{
+  --display:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
+  --body:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --bg:#EBEFF2; --surface:#FFFFFF; --ink:#13202C; --muted:#5A6A79; --line:#D3DAE1;
+  --accent:#1D4E89; --accent-ink:#FFFFFF; --danger:#B3261E;
+  --k-entretien:#1B6B58; --k-reparation:#B04F17; --k-carburant:#6A4CA0;
+  --k-assurance:#1D4E89; --k-controle:#80620A; --k-autre:#5A6A79;
+  --st-ok:#1B6B58; --st-soon:#80620A; --st-late:#B3261E;
+  --plate-blue:#0B3A9E; --plate-bg:#FFFFFF; --plate-ink:#101418; --plate-eu-ink:#FFFFFF;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D151C; --surface:#15202A; --ink:#E5ECF2; --muted:#93A3B2; --line:#27384A;
+    --accent:#7DB2EE; --accent-ink:#0D151C; --danger:#F2877F;
+    --k-entretien:#5CC5A8; --k-reparation:#F0966A; --k-carburant:#B7A0EA;
+    --k-assurance:#7DB2EE; --k-controle:#E3BE55; --k-autre:#93A3B2; --st-ok:#5CC5A8; --st-soon:#E3BE55; --st-late:#F2877F;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D151C; --surface:#15202A; --ink:#E5ECF2; --muted:#93A3B2; --line:#27384A;
+  --accent:#7DB2EE; --accent-ink:#0D151C; --danger:#F2877F;
+  --k-entretien:#5CC5A8; --k-reparation:#F0966A; --k-carburant:#B7A0EA;
+  --k-assurance:#7DB2EE; --k-controle:#E3BE55; --k-autre:#93A3B2; --st-ok:#5CC5A8; --st-soon:#E3BE55; --st-late:#F2877F;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 var(--body);-webkit-text-size-adjust:100%}
+.wrap{max-width:760px;margin-inline:auto;padding-inline:16px;padding-block:22px 120px}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance}
+p{margin:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+h1{font-size:36px;line-height:1;text-transform:uppercase;letter-spacing:.02em;font-weight:700}
+.sub{margin-top:6px;color:var(--muted);font-size:14px}
+.actions{display:flex;gap:8px}
+
+.btn{font:600 14px var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 14px;border-radius:8px;cursor:pointer;min-height:40px}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.danger{color:var(--danger);border-color:var(--danger);background:transparent}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.55;cursor:default}
+.linkbtn{font:600 13px var(--body);background:none;border:0;color:var(--accent);padding:4px 0;cursor:pointer}
+
+.banner{margin-top:16px;padding:10px 12px;border:1px solid var(--danger);color:var(--danger);border-radius:8px;font-size:14px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.chip{font:600 17px var(--display);text-transform:uppercase;letter-spacing:.04em;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px 14px;cursor:pointer;min-height:40px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip.add{border-style:dashed;color:var(--muted);background:transparent}
+
+.vcard{margin-top:14px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.vname{font:700 26px/1.05 var(--display);text-transform:uppercase;overflow-wrap:anywhere}
+.vmeta{color:var(--muted);font-size:14px;margin-top:3px}
+.vright{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.plate{display:inline-flex;border:1.5px solid var(--plate-ink);border-radius:5px;overflow:hidden;background:var(--plate-bg);color:var(--plate-ink);font:500 15px var(--mono);letter-spacing:.06em}
+.plate .eu{background:var(--plate-blue);color:var(--plate-eu-ink);font:600 10px var(--body);padding:5px 4px;display:flex;align-items:flex-end}
+.plate .no{padding:3px 9px}
+
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
+.stat{padding-top:8px;border-top:2px solid var(--ink)}
+.stat .v{font:700 24px/1.1 var(--display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.stat .l{margin-top:3px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+
+.year{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:28px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.year .y{font:700 24px var(--display);letter-spacing:.04em}
+.year .t{font:500 13px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.row{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);align-items:start}
+.date{text-align:center;line-height:1}
+.date .d{font:700 28px var(--display)}
+.date .m{margin-top:2px;font:500 11px var(--mono);text-transform:uppercase;color:var(--muted)}
+.title{font-weight:600;overflow-wrap:anywhere}
+.meta{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin-top:3px;color:var(--muted);font-size:13px}
+.pill{font:600 11px var(--body);text-transform:uppercase;letter-spacing:.07em;padding:2px 8px;border-radius:99px;color:var(--k);background:color-mix(in srgb,var(--k) 14%,transparent)}
+.side{text-align:right}
+.amt{font:600 21px/1.1 var(--display);font-variant-numeric:tabular-nums;white-space:nowrap}
+.docs{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.doc{display:inline-flex;align-items:center;gap:6px;max-width:100%;border:1px solid var(--line);border-radius:6px;padding:3px 8px;font-size:12px;color:var(--ink);text-decoration:none;background:var(--surface)}
+.doc b{font:500 10px var(--mono);color:var(--accent)}
+.doc span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:210px}
+.note{margin-top:6px;font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+
+.empty{margin-top:24px;padding:28px 18px;border:1.5px dashed var(--line);border-radius:12px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.empty h3{font-size:24px;text-transform:uppercase}
+.empty p{color:var(--muted);max-width:42ch}
+.empty .btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:4px}
+.muted{color:var(--muted)}
+.center{text-align:center;margin-top:28px}
+
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:10;background:color-mix(in srgb,var(--bg) 94%,transparent);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px))}
+.bar .inner{max-width:760px;margin-inline:auto;display:flex;gap:8px}
+.bar .btn{flex:1;min-height:46px;font-size:16px}
+
+.overlay{position:fixed;inset:0;z-index:30;display:flex;align-items:flex-end;justify-content:center;background:color-mix(in srgb,var(--ink) 50%,transparent)}
+.sheet{background:var(--surface);color:var(--ink);width:100%;max-width:560px;max-height:94%;overflow:auto;border-radius:16px 16px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px))}
+@media (min-width:640px){.overlay{align-items:center}.sheet{border-radius:16px}}
+.sheet h2{font-size:28px;text-transform:uppercase;margin-bottom:14px}
+.sheet label,.lbl{display:block;margin-bottom:4px;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+input,select,textarea{width:100%;min-height:44px;font:16px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+textarea{min-height:76px;resize:vertical}
+.field{margin-bottom:12px;min-width:0}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.hint{margin-top:6px;font-size:13px;color:var(--muted)}
+.err{margin:8px 0;min-height:1em;font-size:14px;color:var(--danger)}
+.foot{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.foot .spacer{flex:1}
+.files{display:flex;flex-direction:column;gap:6px;margin-bottom:8px}
+.file{display:flex;justify-content:space-between;align-items:center;gap:8px;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:14px}
+.file span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file button{flex:none}
+.opt{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:40;max-width:calc(100% - 32px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:14px}
+.seg{display:flex;gap:4px;margin-top:14px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.seg button{flex:1;font:600 14px var(--body);min-height:40px;border:0;border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.seg button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.badge{font:600 11px var(--mono);min-width:20px;padding:1px 6px;border-radius:99px;background:var(--st-late);color:var(--bg);text-align:center}
+.rgroup{margin-top:26px}
+.rhead{display:flex;justify-content:space-between;align-items:baseline;gap:6px 12px;flex-wrap:wrap;padding-bottom:6px;border-bottom:2px solid var(--ink)}
+.rhead .n{font:700 24px var(--display);text-transform:uppercase;letter-spacing:.03em;overflow-wrap:anywhere}
+.rhead .odo{font:500 13px var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+.rem{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);align-items:start}
+.rem .side{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.due{margin-top:4px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.due.lv2{color:var(--st-late);font-weight:600}
+.due.lv1{color:var(--st-soon);font-weight:600}
+.kinds{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.fchip{font:600 13px var(--body);display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:6px 13px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.fchip i{font:500 12px var(--mono);font-style:normal;opacity:.7}
+.fchip[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.doc{font:inherit;font-size:12px;cursor:pointer}
+.doc.add{border-style:dashed;color:var(--accent);background:transparent;font-weight:600}
+</style>
+<style>
+[hidden]{display:none!important}
+html{background:var(--bg)}
+.top{padding-top:env(safe-area-inset-top,0px)}
+.btn .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--muted);margin-right:7px;vertical-align:1px}
+.btn[data-s="idle"] .dot{background:#2E9E5B}
+.btn[data-s="syncing"] .dot{background:var(--accent);animation:pulse 1s infinite}
+.btn[data-s="pending"] .dot,.btn[data-s="offline"] .dot{background:#D9930D}
+.btn[data-s="error"] .dot{background:var(--danger)}
+@keyframes pulse{50%{opacity:.25}}
+.steps{margin:6px 0 12px;padding-left:20px;font-size:13px;color:var(--muted)}
+.steps li{margin-bottom:4px}
+.syncstate{font-size:14px;margin:0 0 12px}
+.viewer{max-width:760px}
+.viewer img{display:block;margin:0 auto 12px;max-height:70vh;object-fit:contain;border-radius:8px}
+button.doc{font:inherit;font-size:12px;cursor:pointer}
+a.btn{display:inline-flex;align-items:center;text-decoration:none}
+@media (min-width:760px){.overlay{align-items:center}.sheet{border-radius:16px}}
+</style>
+</head><body>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Carnet d'entretien</h1>
+      <p class="sub" id="sub">Voitures et moto</p>
+    </div>
+    <div class="actions">
+      <button class="btn" id="btnInstall" type="button" hidden>Installer</button>
+      <button class="btn" id="btnSync" type="button" data-s="off"><span class="dot"></span><span id="syncLbl">Synchro</span></button>
+      <button class="btn" id="btnImport" type="button" hidden>Importer</button>
+      <button class="btn" id="btnExport" type="button">Exporter</button>
+    </div>
+  </header>
+  <p class="banner" id="banner" role="alert" hidden></p>
+  <nav class="chips" id="chips" aria-label="Véhicules"></nav>
+  <div class="seg" id="seg" role="tablist" hidden>
+    <button type="button" role="tab" id="tabJ" aria-selected="true">Journal</button>
+    <button type="button" role="tab" id="tabR" aria-selected="false">Rappels <span class="badge" id="remBadge" hidden></span></button>
+  </div>
+  <section class="vcard" id="vcard" hidden></section>
+  <div class="kinds" id="kinds" role="group" aria-label="Filtrer par type" hidden></div>
+  <section class="stats" id="stats" hidden></section>
+  <main id="list"><p class="muted center">Chargement de votre carnet…</p></main>
+</div>
+
+<div class="bar" id="bar" hidden><div class="inner"><button class="btn primary" id="btnAdd" type="button">Ajouter une ligne</button></div></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<input id="quickFile" type="file" multiple accept="application/pdf,image/jpeg,image/png,image/webp" hidden>
+
+<div class="overlay" id="entrySheet" hidden role="dialog" aria-modal="true" aria-labelledby="entryTitle">
+  <form class="sheet" id="entryForm" novalidate>
+    <h2 id="entryTitle">Nouvelle ligne</h2>
+    <div class="field"><label for="fVehicle">Véhicule</label><select id="fVehicle"></select></div>
+    <div class="grid2">
+      <div class="field"><label for="fKind">Type</label>
+        <select id="fKind">
+          <option value="entretien">Entretien</option><option value="reparation">Réparation</option>
+          <option value="carburant">Carburant</option><option value="assurance">Assurance</option>
+          <option value="controle">Contrôle technique</option><option value="autre">Autre</option>
+        </select></div>
+      <div class="field"><label for="fDate">Date</label><input id="fDate" type="date"></div>
+    </div>
+    <div class="field"><label for="fTitle">Description</label><input id="fTitle" type="text" autocomplete="off" placeholder="Vidange, filtre à huile, filtre à air"></div>
+    <div class="grid2">
+      <div class="field"><label for="fKm">Kilométrage</label><input id="fKm" type="text" inputmode="numeric" autocomplete="off" placeholder="84 500"></div>
+      <div class="field"><label for="fCost">Montant (€)</label><input id="fCost" type="text" inputmode="decimal" autocomplete="off" placeholder="129,90"></div>
+    </div>
+    <div class="field" id="litersField" hidden><label for="fLiters">Litres</label><input id="fLiters" type="text" inputmode="decimal" autocomplete="off" placeholder="42,3"></div>
+    <div class="field"><label for="fNotes">Notes</label><textarea id="fNotes" placeholder="Garage, pièces changées, prochaine échéance…"></textarea></div>
+    <div class="field" id="fileBlock">
+      <span class="lbl">Factures</span>
+      <div class="files" id="fileList"></div>
+      <button type="button" class="btn" id="btnPick">Joindre un PDF ou une photo</button>
+      <input id="fFiles" type="file" multiple accept="application/pdf,image/jpeg,image/png,image/webp" hidden>
+      <p class="hint">PDF, JPEG, PNG ou WebP, 20 Mo maximum par fichier.</p>
+    </div>
+    <p class="err" id="entryErr" role="alert"></p>
+    <div class="foot">
+      <button type="button" class="btn danger" id="btnDelEntry">Supprimer</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="btnCancelEntry">Annuler</button>
+      <button type="submit" class="btn primary" id="btnSaveEntry">Enregistrer</button>
+    </div>
+  </form>
+</div>
+
+<div class="overlay" id="vehSheet" hidden role="dialog" aria-modal="true" aria-labelledby="vehTitle">
+  <form class="sheet" id="vehForm" novalidate>
+    <h2 id="vehTitle">Nouveau véhicule</h2>
+    <div class="grid2">
+      <div class="field"><label for="vName">Nom</label><input id="vName" type="text" autocomplete="off" placeholder="Clio de Sam"></div>
+      <div class="field"><label for="vType">Genre</label><select id="vType"><option value="voiture">Voiture</option><option value="moto">Moto</option></select></div>
+    </div>
+    <div class="field"><label for="vModel">Marque et modèle</label><input id="vModel" type="text" autocomplete="off" placeholder="Renault Clio V"></div>
+    <div class="grid2">
+      <div class="field"><label for="vPlate">Immatriculation</label><input id="vPlate" type="text" autocomplete="off" placeholder="AB-123-CD"></div>
+      <div class="field"><label for="vYear">Année</label><input id="vYear" type="text" inputmode="numeric" autocomplete="off" placeholder="2019"></div>
+    </div>
+    <p class="err" id="vehErr" role="alert"></p>
+    <div class="foot">
+      <button type="button" class="btn danger" id="btnDelVeh">Supprimer</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="btnCancelVeh">Annuler</button>
+      <button type="submit" class="btn primary" id="btnSaveVeh">Enregistrer</button>
+    </div>
+  </form>
+</div>
+
+<div class="overlay" id="impSheet" hidden role="dialog" aria-modal="true" aria-labelledby="impTitle">
+  <div class="sheet">
+    <h2 id="impTitle">Importer un CSV</h2>
+    <p class="hint" style="margin-bottom:12px">Choisissez le fichier exporté depuis Drivoo (ou tout tableur enregistré en CSV). Les colonnes date, véhicule, type, description, kilométrage, litres et montant sont reconnues automatiquement. Importez chaque fichier une seule fois : les lignes identiques déjà présentes sont ignorées.</p>
+    <div class="field"><label for="iFile">Fichier CSV</label><input id="iFile" type="file" accept=".csv,text/csv,text/plain"></div>
+    <div class="field"><label for="iText">Ou collez le contenu</label><textarea id="iText" placeholder="date;véhicule;type;description;km;montant"></textarea></div>
+    <div class="field"><label for="iVeh">Véhicule pour les lignes sans véhicule</label><select id="iVeh"></select></div>
+    <p class="hint" id="iInfo" role="status"></p>
+    <div class="foot">
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="btnCancelImp">Fermer</button>
+      <button type="button" class="btn primary" id="btnRunImp" disabled>Importer</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="expSheet" hidden role="dialog" aria-modal="true" aria-labelledby="expTitle">
+  <div class="sheet">
+    <h2 id="expTitle">Exporter mes données</h2>
+    <div class="opt">
+      <button type="button" class="btn primary" id="btnExpCsv">Tableur (CSV pour Excel)</button>
+      <p class="hint">Toutes les lignes, avec les noms des factures jointes.</p>
+    </div>
+    <div class="opt">
+      <button type="button" class="btn" id="btnExpJson">Sauvegarde complète (JSON)</button>
+      <p class="hint">Véhicules, lignes, rappels et références des factures, pour tout restaurer plus tard (bouton Synchro, « Importer un fichier carnet »).</p>
+    </div>
+    <p class="hint">Les fichiers des factures sont dans votre Google Drive (dossier Factures). Ouvrez-les depuis chaque ligne pour les enregistrer sur votre appareil.</p>
+    <p class="err" id="expErr" role="alert"></p>
+    <div class="foot"><span class="spacer"></span><button type="button" class="btn" id="btnCancelExp">Fermer</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="remSheet" hidden role="dialog" aria-modal="true" aria-labelledby="remTitle">
+  <form class="sheet" id="remForm" novalidate>
+    <h2 id="remTitle">Nouveau rappel</h2>
+    <div class="field"><label for="rVehicle">Véhicule</label><select id="rVehicle"></select></div>
+    <div class="field"><label for="rName">Tâche à faire</label><input id="rName" type="text" autocomplete="off" placeholder="Pression des pneus"></div>
+    <div class="grid2">
+      <div class="field"><label for="rKm">Tous les (km)</label><input id="rKm" type="text" inputmode="numeric" autocomplete="off" placeholder="500"></div>
+      <div class="field"><label for="rN">Ou tous les</label>
+        <div class="grid2" style="gap:8px"><input id="rN" type="text" inputmode="decimal" autocomplete="off" placeholder="1" aria-label="Durée"><select id="rUnit" aria-label="Unité"><option value="mois">mois</option><option value="ans">ans</option></select></div></div>
+    </div>
+    <p class="hint">Le rappel se déclenche dès que le premier des deux seuils est atteint. Laissez vide celui qui ne vous sert pas.</p>
+    <div class="grid2" style="margin-top:12px">
+      <div class="field"><label for="rLastDate">Dernière fois (date)</label><input id="rLastDate" type="date"></div>
+      <div class="field"><label for="rLastKm">Dernière fois (km)</label><input id="rLastKm" type="text" inputmode="numeric" autocomplete="off" placeholder="84 500"></div>
+    </div>
+    <div class="field"><label for="rKind">Type dans le journal</label><select id="rKind"><option value="entretien">Entretien</option><option value="reparation">Réparation</option><option value="carburant">Carburant</option><option value="assurance">Assurance</option><option value="controle">Contrôle technique</option><option value="autre">Autre</option></select></div>
+    <div class="field"><label for="rNotes">Notes</label><textarea id="rNotes" placeholder="Pression à 2,5 bar à l'avant, 2,7 bar à l'arrière"></textarea></div>
+    <p class="err" id="remErr" role="alert"></p>
+    <div class="foot">
+      <button type="button" class="btn danger" id="btnDelRem">Supprimer</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="btnCancelRem">Annuler</button>
+      <button type="submit" class="btn primary" id="btnSaveRem">Enregistrer</button>
+    </div>
+  </form>
+</div>
+
+<div class="overlay" id="doneSheet" hidden role="dialog" aria-modal="true" aria-labelledby="doneTitle">
+  <form class="sheet" id="doneForm" novalidate>
+    <h2 id="doneTitle">Fait</h2>
+    <div class="grid2">
+      <div class="field"><label for="dDate">Date</label><input id="dDate" type="date"></div>
+      <div class="field"><label for="dKm">Kilométrage</label><input id="dKm" type="text" inputmode="numeric" autocomplete="off" placeholder="84 500"></div>
+    </div>
+    <div class="field"><label for="dCost">Coût (€), facultatif</label><input id="dCost" type="text" inputmode="decimal" autocomplete="off" placeholder="0"></div>
+    <div class="field"><label for="dJournal" style="display:flex;align-items:center;gap:10px;text-transform:none;letter-spacing:0;font-size:15px;color:var(--ink)"><input id="dJournal" type="checkbox" checked style="width:20px;height:20px;min-height:0;flex:none"> Ajouter aussi une ligne au journal</label></div>
+    <p class="err" id="doneErr" role="alert"></p>
+    <div class="foot">
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="btnCancelDone">Annuler</button>
+      <button type="submit" class="btn primary" id="btnSaveDone">Valider</button>
+    </div>
+  </form>
+</div>
+
+<div class="overlay" id="kmSheet" hidden role="dialog" aria-modal="true" aria-labelledby="kmTitle">
+  <form class="sheet" id="kmForm" novalidate>
+    <h2 id="kmTitle">Compteur</h2>
+    <div class="field"><label for="kKm">Kilométrage actuel</label><input id="kKm" type="text" inputmode="numeric" autocomplete="off"></div>
+    <p class="hint" id="kHint"></p>
+    <p class="err" id="kmErr" role="alert"></p>
+    <div class="foot">
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="btnCancelKm">Annuler</button>
+      <button type="submit" class="btn primary" id="btnSaveKm">Enregistrer</button>
+    </div>
+  </form>
+</div>
+
+
+<div class="overlay" id="syncSheet" hidden role="dialog" aria-modal="true" aria-labelledby="syncTitle">
+  <div class="sheet">
+    <h2 id="syncTitle">Synchronisation</h2>
+    <p class="syncstate" id="syncMsg"></p>
+    <div id="syncSetup">
+      <label for="cidInput">Identifiant client Google</label>
+      <input id="cidInput" type="text" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="123456789-abc….apps.googleusercontent.com">
+      <p class="hint">Créé une seule fois dans la console Google Cloud (voir le guide). Il n'est pas secret : saisissez-le sur chaque appareil.</p>
+    </div>
+    <p class="hint">Vos données et vos factures sont enregistrées dans le dossier « Carnet entretien véhicules » de votre Google Drive. L'application ne voit aucun autre fichier de votre Drive.</p>
+    <div class="opt"><button type="button" class="btn primary" id="btnConnect">Se connecter à Google Drive</button></div>
+    <div class="opt"><button type="button" class="btn" id="btnSyncNow" hidden>Synchroniser maintenant</button></div>
+    <div class="opt">
+      <label for="restoreFile">Importer un fichier carnet (JSON)</label>
+      <input id="restoreFile" type="file" accept="application/json,.json">
+      <p class="hint">Restaure une sauvegarde ou les données migrées de Drivvo. Les éléments déjà présents ne sont pas modifiés.</p>
+    </div>
+    <p class="err" id="syncErr" role="alert"></p>
+    <div class="foot">
+      <button type="button" class="btn danger" id="btnDisc" hidden>Déconnecter</button>
+      <span class="spacer"></span><button type="button" class="btn" id="btnCancelSync">Fermer</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="viewSheet" hidden role="dialog" aria-modal="true" aria-labelledby="viewTitle">
+  <div class="sheet viewer">
+    <h2 id="viewTitle">Facture</h2>
+    <div id="viewBody"></div>
+    <p class="err" id="viewErr" role="alert"></p>
+    <div class="foot"><a class="btn primary" id="viewSave" hidden>Enregistrer</a><a class="btn" id="viewOpen" target="_blank" rel="noopener" hidden>Ouvrir</a><span class="spacer"></span><button type="button" class="btn" id="btnCloseView">Fermer</button></div>
+  </div>
+</div>
+
+<script src="store.js"></script>
+<script src="drive.js"></script>
+<script src="config.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  var KINDS = { entretien: 'Entretien', reparation: 'Réparation', carburant: 'Carburant', assurance: 'Assurance', controle: 'Contrôle technique', autre: 'Autre' };
+  var TYPES = { voiture: 'Voiture', moto: 'Moto' };
+  var MONTHS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
+  var eur = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' });
+  var eur0 = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+  var nf = new Intl.NumberFormat('fr-FR', { maximumFractionDigits: 2 });
+  var $ = function (s) { return document.querySelector(s); };
+
+  var db = null, assets = null, dl = null;
+  var canWrite = false;
+  var status = 'loading'; // loading | ready | nodb | error
+  var vehicles = [], entries = [];
+  var loaded = { v: false, e: false, r: false };
+  var reminders = [], view = 'journal', remEd = null, doneFor = null, kmFor = null, quickFor = null;
+  var kindFilter = 'all';
+  try { var kf = localStorage.getItem('carnet.kind'); if (kf === 'maintenance' || kf === 'carburant' || kf === 'autres') kindFilter = kf; } catch (x) {}
+  var filter = 'all';
+  var ed = null;      // entry en cours d'édition
+  var editingVeh = null;
+  var imp = null;     // import préparé
+  var busy = false;
+
+  /* ---------- utilitaires ---------- */
+  function h(tag, props) {
+    var el = document.createElement(tag);
+    if (props) {
+      Object.keys(props).forEach(function (k) {
+        var v = props[k];
+        if (v == null || v === false) return;
+        if (k === 'class') el.className = v;
+        else if (k.slice(0, 2) === 'on') el.addEventListener(k.slice(2), v);
+        else el.setAttribute(k, v === true ? '' : v);
+      });
+    }
+    var kids = Array.prototype.slice.call(arguments, 2);
+    kids.forEach(function add(kid) {
+      if (kid == null || kid === false) return;
+      if (Array.isArray(kid)) { kid.forEach(add); return; }
+      el.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+    });
+    return el;
+  }
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function ymd(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function norm(s) { return String(s == null ? '' : s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim(); }
+  function parseNum(s) {
+    if (s == null) return null;
+    var t = String(s).replace(/[^\d,.\-]/g, '');
+    if (!t || t === '-') return null;
+    if (t.indexOf(',') >= 0 && t.indexOf('.') >= 0) t = t.replace(/\./g, '').replace(',', '.');
+    else if (t.indexOf(',') >= 0) t = t.replace(',', '.');
+    else if ((t.match(/\./g) || []).length > 1) t = t.replace(/\./g, '');
+    var n = parseFloat(t);
+    return isFinite(n) ? n : null;
+  }
+  function mkYmd(y, mo, d) {
+    if (mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+    return y + '-' + pad(mo) + '-' + pad(d);
+  }
+  function parseDateStr(s) {
+    var t = String(s || '').trim();
+    var m = t.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+    if (m) return mkYmd(+m[1], +m[2], +m[3]);
+    m = t.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{2,4})/);
+    if (m) { var y = +m[3]; if (y < 100) y += 2000; return mkYmd(y, +m[2], +m[1]); }
+    return null;
+  }
+  function guessKind() {
+    var s = norm(Array.prototype.join.call(arguments, ' '));
+    if (/carbur|essence|gazole|diesel|gasoil|plein|sans plomb|sp95|sp98|e10/.test(s)) return 'carburant';
+    if (/assur/.test(s)) return 'assurance';
+    if (/controle tech|\bct\b|contre.?visite/.test(s)) return 'controle';
+    if (/entretien|vidange|revision|filtre|plaquette|courroie|batterie|service/.test(s)) return 'entretien';
+    if (/repar|panne|remplacement|casse|carrosserie|pneu/.test(s)) return 'reparation';
+    return 'autre';
+  }
+  var toastTimer;
+  function toast(msg) {
+    var t = $('#toast');
+    t.textContent = msg; t.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.hidden = true; }, 3200);
+  }
+  function errText(e) {
+    var c = e && e.code;
+    if (c === 'unsupported_type') return 'Format non accepté. Utilisez un PDF, un JPEG, un PNG ou un WebP.';
+    if (c === 'too_large') return 'Fichier trop volumineux (20 Mo maximum).';
+    if (c === 'quota_or_state' || c === 'quota_exceeded') return "L'espace de stockage est plein. Supprimez d'anciens fichiers.";
+    if (c === 'rate_limited' || c === 'resource_exhausted') return 'Trop de demandes à la suite. Attendez quelques secondes puis recommencez.';
+    if (c === 'invalid_argument' || c === 'not_granted' || c === 'revoked') return "Vous n'avez pas le droit de modifier ces données.";
+    return (e && e.message) ? e.message : "Une erreur est survenue. Recommencez dans un instant.";
+  }
+  function vmap() { var m = new Map(); vehicles.forEach(function (v) { m.set(v.id, v); }); return m; }
+  function ready() { return status === 'ready' && loaded.v && loaded.e; }
+  function plateEl(p) { return h('span', { class: 'plate' }, h('span', { class: 'eu' }, 'F'), h('span', { class: 'no' }, p)); }
+  function kindGroup(k) { return k === 'carburant' ? 'carburant' : (k === 'entretien' || k === 'reparation' || k === 'controle') ? 'maintenance' : 'autres'; }
+  function setKind(k) { kindFilter = k; try { localStorage.setItem('carnet.kind', k); } catch (x) {} render(); }
+  function renderKinds() {
+    var box = $('#kinds');
+    if (!ready() || !vehicles.length || view !== 'journal') { box.hidden = true; return; }
+    var base = filter === 'all' ? entries : entries.filter(function (e) { return e.vehicleId === filter; });
+    var c = { all: base.length, maintenance: 0, carburant: 0, autres: 0 };
+    base.forEach(function (e) { c[kindGroup(e.kind)]++; });
+    var defs = [['all', 'Tout'], ['maintenance', 'Maintenance'], ['carburant', 'Carburant'], ['autres', 'Autres frais']];
+    box.hidden = false;
+    box.replaceChildren.apply(box, defs.map(function (d) {
+      return h('button', { class: 'fchip', type: 'button', 'aria-pressed': String(kindFilter === d[0]), onclick: function () { setKind(d[0]); } }, d[1], h('i', null, String(c[d[0]])));
+    }));
+  }
+  function visible() {
+    var list = filter === 'all' ? entries : entries.filter(function (e) { return e.vehicleId === filter; });
+    if (kindFilter !== 'all') list = list.filter(function (e) { return kindGroup(e.kind) === kindFilter; });
+    return list.slice().sort(function (a, b) { return String(b.date || '').localeCompare(String(a.date || '')); });
+  }
+  function plural(n, one, many) { return n + ' ' + (n > 1 ? many : one); }
+
+  /* ---------- rendu ---------- */
+  function renderSub() {
+    var v = vehicles.filter(function (x) { return x.type !== 'moto'; }).length;
+    var m = vehicles.filter(function (x) { return x.type === 'moto'; }).length;
+    var parts = [];
+    if (v) parts.push(plural(v, 'voiture', 'voitures'));
+    if (m) parts.push(plural(m, 'moto', 'motos'));
+    $('#sub').textContent = parts.length ? parts.join(' · ') : 'Voitures et moto';
+  }
+  function renderBanner() {
+    var b = $('#banner');
+    if (status === 'nodb') { b.textContent = "Le stockage de ce navigateur est indisponible (navigation privée ?). Ouvrez l'application dans une fenêtre normale."; b.hidden = false; }
+    else if (status === 'error') { b.textContent = 'La connexion à vos données a été interrompue. Rechargez la page.'; b.hidden = false; }
+    else if (ready() && !canWrite) { b.textContent = 'Vous consultez ce carnet en lecture seule.'; b.hidden = false; }
+    else b.hidden = true;
+    $('#btnImport').hidden = !(canWrite && ready());
+  }
+  function renderChips() {
+    var box = $('#chips');
+    if (!ready() || !vehicles.length) { box.replaceChildren(); return; }
+    var items = [h('button', { class: 'chip', type: 'button', 'aria-pressed': String(filter === 'all'), onclick: function () { filter = 'all'; render(); } }, 'Tous')];
+    vehicles.forEach(function (v) {
+      items.push(h('button', { class: 'chip', type: 'button', 'aria-pressed': String(filter === v.id), onclick: function () { filter = v.id; render(); } }, v.name));
+    });
+    if (canWrite) items.push(h('button', { class: 'chip add', type: 'button', onclick: function () { openVeh(null); } }, '+ Véhicule'));
+    box.replaceChildren.apply(box, items);
+  }
+  function renderVehicleCard() {
+    var box = $('#vcard');
+    var v = vehicles.filter(function (x) { return x.id === filter; })[0];
+    if (!ready() || !v || view === 'rappels') { box.hidden = true; box.replaceChildren(); return; }
+    var meta = [TYPES[v.type] || 'Véhicule', v.model, v.year].filter(Boolean).join(' · ');
+    box.hidden = false;
+    box.replaceChildren(
+      h('div', null, h('div', { class: 'vname' }, v.name), h('div', { class: 'vmeta' }, meta)),
+      h('div', { class: 'vright' },
+        v.plate ? plateEl(v.plate) : null,
+        canWrite ? h('button', { class: 'btn ghost', type: 'button', onclick: function () { openVeh(v); } }, 'Modifier') : null)
+    );
+  }
+  function renderStats() {
+    var box = $('#stats');
+    if (!ready() || !vehicles.length) { box.hidden = true; box.replaceChildren(); return; }
+    var list = visible();
+    var cut = new Date(); cut.setFullYear(cut.getFullYear() - 1);
+    var cutS = ymd(cut);
+    var twelve = 0, total = 0, maxKm = null, docs = 0;
+    list.forEach(function (e) {
+      var c = typeof e.cost === 'number' ? e.cost : 0;
+      total += c;
+      if ((e.date || '') >= cutS) twelve += c;
+      if (typeof e.km === 'number' && (maxKm == null || e.km > maxKm)) maxKm = e.km;
+      docs += (e.files || []).length;
+    });
+    var third = filter === 'all'
+      ? { v: String(docs), l: 'Factures archivées' }
+      : { v: (odoMap()[filter] || 0) ? nf.format(odoMap()[filter]) : '—', l: 'Compteur (km)' };
+    box.hidden = false;
+    box.replaceChildren(
+      h('div', { class: 'stat' }, h('div', { class: 'v' }, eur0.format(twelve)), h('div', { class: 'l' }, '12 derniers mois')),
+      h('div', { class: 'stat' }, h('div', { class: 'v' }, eur0.format(total)), h('div', { class: 'l' }, 'Total dépensé')),
+      h('div', { class: 'stat' }, h('div', { class: 'v' }, third.v), h('div', { class: 'l' }, third.l))
+    );
+  }
+  function emptyCard(title, text, buttons) {
+    return h('div', { class: 'empty' }, h('h3', null, title), h('p', null, text), buttons && buttons.length ? h('div', { class: 'btns' }, buttons) : null);
+  }
+  function rowEl(e, vm) {
+    var v = vm.get(e.vehicleId);
+    var kind = KINDS[e.kind] ? e.kind : 'autre';
+    var parts = (e.date || '').split('-');
+    var meta = [];
+    if (filter === 'all' && v) meta.push(h('span', null, v.name));
+    if (typeof e.km === 'number') meta.push(h('span', null, nf.format(e.km) + ' km'));
+    if (typeof e.liters === 'number') meta.push(h('span', null, nf.format(e.liters) + ' L'));
+    var docs = (e.files || []).map(function (f) {
+      return h('button', { class: 'doc', type: 'button', onclick: function () { openInvoice(f); } },
+        h('b', null, f.type === 'application/pdf' ? 'PDF' : 'IMG'), h('span', null, f.name || 'Facture'));
+    });
+    if (canWrite && assets && kind !== 'carburant') docs.push(h('button', { class: 'doc add', type: 'button', onclick: function () { quickAttach(e); } }, '+ Facture'));
+    return h('div', { class: 'row' },
+      h('div', { class: 'date' }, h('div', { class: 'd' }, parts[2] ? String(+parts[2]) : '?'), h('div', { class: 'm' }, parts[1] ? MONTHS[+parts[1] - 1] : '')),
+      h('div', { style: 'min-width:0' },
+        h('div', { class: 'title' }, e.title || KINDS[kind]),
+        h('div', { class: 'meta' }, h('span', { class: 'pill', style: '--k:var(--k-' + kind + ')' }, KINDS[kind]), meta),
+        e.notes ? h('div', { class: 'note' }, e.notes) : null,
+        docs.length ? h('div', { class: 'docs' }, docs) : null),
+      h('div', { class: 'side' },
+        typeof e.cost === 'number' ? h('div', { class: 'amt' }, eur.format(e.cost)) : null,
+        canWrite ? h('button', { class: 'linkbtn', type: 'button', onclick: function () { openEntry(e); } }, 'Modifier') : null)
+    );
+  }
+  function renderList() {
+    var box = $('#list');
+    if (status === 'nodb' || status === 'error') { box.replaceChildren(); return; }
+    if (!ready()) { box.replaceChildren(h('p', { class: 'muted center' }, 'Chargement de votre carnet…')); return; }
+    if (!vehicles.length) {
+      box.replaceChildren(emptyCard('Votre garage est vide', "Ajoutez vos voitures et votre moto, puis leurs entretiens et leurs factures.",
+        canWrite ? [
+          h('button', { class: 'btn primary', type: 'button', onclick: function () { openVeh(null, 'voiture'); } }, 'Ajouter une voiture'),
+          h('button', { class: 'btn', type: 'button', onclick: function () { openVeh(null, 'moto'); } }, 'Ajouter une moto')
+        ] : []));
+      return;
+    }
+    var list = visible();
+    if (!list.length && kindFilter !== 'all' && entries.length) {
+      box.replaceChildren(emptyCard('Rien dans cette catégorie', 'Aucune ligne ne correspond au filtre choisi.',
+        [h('button', { class: 'btn', type: 'button', onclick: function () { setKind('all'); } }, 'Tout afficher')]));
+      return;
+    }
+    if (!list.length) {
+      box.replaceChildren(emptyCard('Aucune ligne pour le moment', "Ajoutez un entretien avec sa facture, ou importez le fichier CSV exporté depuis Drivoo.",
+        canWrite ? [
+          h('button', { class: 'btn primary', type: 'button', onclick: function () { openEntry(null); } }, 'Ajouter une ligne'),
+          h('button', { class: 'btn', type: 'button', onclick: openImport }, 'Importer un CSV')
+        ] : []));
+      return;
+    }
+    var vm = vmap(), groups = [], cur = null;
+    list.forEach(function (e) {
+      var y = (e.date || '').slice(0, 4) || '—';
+      if (!cur || cur.y !== y) { cur = { y: y, sum: 0, rows: [] }; groups.push(cur); }
+      cur.sum += typeof e.cost === 'number' ? e.cost : 0;
+      cur.rows.push(rowEl(e, vm));
+    });
+    var out = [];
+    groups.forEach(function (g) {
+      out.push(h('div', { class: 'year' }, h('span', { class: 'y' }, g.y), h('span', { class: 't' }, eur.format(g.sum))));
+      out.push.apply(out, g.rows);
+    });
+    box.replaceChildren.apply(box, out);
+  }
+  function renderBar() {
+    var bar = $('#bar'), btn = $('#btnAdd');
+    if (!ready() || !canWrite) { bar.hidden = true; return; }
+    bar.hidden = false;
+    if (vehicles.length && view === 'rappels') { btn.textContent = 'Ajouter un rappel'; btn.onclick = function () { openRem(null); }; }
+    else if (vehicles.length) { btn.textContent = 'Ajouter une ligne'; btn.onclick = function () { openEntry(null); }; }
+    else { btn.textContent = 'Ajouter un véhicule'; btn.onclick = function () { openVeh(null); }; }
+  }
+  function render() {
+    if (loaded.v && filter !== 'all' && !vehicles.some(function (v) { return v.id === filter; })) filter = 'all';
+    renderSub(); renderBanner(); renderChips(); renderSeg(); renderVehicleCard();
+    if (view === 'rappels' && vehicles.length) { $('#kinds').hidden = true; $('#stats').hidden = true; renderReminders(); }
+    else { renderKinds(); renderStats(); renderList(); }
+    renderBar();
+  }
+
+  /* ---------- feuilles (modales) ---------- */
+  function openSheet(id) { $(id).hidden = false; }
+  function closeSheet(id) { $(id).hidden = true; }
+  function armDelete(btn, label, action) {
+    var armed = false, timer;
+    btn.textContent = label;
+    btn.onclick = function () {
+      if (!armed) {
+        armed = true; btn.textContent = 'Confirmer la suppression';
+        timer = setTimeout(function () { armed = false; btn.textContent = label; }, 4000);
+        return;
+      }
+      clearTimeout(timer); armed = false; btn.textContent = label;
+      action();
+    };
+  }
+
+  /* --- lignes --- */
+  function syncKind() { $('#litersField').hidden = $('#fKind').value !== 'carburant'; }
+  function renderFiles() {
+    var box = $('#fileList');
+    var items = [];
+    ed.keep.forEach(function (f) {
+      items.push(h('div', { class: 'file' }, h('span', null, f.name || 'Facture'),
+        h('button', { class: 'linkbtn', type: 'button', 'aria-label': 'Retirer ' + (f.name || 'la facture'), onclick: function () {
+          ed.keep = ed.keep.filter(function (x) { return x.id !== f.id; }); ed.drop.push(f.id); renderFiles();
+        } }, 'Retirer')));
+    });
+    ed.add.forEach(function (f, i) {
+      items.push(h('div', { class: 'file' }, h('span', null, f.name + ' (à envoyer)'),
+        h('button', { class: 'linkbtn', type: 'button', 'aria-label': 'Retirer ' + f.name, onclick: function () { ed.add.splice(i, 1); renderFiles(); } }, 'Retirer')));
+    });
+    box.replaceChildren.apply(box, items);
+  }
+  function openEntry(e) {
+    if (!canWrite || !db) return;
+    if (!vehicles.length) { openVeh(null); return; }
+    ed = { id: e ? e.id : null, keep: e ? (e.files || []).slice() : [], add: [], drop: [] };
+    $('#entryTitle').textContent = e ? 'Modifier la ligne' : 'Nouvelle ligne';
+    var sel = $('#fVehicle');
+    sel.replaceChildren.apply(sel, vehicles.map(function (v) { return h('option', { value: v.id }, v.name); }));
+    sel.value = e ? e.vehicleId : (filter !== 'all' ? filter : vehicles[0].id);
+    if (!sel.value) sel.selectedIndex = 0;
+    $('#fKind').value = e ? (KINDS[e.kind] ? e.kind : 'autre') : 'entretien';
+    $('#fDate').value = e && e.date ? e.date : ymd(new Date());
+    $('#fTitle').value = e && e.title ? e.title : '';
+    $('#fKm').value = e && typeof e.km === 'number' ? String(e.km) : '';
+    $('#fCost').value = e && typeof e.cost === 'number' ? String(e.cost).replace('.', ',') : '';
+    $('#fLiters').value = e && typeof e.liters === 'number' ? String(e.liters).replace('.', ',') : '';
+    $('#fNotes').value = e && e.notes ? e.notes : '';
+    $('#entryErr').textContent = '';
+    $('#fileBlock').hidden = !assets;
+    $('#btnDelEntry').hidden = !e;
+    if (e) armDelete($('#btnDelEntry'), 'Supprimer', deleteEntry);
+    syncKind(); renderFiles();
+    openSheet('#entrySheet');
+  }
+  function assetType(f) {
+    var ok = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'application/pdf'];
+    if (ok.indexOf(f.type) >= 0) return f.type;
+    var ext = (f.name.split('.').pop() || '').toLowerCase();
+    return { pdf: 'application/pdf', png: 'image/png', jpg: 'image/jpeg', jpeg: 'image/jpeg', webp: 'image/webp', gif: 'image/gif' }[ext] || null;
+  }
+  async function saveEntry(ev) {
+    ev.preventDefault();
+    if (busy || !ed) return;
+    var err = $('#entryErr'); err.textContent = '';
+    var vehicleId = $('#fVehicle').value, kind = $('#fKind').value, date = $('#fDate').value;
+    if (!vehicleId) { err.textContent = 'Choisissez un véhicule.'; return; }
+    if (!date) { err.textContent = 'Indiquez la date.'; return; }
+    var cost = parseNum($('#fCost').value);
+    if ($('#fCost').value.trim() && cost == null) { err.textContent = 'Le montant doit être un nombre, par exemple 129,90.'; return; }
+    var km = parseNum($('#fKm').value);
+    if ($('#fKm').value.trim() && km == null) { err.textContent = 'Le kilométrage doit être un nombre.'; return; }
+    var liters = kind === 'carburant' ? parseNum($('#fLiters').value) : null;
+    busy = true;
+    var btn = $('#btnSaveEntry'); btn.disabled = true; btn.textContent = 'Enregistrement…';
+    var uploaded = [];
+    try {
+      for (var i = 0; i < ed.add.length; i++) {
+        var f = ed.add[i], type = assetType(f);
+        if (!type) throw { code: 'unsupported_type' };
+        var r = await assets.upload(f, { type: type, label: invLabel(vehicleId, date, $('#fTitle').value, kind) });
+        uploaded.push({ id: r.id, name: f.name, type: r.contentType });
+      }
+      var data = {
+        vehicleId: vehicleId, kind: kind, date: date, km: km, cost: cost, liters: liters,
+        title: $('#fTitle').value.trim(), notes: $('#fNotes').value.trim(),
+        files: ed.keep.concat(uploaded)
+      };
+      var ref = ed.id ? db.collection('entries').doc(ed.id) : db.collection('entries').doc();
+      try { await ref.set(data); }
+      catch (e2) {
+        for (var j = 0; j < uploaded.length; j++) { try { await assets.delete(uploaded[j].id); } catch (x) {} }
+        throw e2;
+      }
+      for (var k = 0; k < ed.drop.length; k++) { try { await assets.delete(ed.drop[k]); } catch (x) {} }
+      closeSheet('#entrySheet'); ed = null;
+      if (kindFilter !== 'all' && kindGroup(kind) !== kindFilter) setKind('all');
+      toast('Ligne enregistrée');
+    } catch (e) {
+      err.textContent = errText(e);
+    } finally {
+      busy = false; btn.disabled = false; btn.textContent = 'Enregistrer';
+    }
+  }
+  async function deleteEntry() {
+    if (busy || !ed || !ed.id) return;
+    busy = true;
+    var cur = entries.filter(function (x) { return x.id === ed.id; })[0];
+    try {
+      var all = (cur && cur.files ? cur.files : []).map(function (f) { return f.id; });
+      for (var i = 0; i < all.length; i++) { try { if (assets) await assets.delete(all[i]); } catch (x) {} }
+      await db.collection('entries').doc(ed.id).delete();
+      closeSheet('#entrySheet'); ed = null;
+      toast('Ligne supprimée');
+    } catch (e) { $('#entryErr').textContent = errText(e); }
+    finally { busy = false; }
+  }
+
+  /* --- véhicules --- */
+  function openVeh(v, type) {
+    if (!canWrite || !db) return;
+    editingVeh = v;
+    $('#vehTitle').textContent = v ? 'Modifier le véhicule' : 'Nouveau véhicule';
+    $('#vName').value = v ? v.name : '';
+    $('#vType').value = v ? (v.type === 'moto' ? 'moto' : 'voiture') : (type || 'voiture');
+    $('#vModel').value = v && v.model ? v.model : '';
+    $('#vPlate').value = v && v.plate ? v.plate : '';
+    $('#vYear').value = v && v.year ? String(v.year) : '';
+    $('#vehErr').textContent = '';
+    $('#btnDelVeh').hidden = !v;
+    if (v) armDelete($('#btnDelVeh'), 'Supprimer', deleteVeh);
+    openSheet('#vehSheet');
+  }
+  async function saveVeh(ev) {
+    ev.preventDefault();
+    if (busy) return;
+    var err = $('#vehErr'); err.textContent = '';
+    var name = $('#vName').value.trim();
+    if (!name) { err.textContent = 'Donnez un nom au véhicule.'; return; }
+    var year = parseNum($('#vYear').value);
+    busy = true;
+    try {
+      var data = { name: name, type: $('#vType').value, model: $('#vModel').value.trim(), plate: $('#vPlate').value.trim().toUpperCase(), year: year ? Math.round(year) : null };
+      if (editingVeh) { await db.collection('vehicles').doc(editingVeh.id).update(data); }
+      else { var ref = db.collection('vehicles').doc(); data.createdAt = Date.now(); await ref.set(data); filter = ref.id; }
+      closeSheet('#vehSheet');
+      toast('Véhicule enregistré');
+    } catch (e) { err.textContent = errText(e); }
+    finally { busy = false; }
+  }
+  async function deleteVeh() {
+    if (busy || !editingVeh) return;
+    if (entries.some(function (e) { return e.vehicleId === editingVeh.id; })) {
+      $('#vehErr').textContent = 'Ce véhicule a encore des lignes. Supprimez-les ou déplacez-les avant de le retirer.';
+      return;
+    }
+    busy = true;
+    try { await db.collection('vehicles').doc(editingVeh.id).delete(); closeSheet('#vehSheet'); toast('Véhicule supprimé'); }
+    catch (e) { $('#vehErr').textContent = errText(e); }
+    finally { busy = false; }
+  }
+
+  /* ---------- factures rapides ---------- */
+  function quickAttach(e) { if (!assets || busy) return; quickFor = e.id; $('#quickFile').click(); }
+  async function quickUpload(ev) {
+    var files = Array.prototype.slice.call(ev.target.files || []);
+    ev.target.value = '';
+    var id = quickFor; quickFor = null;
+    if (!files.length || !id || busy) return;
+    var bad = files.filter(function (f) { return !assetType(f); });
+    files = files.filter(function (f) { return assetType(f); });
+    if (bad.length) toast('Format non accepté : ' + bad.map(function (f) { return f.name; }).join(', ') + '. Utilisez un PDF, un JPEG, un PNG ou un WebP.');
+    if (!files.length) return;
+    busy = true;
+    toast('Envoi de ' + plural(files.length, 'fichier', 'fichiers') + '…');
+    var up = [];
+    try {
+      for (var i = 0; i < files.length; i++) {
+        var qe = entries.filter(function (x) { return x.id === id; })[0] || {};
+        var r = await assets.upload(files[i], { type: assetType(files[i]), label: invLabel(qe.vehicleId, qe.date, qe.title, qe.kind) });
+        up.push({ id: r.id, name: files[i].name, type: r.contentType });
+      }
+      var cur = entries.filter(function (x) { return x.id === id; })[0];
+      if (!cur) throw { message: "Cette ligne n'existe plus." };
+      await db.collection('entries').doc(id).update({ files: (cur.files || []).concat(up) });
+      toast(plural(up.length, 'facture ajoutée', 'factures ajoutées'));
+    } catch (e) {
+      for (var j = 0; j < up.length; j++) { try { await assets.delete(up[j].id); } catch (x) {} }
+      toast(errText(e));
+    } finally { busy = false; }
+  }
+
+  /* ---------- rappels ---------- */
+  function addMonths(iso, n) {
+    var p = iso.split('-'), y = +p[0], m = +p[1] - 1 + n, d = +p[2];
+    var first = new Date(y, m, 1), last = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+    first.setDate(Math.min(d, last));
+    return ymd(first);
+  }
+  function daysBetween(a, b) {
+    var pa = a.split('-'), pb = b.split('-');
+    return Math.round((Date.UTC(+pb[0], +pb[1] - 1, +pb[2]) - Date.UTC(+pa[0], +pa[1] - 1, +pa[2])) / 86400000);
+  }
+  function fmtDate(iso) { var p = iso.split('-'); return +p[2] + ' ' + MONTHS[+p[1] - 1] + ' ' + p[0]; }
+  function everyLabel(r) {
+    var parts = [];
+    if (r.everyKm) parts.push('tous les ' + nf.format(r.everyKm) + ' km');
+    if (r.everyMonths) {
+      var m = r.everyMonths;
+      parts.push(m % 12 === 0 ? (m === 12 ? 'tous les ans' : 'tous les ' + (m / 12) + ' ans') : (m === 1 ? 'tous les mois' : 'tous les ' + m + ' mois'));
+    }
+    return parts.join(' ou ');
+  }
+  function human(days) {
+    if (days <= 60) return plural(days, 'jour', 'jours');
+    if (days < 730) return Math.round(days / 30.4) + ' mois';
+    return (Math.round(days / 36.5) / 10).toString().replace('.', ',') + ' ans';
+  }
+  function odoMap() {
+    var m = {};
+    vehicles.forEach(function (v) { m[v.id] = typeof v.odometerKm === 'number' ? v.odometerKm : 0; });
+    entries.forEach(function (e) { if (typeof e.km === 'number' && e.km > (m[e.vehicleId] || 0)) m[e.vehicleId] = e.km; });
+    return m;
+  }
+  function remStatus(r, km, today) {
+    var out = { rank: -1, kmLine: null, dateLine: null, frac: Infinity };
+    if (r.everyKm && typeof r.lastKm === 'number') {
+      var next = r.lastKm + r.everyKm, left = next - km;
+      var lvl = left < 0 ? 2 : (left <= r.everyKm * 0.1 ? 1 : 0);
+      out.kmLine = { next: next, left: left, lvl: lvl };
+      out.rank = Math.max(out.rank, lvl); out.frac = Math.min(out.frac, left / r.everyKm);
+    }
+    if (r.everyMonths && r.lastDate) {
+      var nd = addMonths(r.lastDate, r.everyMonths), dl = daysBetween(today, nd);
+      var win = Math.max(7, Math.round(r.everyMonths * 30.4 * 0.1));
+      var lvl2 = dl < 0 ? 2 : (dl <= win ? 1 : 0);
+      out.dateLine = { next: nd, left: dl, lvl: lvl2 };
+      out.rank = Math.max(out.rank, lvl2); out.frac = Math.min(out.frac, dl / (r.everyMonths * 30.4));
+    }
+    return out;
+  }
+  function kmText(l) {
+    return l.left < 0 ? 'Dépassé de ' + nf.format(-l.left) + ' km (prévu à ' + nf.format(l.next) + ' km)' : 'Dans ' + nf.format(l.left) + ' km (à ' + nf.format(l.next) + ' km)';
+  }
+  function dateText(l) {
+    if (l.left < 0) return 'Dépassé de ' + human(-l.left) + ' (prévu le ' + fmtDate(l.next) + ')';
+    if (l.left === 0) return "À faire aujourd'hui (" + fmtDate(l.next) + ')';
+    return 'Dans ' + human(l.left) + ' (le ' + fmtDate(l.next) + ')';
+  }
+  var ST = { '2': ['En retard', 'var(--st-late)'], '1': ['Bientôt', 'var(--st-soon)'], '0': ['À jour', 'var(--st-ok)'], '-1': ['À initialiser', 'var(--muted)'] };
+  function dueCount() {
+    var odo = odoMap(), today = ymd(new Date()), vm = vmap(), n = 0;
+    reminders.forEach(function (r) {
+      if (!vm.has(r.vehicleId) || (filter !== 'all' && r.vehicleId !== filter)) return;
+      if (remStatus(r, odo[r.vehicleId] || 0, today).rank >= 1) n++;
+    });
+    return n;
+  }
+  function renderSeg() {
+    var seg = $('#seg');
+    if (!ready() || !vehicles.length) { seg.hidden = true; return; }
+    seg.hidden = false;
+    $('#tabJ').setAttribute('aria-selected', String(view === 'journal'));
+    $('#tabR').setAttribute('aria-selected', String(view === 'rappels'));
+    var n = loaded.r ? dueCount() : 0, b = $('#remBadge');
+    b.hidden = n === 0; b.textContent = String(n);
+  }
+  function remRow(item) {
+    var r = item.r, st = item.st, s = ST[String(st.rank)];
+    var last = [];
+    if (r.lastDate) last.push(fmtDate(r.lastDate));
+    if (typeof r.lastKm === 'number') last.push(nf.format(r.lastKm) + ' km');
+    return h('div', { class: 'rem' },
+      h('div', { style: 'min-width:0' },
+        h('div', { class: 'title' }, r.title),
+        h('div', { class: 'meta' }, h('span', { class: 'pill', style: '--k:' + s[1] }, s[0]), h('span', null, everyLabel(r))),
+        st.kmLine ? h('div', { class: 'due lv' + st.kmLine.lvl }, kmText(st.kmLine)) : null,
+        st.dateLine ? h('div', { class: 'due lv' + st.dateLine.lvl }, dateText(st.dateLine)) : null,
+        st.rank === -1 ? h('div', { class: 'due' }, 'Indiquez la dernière fois, ou touchez « Fait » pour démarrer le suivi.') : null,
+        last.length ? h('div', { class: 'note' }, 'Dernière fois : ' + last.join(' · ')) : null,
+        r.notes ? h('div', { class: 'note' }, r.notes) : null),
+      canWrite ? h('div', { class: 'side' },
+        h('button', { class: 'btn primary', type: 'button', onclick: function () { openDone(r); } }, 'Fait'),
+        h('button', { class: 'linkbtn', type: 'button', onclick: function () { openRem(r); } }, 'Modifier')) : null);
+  }
+  function renderReminders() {
+    var box = $('#list');
+    if (!loaded.r) { box.replaceChildren(h('p', { class: 'muted center' }, 'Chargement des rappels…')); return; }
+    var odo = odoMap(), today = ymd(new Date());
+    var vs = filter === 'all' ? vehicles : vehicles.filter(function (v) { return v.id === filter; });
+    var total = 0, out = [];
+    vs.forEach(function (v) {
+      var items = reminders.filter(function (r) { return r.vehicleId === v.id; }).map(function (r) { return { r: r, st: remStatus(r, odo[v.id] || 0, today) }; });
+      items.sort(function (a, b) { return (b.st.rank - a.st.rank) || (a.st.frac - b.st.frac) || 0; });
+      total += items.length;
+      var o = odo[v.id] || 0;
+      out.push(h('div', { class: 'rgroup' },
+        h('div', { class: 'rhead' },
+          h('span', { class: 'n' }, v.name),
+          h('span', { class: 'odo' }, 'Compteur ' + (o ? nf.format(o) + ' km' : 'inconnu') + ' ',
+            canWrite ? h('button', { class: 'linkbtn', type: 'button', onclick: function () { openKm(v); } }, 'Mettre à jour') : null)),
+        items.length ? items.map(remRow) : h('p', { class: 'muted', style: 'padding:14px 0' }, 'Aucun rappel pour ce véhicule.')));
+    });
+    if (!total) {
+      box.replaceChildren(emptyCard('Aucun rappel', 'Ajoutez par exemple la pression des pneus tous les mois ou tous les 500 km.',
+        canWrite ? [h('button', { class: 'btn primary', type: 'button', onclick: function () { openRem(null); } }, 'Ajouter un rappel')] : []));
+      return;
+    }
+    box.replaceChildren.apply(box, out);
+  }
+  function openRem(r) {
+    if (!canWrite || !db) return;
+    if (!vehicles.length) { openVeh(null); return; }
+    remEd = r;
+    $('#remTitle').textContent = r ? 'Modifier le rappel' : 'Nouveau rappel';
+    var sel = $('#rVehicle');
+    sel.replaceChildren.apply(sel, vehicles.map(function (v) { return h('option', { value: v.id }, v.name); }));
+    sel.value = r ? r.vehicleId : (filter !== 'all' ? filter : vehicles[0].id);
+    if (!sel.value) sel.selectedIndex = 0;
+    $('#rName').value = r ? r.title : '';
+    $('#rKind').value = r && KINDS[r.kind] ? r.kind : 'entretien';
+    $('#rKm').value = r && r.everyKm ? String(r.everyKm) : '';
+    var m = r && r.everyMonths ? r.everyMonths : 0;
+    if (m && m % 12 === 0) { $('#rN').value = String(m / 12); $('#rUnit').value = 'ans'; }
+    else { $('#rN').value = m ? String(m) : ''; $('#rUnit').value = 'mois'; }
+    $('#rLastDate').value = r && r.lastDate ? r.lastDate : '';
+    $('#rLastKm').value = r && typeof r.lastKm === 'number' ? String(r.lastKm) : '';
+    $('#rNotes').value = r && r.notes ? r.notes : '';
+    $('#remErr').textContent = '';
+    $('#btnDelRem').hidden = !r;
+    if (r) armDelete($('#btnDelRem'), 'Supprimer', deleteRem);
+    openSheet('#remSheet');
+  }
+  async function saveRem(ev) {
+    ev.preventDefault();
+    if (busy) return;
+    var err = $('#remErr'); err.textContent = '';
+    var title = $('#rName').value.trim();
+    if (!title) { err.textContent = 'Donnez un nom à la tâche.'; return; }
+    var ek = parseNum($('#rKm').value);
+    if ($('#rKm').value.trim() && (ek == null || ek <= 0)) { err.textContent = "L'intervalle en km doit être un nombre positif."; return; }
+    var en = parseNum($('#rN').value);
+    if ($('#rN').value.trim() && (en == null || en <= 0)) { err.textContent = "L'intervalle en mois ou en ans doit être un nombre positif."; return; }
+    if (!ek && !en) { err.textContent = 'Indiquez un intervalle en km, en mois ou en ans, ou les deux.'; return; }
+    var lk = parseNum($('#rLastKm').value);
+    if ($('#rLastKm').value.trim() && lk == null) { err.textContent = 'Le dernier kilométrage doit être un nombre.'; return; }
+    var months = en ? Math.max(1, Math.round(en * ($('#rUnit').value === 'ans' ? 12 : 1))) : null;
+    busy = true;
+    try {
+      var data = { vehicleId: $('#rVehicle').value, title: title, kind: $('#rKind').value, everyKm: ek ? Math.round(ek) : null, everyMonths: months,
+        lastDate: $('#rLastDate').value || null, lastKm: lk == null ? null : Math.round(lk), notes: $('#rNotes').value.trim() };
+      var ref = remEd ? db.collection('reminders').doc(remEd.id) : db.collection('reminders').doc();
+      await ref.set(data);
+      closeSheet('#remSheet'); remEd = null;
+      toast('Rappel enregistré');
+    } catch (e) { err.textContent = errText(e); }
+    finally { busy = false; }
+  }
+  async function deleteRem() {
+    if (busy || !remEd) return;
+    busy = true;
+    try { await db.collection('reminders').doc(remEd.id).delete(); closeSheet('#remSheet'); remEd = null; toast('Rappel supprimé'); }
+    catch (e) { $('#remErr').textContent = errText(e); }
+    finally { busy = false; }
+  }
+  function openDone(r) {
+    if (!canWrite || !db) return;
+    doneFor = r;
+    $('#doneTitle').textContent = 'Fait : ' + r.title;
+    $('#dDate').value = ymd(new Date());
+    var o = odoMap()[r.vehicleId];
+    $('#dKm').value = o ? String(o) : '';
+    $('#dCost').value = '';
+    $('#dJournal').checked = true;
+    $('#doneErr').textContent = '';
+    openSheet('#doneSheet');
+  }
+  async function saveDone(ev) {
+    ev.preventDefault();
+    if (busy || !doneFor) return;
+    var r = doneFor, err = $('#doneErr'); err.textContent = '';
+    var date = $('#dDate').value;
+    if (!date) { err.textContent = 'Indiquez la date.'; return; }
+    var km = parseNum($('#dKm').value);
+    if ($('#dKm').value.trim() && km == null) { err.textContent = 'Le kilométrage doit être un nombre.'; return; }
+    if (r.everyKm && km == null) { err.textContent = 'Indiquez le kilométrage pour suivre ce rappel.'; return; }
+    var cost = parseNum($('#dCost').value);
+    if ($('#dCost').value.trim() && cost == null) { err.textContent = 'Le coût doit être un nombre, par exemple 12,50.'; return; }
+    busy = true;
+    try {
+      if ($('#dJournal').checked) {
+        await db.collection('entries').doc().set({ vehicleId: r.vehicleId, kind: KINDS[r.kind] ? r.kind : 'entretien', date: date, km: km == null ? null : Math.round(km),
+          cost: cost, liters: null, title: r.title, notes: '', files: [] });
+      }
+      await db.collection('reminders').doc(r.id).update({ lastDate: date, lastKm: km == null ? null : Math.round(km) });
+      var v = vmap().get(r.vehicleId);
+      if (v && km != null && km > (typeof v.odometerKm === 'number' ? v.odometerKm : 0)) {
+        await db.collection('vehicles').doc(v.id).update({ odometerKm: Math.round(km), odometerDate: date });
+      }
+      closeSheet('#doneSheet'); doneFor = null;
+      toast('Rappel remis à zéro');
+    } catch (e) { err.textContent = errText(e); }
+    finally { busy = false; }
+  }
+  function openKm(v) {
+    if (!canWrite || !db) return;
+    kmFor = v;
+    var o = odoMap()[v.id] || 0;
+    $('#kmTitle').textContent = 'Compteur · ' + v.name;
+    $('#kKm').value = o ? String(o) : '';
+    $('#kHint').textContent = o ? 'Dernier relevé connu : ' + nf.format(o) + ' km.' : 'Aucun relevé pour ce véhicule.';
+    $('#kmErr').textContent = '';
+    openSheet('#kmSheet');
+  }
+  async function saveKm(ev) {
+    ev.preventDefault();
+    if (busy || !kmFor) return;
+    var err = $('#kmErr'); err.textContent = '';
+    var k = parseNum($('#kKm').value);
+    if (k == null || k < 0) { err.textContent = 'Indiquez le kilométrage affiché au compteur.'; return; }
+    var cur = odoMap()[kmFor.id] || 0;
+    if (k < cur) { err.textContent = 'Le compteur ne peut pas être inférieur au dernier relevé (' + nf.format(cur) + ' km).'; return; }
+    busy = true;
+    try {
+      await db.collection('vehicles').doc(kmFor.id).update({ odometerKm: Math.round(k), odometerDate: ymd(new Date()) });
+      closeSheet('#kmSheet'); kmFor = null;
+      toast('Compteur mis à jour');
+    } catch (e) { err.textContent = errText(e); }
+    finally { busy = false; }
+  }
+
+  /* ---------- import CSV ---------- */
+  function parseCSV(text) {
+    text = text.replace(/^﻿/, '');
+    var first = text.split(/\r?\n/, 1)[0] || '';
+    var delim = [';', '\t', ','].map(function (d) { return [d, first.split(d).length]; }).sort(function (a, b) { return b[1] - a[1]; })[0][0];
+    var rows = [], row = [], cur = '', q = false;
+    for (var i = 0; i < text.length; i++) {
+      var c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; }
+        else cur += c;
+      } else if (c === '"') q = true;
+      else if (c === delim) { row.push(cur); cur = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (c === '\r' && text[i + 1] === '\n') i++;
+        row.push(cur); cur = '';
+        if (row.some(function (x) { return x.trim() !== ''; })) rows.push(row);
+        row = [];
+      } else cur += c;
+    }
+    row.push(cur);
+    if (row.some(function (x) { return x.trim() !== ''; })) rows.push(row);
+    return rows;
+  }
+  function findCol(headers, syns, used) {
+    var i, j;
+    for (i = 0; i < headers.length; i++) if (!used[i] && syns.indexOf(headers[i]) >= 0) { used[i] = true; return i; }
+    for (i = 0; i < headers.length; i++) {
+      if (used[i]) continue;
+      for (j = 0; j < syns.length; j++) if (headers[i].indexOf(syns[j]) >= 0) { used[i] = true; return i; }
+    }
+    return -1;
+  }
+  function analyze() {
+    var text = $('#iText').value;
+    var info = $('#iInfo'), run = $('#btnRunImp');
+    imp = null; run.disabled = true;
+    if (!text.trim()) { info.textContent = ''; return; }
+    var rows = parseCSV(text);
+    if (rows.length < 2) { info.textContent = 'Aucune ligne de données trouvée.'; return; }
+    var headers = rows[0].map(norm), used = {};
+    var cols = {
+      date: findCol(headers, ['date', 'jour'], used),
+      veh: findCol(headers, ['vehicule', 'vehicle', 'voiture', 'moto'], used),
+      km: findCol(headers, ['kilometrage', 'km', 'odometre', 'compteur', 'mileage'], used),
+      liters: findCol(headers, ['litres', 'litre', 'liters', 'volume', 'quantite'], used),
+      cost: findCol(headers, ['montant', 'cout', 'prix', 'total', 'amount', 'cost', 'ttc'], used),
+      kind: findCol(headers, ['type', 'categorie', 'category', 'nature'], used),
+      title: findCol(headers, ['description', 'libelle', 'titre', 'intitule', 'intervention', 'detail', 'commentaire', 'notes'], used)
+    };
+    if (cols.date < 0) { info.textContent = 'Colonne de date introuvable. La première ligne du fichier doit contenir les titres des colonnes.'; return; }
+    var data = rows.slice(1);
+    if (data.length > 1000) { info.textContent = '1 000 lignes maximum par import. Découpez le fichier.'; return; }
+    var found = Object.keys(cols).filter(function (k) { return cols[k] >= 0; });
+    var names = { date: 'date', veh: 'véhicule', km: 'kilométrage', liters: 'litres', cost: 'montant', kind: 'type', title: 'description' };
+    imp = { data: data, cols: cols };
+    info.textContent = plural(data.length, 'ligne détectée', 'lignes détectées') + '. Colonnes reconnues : ' + found.map(function (k) { return names[k]; }).join(', ') + '.';
+    run.disabled = false;
+  }
+  function openImport() {
+    if (!canWrite || !db || !vehicles.length) { toast("Ajoutez d'abord un véhicule."); if (canWrite) openVeh(null); return; }
+    var sel = $('#iVeh');
+    sel.replaceChildren.apply(sel, vehicles.map(function (v) { return h('option', { value: v.id }, v.name); }));
+    sel.value = filter !== 'all' ? filter : vehicles[0].id;
+    $('#iText').value = ''; $('#iFile').value = ''; $('#iInfo').textContent = ''; $('#btnRunImp').disabled = true; imp = null;
+    closeSheet('#expSheet');
+    openSheet('#impSheet');
+  }
+  async function runImport() {
+    if (busy || !imp) return;
+    busy = true;
+    var run = $('#btnRunImp'), info = $('#iInfo');
+    run.disabled = true;
+    var c = imp.cols, defVeh = $('#iVeh').value;
+    var vm = new Map();
+    vehicles.forEach(function (v) { vm.set(norm(v.name), v.id); });
+    var seen = new Set(entries.map(function (e) { return [e.vehicleId, e.date, e.km, e.cost, e.title].join('|'); }));
+    var ok = 0, skipped = 0, dup = 0;
+    try {
+      for (var i = 0; i < imp.data.length; i++) {
+        var r = imp.data[i];
+        var date = parseDateStr(r[c.date]);
+        if (!date) { skipped++; continue; }
+        var vid = defVeh;
+        if (c.veh >= 0 && String(r[c.veh] || '').trim()) {
+          var vn = String(r[c.veh]).trim(), key = norm(vn);
+          if (!vm.has(key)) {
+            var vref = db.collection('vehicles').doc();
+            await vref.set({ name: vn, type: /moto/.test(key) ? 'moto' : 'voiture', model: '', plate: '', year: null, createdAt: Date.now() + i });
+            vm.set(key, vref.id);
+          }
+          vid = vm.get(key);
+        }
+        var title = c.title >= 0 ? String(r[c.title] || '').trim() : '';
+        var kindRaw = c.kind >= 0 ? String(r[c.kind] || '') : '';
+        var kind = guessKind(kindRaw, title);
+        var km = c.km >= 0 ? parseNum(r[c.km]) : null;
+        var cost = c.cost >= 0 ? parseNum(r[c.cost]) : null;
+        var liters = c.liters >= 0 && kind === 'carburant' ? parseNum(r[c.liters]) : null;
+        var sig = [vid, date, km, cost, title].join('|');
+        if (seen.has(sig)) { dup++; continue; }
+        seen.add(sig);
+        await db.collection('entries').doc().set({ vehicleId: vid, kind: kind, date: date, km: km, cost: cost, liters: liters, title: title || (kindRaw.trim() || KINDS[kind]), notes: '', files: [] });
+        ok++;
+        if (ok % 10 === 0) info.textContent = ok + ' lignes importées…';
+      }
+      closeSheet('#impSheet');
+      toast(plural(ok, 'ligne importée', 'lignes importées') + (dup ? ', ' + plural(dup, 'doublon ignoré', 'doublons ignorés') : '') + (skipped ? ', ' + plural(skipped, 'ligne sans date ignorée', 'lignes sans date ignorées') : ''));
+    } catch (e) {
+      info.textContent = ok + ' lignes importées avant l\'arrêt. ' + errText(e);
+    } finally { busy = false; run.disabled = false; }
+  }
+
+  /* ---------- export ---------- */
+  function csvCell(v) { var s = v == null ? '' : String(v); return /[;"\n\r]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s; }
+  function numFr(n) { return typeof n === 'number' ? String(n).replace('.', ',') : ''; }
+  async function saveFile(name, data) {
+    var err = $('#expErr'); err.textContent = '';
+    try { await dl.save({ filename: name, data: data }); }
+    catch (e) { if (e && e.code === 'declined') return; err.textContent = "L'enregistrement du fichier n'a pas abouti. Recommencez."; }
+  }
+  function exportCsv() {
+    var vm = vmap();
+    var lines = [['Date', 'Véhicule', 'Immatriculation', 'Type', 'Description', 'Kilométrage', 'Litres', 'Montant (€)', 'Factures', 'Notes'].join(';')];
+    entries.slice().sort(function (a, b) { return String(a.date || '').localeCompare(String(b.date || '')); }).forEach(function (e) {
+      var v = vm.get(e.vehicleId) || {};
+      lines.push([e.date, v.name, v.plate, KINDS[e.kind] || 'Autre', e.title, numFr(e.km), numFr(e.liters), numFr(e.cost),
+        (e.files || []).map(function (f) { return f.name; }).join(' | '), e.notes].map(csvCell).join(';'));
+    });
+    saveFile('carnet-entretien-' + ymd(new Date()) + '.csv', '﻿' + lines.join('\r\n'));
+  }
+  function exportJson() {
+    saveFile('carnet-entretien-sauvegarde-' + ymd(new Date()) + '.json',
+      JSON.stringify(Object.assign({ format: 'carnet-entretien', version: 1, exportedAt: new Date().toISOString() }, Store.exportAll()), null, 2));
+  }
+  function openExport() {
+    $('#expErr').textContent = '';
+    var on = !!dl;
+    $('#btnExpCsv').disabled = !on; $('#btnExpJson').disabled = !on;
+    if (!on) $('#expErr').textContent = "L'export n'est pas disponible dans cet affichage.";
+    openSheet('#expSheet');
+  }
+
+  /* ---------- branchements ---------- */
+  function wire() {
+    $('#entryForm').addEventListener('submit', saveEntry);
+    $('#vehForm').addEventListener('submit', saveVeh);
+    $('#fKind').addEventListener('change', syncKind);
+    $('#btnPick').addEventListener('click', function () { $('#fFiles').click(); });
+    $('#fFiles').addEventListener('change', function (ev) {
+      var files = Array.prototype.slice.call(ev.target.files || []);
+      var bad = files.filter(function (f) { return !assetType(f); });
+      files = files.filter(function (f) { return assetType(f); });
+      if (ed) { ed.add = ed.add.concat(files); renderFiles(); }
+      $('#entryErr').textContent = bad.length ? 'Format non accepté pour ' + bad.map(function (f) { return f.name; }).join(', ') + '. Utilisez un PDF, un JPEG, un PNG ou un WebP.' : '';
+      ev.target.value = '';
+    });
+    $('#btnCancelEntry').addEventListener('click', function () { closeSheet('#entrySheet'); ed = null; });
+    $('#btnCancelVeh').addEventListener('click', function () { closeSheet('#vehSheet'); });
+    $('#btnCancelImp').addEventListener('click', function () { closeSheet('#impSheet'); });
+    $('#btnCancelExp').addEventListener('click', function () { closeSheet('#expSheet'); });
+    $('#tabJ').addEventListener('click', function () { view = 'journal'; render(); });
+    $('#tabR').addEventListener('click', function () { view = 'rappels'; render(); });
+    $('#remForm').addEventListener('submit', saveRem);
+    $('#doneForm').addEventListener('submit', saveDone);
+    $('#kmForm').addEventListener('submit', saveKm);
+    $('#btnCancelRem').addEventListener('click', function () { closeSheet('#remSheet'); remEd = null; });
+    $('#btnCancelDone').addEventListener('click', function () { closeSheet('#doneSheet'); doneFor = null; });
+    $('#btnCancelKm').addEventListener('click', function () { closeSheet('#kmSheet'); kmFor = null; });
+    $('#quickFile').addEventListener('change', quickUpload);
+    $('#btnImport').addEventListener('click', openImport);
+    $('#btnExport').addEventListener('click', openExport);
+    $('#btnExpCsv').addEventListener('click', exportCsv);
+    $('#btnExpJson').addEventListener('click', exportJson);
+    $('#btnRunImp').addEventListener('click', runImport);
+    $('#iText').addEventListener('input', analyze);
+    $('#iFile').addEventListener('change', function (ev) {
+      var f = ev.target.files && ev.target.files[0];
+      if (!f) return;
+      var rd = new FileReader();
+      rd.onload = function () { $('#iText').value = String(rd.result || ''); analyze(); };
+      rd.onerror = function () { $('#iInfo').textContent = 'Impossible de lire ce fichier.'; };
+      rd.readAsText(f, 'utf-8');
+    });
+    ['#entrySheet', '#vehSheet', '#impSheet', '#expSheet', '#remSheet', '#doneSheet', '#kmSheet'].forEach(function (id) {
+      $(id).addEventListener('click', function (ev) { if (ev.target === ev.currentTarget && !busy) { closeSheet(id); if (id === '#entrySheet') ed = null; } });
+    });
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key !== 'Escape' || busy) return;
+      ['#entrySheet', '#vehSheet', '#impSheet', '#expSheet', '#remSheet', '#doneSheet', '#kmSheet'].forEach(function (id) { closeSheet(id); });
+      ed = null;
+    });
+  }
+
+  /* ---------- factures : libellé, ouverture ---------- */
+  function invLabel(vid, date, title, kind) {
+    var v = vehicles.filter(function (x) { return x.id === vid; })[0];
+    return [date || '', v ? v.name : '', title || KINDS[kind] || ''].filter(Boolean).join(' ');
+  }
+  var viewUrl = null;
+  function closeView() { closeSheet('#viewSheet'); if (viewUrl) { URL.revokeObjectURL(viewUrl); viewUrl = null; } $('#viewBody').replaceChildren(); }
+  async function openInvoice(f) {
+    $('#viewTitle').textContent = f.name || 'Facture'; $('#viewErr').textContent = '';
+    $('#viewBody').replaceChildren(h('p', { class: 'muted' }, 'Chargement…'));
+    $('#viewSave').hidden = true; $('#viewOpen').hidden = true;
+    openSheet('#viewSheet');
+    try {
+      var blob = await Drive.fetchBlob(f.id);
+      if (viewUrl) URL.revokeObjectURL(viewUrl);
+      viewUrl = URL.createObjectURL(blob);
+      var pdf = blob.type === 'application/pdf' || f.type === 'application/pdf';
+      $('#viewBody').replaceChildren(pdf ? h('p', { class: 'muted' }, 'Document PDF prêt. Enregistrez-le ou ouvrez-le.') : h('img', { src: viewUrl, alt: f.name || 'Facture' }));
+      var sv = $('#viewSave'); sv.href = viewUrl; sv.download = f.name || (pdf ? 'facture.pdf' : 'facture.jpg'); sv.hidden = false;
+      var op = $('#viewOpen'); op.href = viewUrl; op.hidden = !pdf;
+    } catch (e) {
+      $('#viewBody').replaceChildren();
+      $('#viewErr').textContent = (e && e.message) || 'Impossible de récupérer ce fichier.';
+    }
+  }
+
+  /* ---------- synchronisation ---------- */
+  var SYNC_LBL = { off: 'Synchro', disconnected: 'Synchro', pending: 'Reconnecter', syncing: 'Synchro…', idle: 'Synchronisé', offline: 'Hors ligne', error: 'Erreur synchro' };
+  function renderSync(st) {
+    st = st || Drive.state();
+    var b = $('#btnSync'); b.dataset.s = st.status; $('#syncLbl').textContent = SYNC_LBL[st.status] || 'Synchro';
+    var cid = !!Drive.clientId(), conn = Drive.connected();
+    var msg = {
+      off: 'Non configuré : renseignez votre identifiant client Google pour activer la sauvegarde dans Drive.',
+      disconnected: 'Prêt à se connecter. Les données restent sur cet appareil tant que vous ne vous connectez pas.',
+      pending: 'Connecté, mais la session Google a expiré. Touchez « Synchroniser maintenant ».',
+      syncing: 'Synchronisation en cours…',
+      idle: 'Tout est synchronisé' + (st.last ? ' (dernière synchro à ' + new Date(st.last).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ').' : '.'),
+      offline: 'Hors ligne : vos modifications sont gardées sur l\'appareil et partiront au retour du réseau.',
+      error: st.error || 'La synchronisation a échoué.'
+    }[st.status] || '';
+    $('#syncMsg').textContent = msg;
+    $('#btnConnect').hidden = conn; $('#btnSyncNow').hidden = !conn; $('#btnDisc').hidden = !conn;
+    $('#syncSetup').hidden = conn; $('#btnConnect').disabled = st.status === 'syncing' || !cid;
+    $('#btnSyncNow').disabled = st.status === 'syncing';
+  }
+  function wireSync() {
+    Drive.onState(renderSync);
+    $('#btnSync').addEventListener('click', function () { $('#syncErr').textContent = ''; $('#cidInput').value = Drive.clientId(); renderSync(); openSheet('#syncSheet'); });
+    $('#btnCancelSync').addEventListener('click', function () { closeSheet('#syncSheet'); });
+    $('#cidInput').addEventListener('input', function (ev) { Drive.setClientId(ev.target.value); });
+    $('#btnConnect').addEventListener('click', async function () {
+      $('#syncErr').textContent = '';
+      try { await Drive.connect(); } catch (e) { $('#syncErr').textContent = (e && e.message) || 'Connexion impossible.'; }
+    });
+    $('#btnSyncNow').addEventListener('click', async function () { $('#syncErr').textContent = ''; await Drive.syncNow(); });
+    $('#btnDisc').addEventListener('click', async function () { await Drive.disconnect(); toast('Déconnecté de Google Drive. Les données restent sur cet appareil.'); });
+    $('#restoreFile').addEventListener('change', async function (ev) {
+      var f = ev.target.files && ev.target.files[0]; ev.target.value = '';
+      if (!f) return;
+      try {
+        var o = JSON.parse(await f.text());
+        if (!o || (o.format !== 'carnet-entretien' && !o.vehicles)) throw new Error('format');
+        var n = await Store.importRecords(o);
+        closeSheet('#syncSheet');
+        toast(n ? plural(n, 'élément importé', 'éléments importés') : 'Rien de nouveau à importer.');
+      } catch (e) { $('#syncErr').textContent = "Ce fichier n'est pas une sauvegarde du carnet."; }
+    });
+    $('#btnCloseView').addEventListener('click', closeView);
+    $('#viewSheet').addEventListener('click', function (ev) { if (ev.target === ev.currentTarget) closeView(); });
+    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { closeSheet('#syncSheet'); closeView(); } });
+    var deferred = null;
+    window.addEventListener('beforeinstallprompt', function (ev) { ev.preventDefault(); deferred = ev; $('#btnInstall').hidden = false; });
+    window.addEventListener('appinstalled', function () { $('#btnInstall').hidden = true; deferred = null; });
+    $('#btnInstall').addEventListener('click', async function () {
+      if (!deferred) return;
+      deferred.prompt(); try { await deferred.userChoice; } catch (e) {}
+      deferred = null; $('#btnInstall').hidden = true;
+    });
+    if ('serviceWorker' in navigator && location.protocol !== 'file:') navigator.serviceWorker.register('sw.js').catch(function () {});
+    Drive.init();
+  }
+
+  async function init() {
+    wire();
+    wireSync();
+    render();
+    try {
+      var c = window.claude;
+      if (!c || !c.use) { status = 'nodb'; render(); return; }
+      var res = await Promise.all([c.use('db'), c.use('assets'), c.use('downloads'), c.use('user')]);
+      db = res[0]; assets = res[1]; dl = res[2];
+      var user = res[3];
+      if (!db) { status = 'nodb'; render(); return; }
+      canWrite = true;
+      if (user && typeof user.can === 'function') {
+        try { var w = await user.can('data.write'); canWrite = w !== false; } catch (x) { canWrite = true; }
+      }
+      status = 'ready';
+      db.collection('vehicles').onSnapshot(function (snap) {
+        vehicles = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); })
+          .sort(function (a, b) { return (a.createdAt || 0) - (b.createdAt || 0) || String(a.name).localeCompare(String(b.name)); });
+        loaded.v = true; render();
+      }, function () { status = 'error'; render(); });
+      db.collection('entries').orderBy('date', 'desc').limit(1000).onSnapshot(function (snap) {
+        entries = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+        loaded.e = true; render();
+      }, function () { status = 'error'; render(); });
+      db.collection('reminders').onSnapshot(function (snap) {
+        reminders = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+        loaded.r = true; render();
+      }, function () { status = 'error'; render(); });
+    } catch (e) { status = 'nodb'; render(); }
+  }
+  init();
+})();
+</script>
+
+</body></html>

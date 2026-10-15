@@ -1,0 +1,8 @@
+Carnet d'entretien - application installable (PWA)
+
+1. Mettez TOUS les fichiers de ce dossier à la racine d'un dépôt GitHub public, puis activez GitHub Pages
+   (Settings > Pages > Deploy from a branch > main / root).
+2. N'ajoutez JAMAIS donnees-carnet.json dans ce dépôt : il contient vos données personnelles.
+   Importez-le depuis l'application (Synchro > Importer un fichier carnet).
+3. Créez l'identifiant client Google (voir le guide dans la conversation), saisissez-le dans Synchro.
+4. Après toute modification des fichiers, changez VERSION dans sw.js (carnet-v2, v3...) pour que les appareils se mettent à jour.
