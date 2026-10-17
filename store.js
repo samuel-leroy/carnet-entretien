@@ -208,11 +208,27 @@
       return changed.length;
     },
     importRecords: async function (obj) {
+      var ENRICH = ['fuelType', 'station', 'full', 'missed'];
       var recs = [];
       COLS.forEach(function (c) {
         (Array.isArray(obj[c]) ? obj[c] : []).forEach(function (d) {
-          if (!d || typeof d !== 'object' || !d.id || mem[c].has(String(d.id))) return;
-          var data = clone(d); var id = String(data.id); delete data.id;
+          if (!d || typeof d !== 'object' || !d.id) return;
+          var id = String(d.id), cur = mem[c].get(id);
+          if (cur) {
+            // élément déjà présent : on complète seulement les champs d'enrichissement manquants
+            if (c !== 'entries' || cur.deleted || !cur.data) return;
+            var add = {};
+            var tt = String(cur.data.title || '').toLowerCase();
+            ENRICH.forEach(function (k) {
+              if (d[k] === undefined || cur.data[k] !== undefined) return;
+              // carburant / station : seulement si le titre actuel les contient encore (sinon la ligne a été renommée : on respecte le titre)
+              if ((k === 'station' && d[k]) || k === 'fuelType') { if (tt.indexOf(String(d[k]).toLowerCase()) < 0) return; }
+              add[k] = d[k];
+            });
+            if (Object.keys(add).length) recs.push({ k: c + '/' + id, c: c, id: id, data: Object.assign({}, cur.data, add), updatedAt: now(), deleted: false });
+            return;
+          }
+          var data = clone(d); delete data.id;
           recs.push({ k: c + '/' + id, c: c, id: id, data: data, updatedAt: now(), deleted: false });
         });
       });

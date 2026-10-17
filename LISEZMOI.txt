@@ -1,8 +1,11 @@
-Carnet d'entretien - application installable (PWA)
+Carnet d'entretien - mise à jour v2 (timeline, statistiques carburant, vélos)
 
-1. Mettez TOUS les fichiers de ce dossier à la racine d'un dépôt GitHub public, puis activez GitHub Pages
-   (Settings > Pages > Deploy from a branch > main / root).
-2. N'ajoutez JAMAIS donnees-carnet.json dans ce dépôt : il contient vos données personnelles.
-   Importez-le depuis l'application (Synchro > Importer un fichier carnet).
-3. Créez l'identifiant client Google (voir le guide dans la conversation), saisissez-le dans Synchro.
-4. Après toute modification des fichiers, changez VERSION dans sw.js (carnet-v2, v3...) pour que les appareils se mettent à jour.
+MISE À JOUR SUR GITHUB
+1. Dans votre dépôt GitHub (carnet-entretien) : Add file > Upload files.
+2. Glissez les fichiers de ce dossier (index.html, store.js, sw.js, etc.) : ils remplacent les anciens. Commit changes.
+3. Attendez 1 à 2 minutes. Fermez complètement l'appli sur le téléphone et rouvrez-la (deux fois si l'ancienne version s'affiche encore).
+4. N'ajoutez JAMAIS donnees-carnet.json dans le dépôt.
+
+ENRICHIR VOS DONNÉES (une seule fois)
+Dans l'appli : Synchro > Importer un fichier carnet > donnees-carnet.json (version 2 fournie à part).
+Cela ajoute à vos pleins existants le carburant, la station et l'information « plein complet », sans rien dupliquer.
