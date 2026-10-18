@@ -228,6 +228,32 @@ details.tbl summary{cursor:pointer;color:var(--accent);font-weight:600}
 details.tbl table{width:100%;border-collapse:collapse;margin-top:6px;font-variant-numeric:tabular-nums}
 details.tbl th,details.tbl td{text-align:right;padding:3px 6px;border-bottom:1px solid var(--line)}
 details.tbl th:first-child,details.tbl td:first-child{text-align:left}
+:root{--dot-bolt:#F5C400}
+.dotk[data-k="recharge"]{background:var(--dot-bolt);color:#3a2d00}
+.btn.rechbtn{flex:0 0 auto;background:var(--dot-bolt);color:#3a2d00;border-color:transparent;font-weight:700}
+
+/* v3 */
+.gtitle{font:600 13px var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:20px 0 10px}
+.gcard{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;cursor:pointer;font:inherit;min-height:84px}
+.gcard:active{transform:scale(.99)}
+.glogo{flex:none;width:60px;height:60px;border-radius:14px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;color:var(--muted)}
+.glogo img{width:100%;height:100%;object-fit:contain;display:block}
+.gbody{min-width:0;flex:1}
+.gname{font:700 20px var(--display);letter-spacing:.02em;text-transform:uppercase;overflow-wrap:break-word;line-height:1.15}
+.gmeta .plate,.gmeta .serial{flex:none}
+.gmeta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:5px;color:var(--muted);font-size:14px}
+.gside{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:none}
+.gchev{color:var(--muted);font-size:26px;line-height:1}
+.gall{background:transparent;border-style:dashed;min-height:64px}
+.backrow{display:flex;align-items:center;gap:10px}
+.backbtn{display:inline-flex;align-items:center;gap:6px;font:600 17px var(--display);text-transform:uppercase;letter-spacing:.04em;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px 14px 7px 10px;cursor:pointer;min-height:40px}
+.vlogo{width:48px;height:48px;border-radius:12px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;color:var(--muted);flex:none}
+.vlogo img{width:100%;height:100%;object-fit:contain}
+.vhead{display:flex;align-items:center;gap:12px;min-width:0}
+.logorow{display:flex;align-items:center;gap:12px}
+.logoprev{width:56px;height:56px;border-radius:12px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;color:var(--muted);flex:none}
+.logoprev img{width:100%;height:100%;object-fit:contain}
+.pill.late{--k:var(--st-late)}
 </style>
 </head><body>
 
@@ -245,7 +271,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     </div>
   </header>
   <p class="banner" id="banner" role="alert" hidden></p>
-  <nav class="chips" id="chips" aria-label="Véhicules"></nav>
+  <nav class="chips" id="chips" aria-label="Navigation"></nav>
   <div class="seg" id="seg" role="tablist" hidden>
     <button type="button" role="tab" id="tabJ" aria-selected="true">Journal</button>
     <button type="button" role="tab" id="tabR" aria-selected="false">Rappels <span class="badge" id="remBadge" hidden></span></button>
@@ -258,7 +284,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   <main id="list"><p class="muted center">Chargement de votre carnet…</p></main>
 </div>
 
-<div class="bar" id="bar" hidden><div class="inner"><button class="btn primary" id="btnAdd" type="button">Ajouter une ligne</button></div></div>
+<div class="bar" id="bar" hidden><div class="inner"><button class="btn primary" id="btnAdd" type="button">Ajouter une ligne</button><button class="btn rechbtn" id="btnAdd2" type="button" hidden>Recharge</button></div></div>
 <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 <input id="quickFile" type="file" multiple accept="application/pdf,image/jpeg,image/png,image/webp" hidden>
 
@@ -270,7 +296,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       <div class="field"><label for="fKind">Type</label>
         <select id="fKind">
           <option value="entretien">Entretien</option><option value="reparation">Réparation</option>
-          <option value="carburant">Carburant</option><option value="assurance">Assurance</option>
+          <option value="carburant">Carburant</option><option value="recharge">Recharge</option><option value="assurance">Assurance</option>
           <option value="controle">Contrôle technique</option><option value="autre">Autre</option>
         </select></div>
       <div class="field"><label for="fDate">Date</label><input id="fDate" type="date"></div>
@@ -281,6 +307,13 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       <div class="field"><label for="fCost">Montant (€)</label><input id="fCost" type="text" inputmode="decimal" autocomplete="off" placeholder="129,90"></div>
     </div>
     <div class="field" id="litersField" hidden><label for="fLiters">Litres</label><input id="fLiters" type="text" inputmode="decimal" autocomplete="off" placeholder="42,3"></div>
+    <div id="rechFields" hidden>
+      <div class="grid2">
+        <div class="field"><label for="fBatStart">Batterie au départ (%)</label><input id="fBatStart" type="text" inputmode="numeric" autocomplete="off" placeholder="20"></div>
+        <div class="field"><label for="fBatEnd">Batterie à la fin (%)</label><input id="fBatEnd" type="text" inputmode="numeric" autocomplete="off" placeholder="100"></div>
+      </div>
+      <p class="hint">Entre 0 et 100 %. Le kilométrage du vélo se saisit plus haut.</p>
+    </div>
     <div id="fuelFields" hidden>
       <div class="grid2">
         <div class="field"><label for="fFuel">Carburant</label><select id="fFuel"><option>SP98</option><option>SP95</option><option>SP95 E10</option><option>E85</option><option>Gazole</option><option>Autre</option></select></div>
@@ -316,10 +349,17 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       <div class="field"><label for="vType">Genre</label><select id="vType"><option value="voiture">Voiture</option><option value="moto">Moto</option><option value="velo">Vélo électrique</option></select></div>
     </div>
     <div class="field"><label for="vModel">Marque et modèle</label><input id="vModel" type="text" autocomplete="off" placeholder="Renault Clio V"></div>
+    <div class="field"><span class="lbl">Logo</span>
+      <div class="logorow"><span class="logoprev" id="vLogoPrev"></span>
+        <button type="button" class="btn" id="btnLogo">Choisir une image</button>
+        <button type="button" class="linkbtn" id="btnLogoDel" hidden>Retirer</button>
+        <input id="vLogoFile" type="file" accept="image/*" hidden></div>
+      <p class="hint">Marque ou photo du véhicule. Facultatif : une icône par défaut est utilisée.</p></div>
     <div class="grid2">
       <div class="field"><label for="vPlate" id="vPlateLbl">Immatriculation</label><input id="vPlate" type="text" autocomplete="off" placeholder="AB-123-CD"></div>
-      <div class="field"><label for="vYear">Année</label><input id="vYear" type="text" inputmode="numeric" autocomplete="off" placeholder="2019"></div>
+      <div class="field"><label for="vFirst">Mise en circulation</label><input id="vFirst" type="date"></div>
     </div>
+    <div class="field"><label for="vYear">Année (si la date exacte est inconnue)</label><input id="vYear" type="text" inputmode="numeric" autocomplete="off" placeholder="2019"></div>
     <p class="err" id="vehErr" role="alert"></p>
     <div class="foot">
       <button type="button" class="btn danger" id="btnDelVeh">Supprimer</button>
@@ -463,7 +503,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
 (function () {
   'use strict';
 
-  var KINDS = { entretien: 'Entretien', reparation: 'Réparation', carburant: 'Carburant', assurance: 'Assurance', controle: 'Contrôle technique', autre: 'Autre' };
+  var KINDS = { entretien: 'Entretien', reparation: 'Réparation', carburant: 'Carburant', recharge: 'Recharge', assurance: 'Assurance', controle: 'Contrôle technique', autre: 'Autre' };
   var TYPES = { voiture: 'Voiture', moto: 'Moto', velo: 'Vélo électrique' };
   var MONTHS = ['janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin', 'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.'];
   var eur = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' });
@@ -561,7 +601,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   function vmap() { var m = new Map(); vehicles.forEach(function (v) { m.set(v.id, v); }); return m; }
   function ready() { return status === 'ready' && loaded.v && loaded.e; }
   function plateEl(p) { return h('span', { class: 'plate' }, h('span', { class: 'eu' }, 'F'), h('span', { class: 'no' }, p)); }
-  function kindGroup(k) { return k === 'carburant' ? 'carburant' : (k === 'entretien' || k === 'reparation' || k === 'controle') ? 'maintenance' : 'autres'; }
+  function kindGroup(k) { return (k === 'carburant' || k === 'recharge') ? 'carburant' : (k === 'entretien' || k === 'reparation' || k === 'controle') ? 'maintenance' : 'autres'; }
   function setKind(k) { kindFilter = k; try { localStorage.setItem('carnet.kind', k); } catch (x) {} render(); }
   function renderKinds() {
     var box = $('#kinds');
@@ -569,8 +609,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     var base = filter === 'all' ? entries : entries.filter(function (e) { return e.vehicleId === filter; });
     var c = { all: base.length, maintenance: 0, carburant: 0, autres: 0 };
     base.forEach(function (e) { c[kindGroup(e.kind)]++; });
-    var defs = [['all', 'Tout'], ['maintenance', 'Maintenance'], ['carburant', 'Carburant'], ['autres', 'Autres frais']];
-    if (isVelo(filter)) defs = defs.filter(function (d) { return d[0] !== 'carburant'; });
+    var defs = [['all', 'Tout'], ['maintenance', 'Maintenance'], ['carburant', isVelo(filter) ? 'Recharges' : filter === 'all' ? 'Pleins et recharges' : 'Carburant'], ['autres', 'Autres frais']];
     box.hidden = false;
     box.replaceChildren.apply(box, defs.map(function (d) {
       return h('button', { class: 'fchip', type: 'button', 'aria-pressed': String(kindFilter === d[0]), onclick: function () { setKind(d[0]); } }, d[1], h('i', null, String(c[d[0]])));
@@ -591,6 +630,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     card: 'M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z',
     down: 'M16 18l2.29-2.29-4.88-4.88-4 4L2 7.41 3.41 6l6 6 4-4 6.3 6.29L22 12v6z',
     money: 'M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z',
+    bolt: 'M13 2L4.5 13.5H10L9 22l8.5-11.5H12z',
     chart: 'M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z'
   };
   function svgIcon(name, size) {
@@ -599,6 +639,26 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     sv.setAttribute('viewBox', '0 0 24 24'); sv.setAttribute('width', size || 24); sv.setAttribute('height', size || 24); sv.setAttribute('aria-hidden', 'true');
     p.setAttribute('d', ICONS[name]); p.setAttribute('fill', 'currentColor'); sv.appendChild(p);
     return sv;
+  }
+  function typeGlyph(type, size) {
+    var NS = 'http://www.w3.org/2000/svg', sv = document.createElementNS(NS, 'svg');
+    sv.setAttribute('viewBox', '0 0 32 32'); sv.setAttribute('width', size || 30); sv.setAttribute('height', size || 30); sv.setAttribute('aria-hidden', 'true');
+    sv.setAttribute('fill', 'none'); sv.setAttribute('stroke', 'currentColor'); sv.setAttribute('stroke-width', '1.8'); sv.setAttribute('stroke-linecap', 'round'); sv.setAttribute('stroke-linejoin', 'round');
+    var D = {
+      voiture: ['M4 20v-4l2.4-5.2A2 2 0 0 1 8.2 9.6h15.6a2 2 0 0 1 1.8 1.2L28 16v4', 'M4 20h24', 'M7 16h18', 'c8,21.5,2.5', 'c24,21.5,2.5'],
+      moto: ['c7,21,4', 'c25,21,4', 'M7 21l5-8h6l3 8', 'M18 13l3-4h3', 'M12 13l-2-3h-3', 'M13 21h8'],
+      velo: ['c7,21,4.5', 'c25,21,4.5', 'M7 21l5-9h8l5 9', 'M12 12l5 9', 'M20 12l-1-3h-3', 'M12 12l-1-3h-2.5']
+    }[type] || [];
+    D.forEach(function (d) {
+      if (d.charAt(0) === 'c') { var a = d.slice(1).split(','), c = document.createElementNS(NS, 'circle'); c.setAttribute('cx', a[0]); c.setAttribute('cy', a[1]); c.setAttribute('r', a[2]); sv.appendChild(c); }
+      else { var p = document.createElementNS(NS, 'path'); p.setAttribute('d', d); sv.appendChild(p); }
+    });
+    return sv;
+  }
+  function logoEl(v, cls, size) {
+    var box = h('span', { class: cls });
+    if (v && v.logo) box.append(h('img', { src: v.logo, alt: '' })); else box.append(typeGlyph(v && v.type, size));
+    return box;
   }
   function isVelo(id) { return vehicles.some(function (v) { return v.id === id && v.type === 'velo'; }); }
   function fuelOf(e) {
@@ -890,24 +950,73 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     else b.hidden = true;
     $('#btnImport').hidden = !(canWrite && ready());
   }
+  var screen = 'garage';
+  function enterVehicle(id) {
+    filter = id; view = 'journal'; screen = 'vehicle';
+    try { history.pushState({ s: 'v' }, ''); } catch (x) {}
+    window.scrollTo(0, 0); render();
+  }
+  function goGarage() {
+    if (history.state && history.state.s === 'v') { history.back(); return; }
+    screen = 'garage'; filter = 'all'; render();
+  }
+  function lateCounts(vid) {
+    var odo = odoMap(), today = ymd(new Date()), late = 0, soon = 0;
+    reminders.forEach(function (r) {
+      if (r.vehicleId !== vid) return;
+      var k = remStatus(r, odo[vid] || 0, today).rank;
+      if (k === 2) late++; else if (k === 1) soon++;
+    });
+    return { late: late, soon: soon };
+  }
+  function renderGarage() {
+    var box = $('#list'); box.className = 'garage';
+    if (!ready()) { box.replaceChildren(h('p', { class: 'muted center' }, 'Chargement de votre carnet…')); return; }
+    if (!vehicles.length) {
+      box.replaceChildren(emptyCard('Votre garage est vide', "Ajoutez vos voitures, votre moto et vos vélos, puis leurs entretiens et leurs factures.",
+        canWrite ? [
+          h('button', { class: 'btn primary', type: 'button', onclick: function () { openVeh(null, 'voiture'); } }, 'Ajouter une voiture'),
+          h('button', { class: 'btn', type: 'button', onclick: function () { openVeh(null, 'moto'); } }, 'Ajouter une moto'),
+          h('button', { class: 'btn', type: 'button', onclick: function () { openVeh(null, 'velo'); } }, 'Ajouter un vélo')
+        ] : []));
+      return;
+    }
+    var out = [h('div', { class: 'gtitle' }, 'Choisissez un véhicule')];
+    vehicles.forEach(function (v) {
+      var lc = loaded.r ? lateCounts(v.id) : { late: 0, soon: 0 };
+      var date = v.firstDate ? 'Mise en circulation ' + fmtDate(v.firstDate) : (v.year ? String(v.year) : '');
+      var side = [];
+      if (lc.late) side.push(h('span', { class: 'pill late' }, plural(lc.late, 'rappel en retard', 'rappels en retard')));
+      else if (lc.soon) side.push(h('span', { class: 'pill', style: '--k:var(--st-soon)' }, plural(lc.soon, 'rappel bientôt', 'rappels bientôt')));
+      out.push(h('button', { class: 'gcard', type: 'button', 'data-vid': v.id, onclick: function () { enterVehicle(v.id); } },
+        logoEl(v, 'glogo', 34),
+        h('div', { class: 'gbody' },
+          h('div', { class: 'gname' }, v.name),
+          h('div', { class: 'gmeta' }, v.plate ? (v.type === 'velo' ? h('span', { class: 'serial' }, v.plate) : plateEl(v.plate)) : null, date ? h('span', null, date) : null),
+          side.length ? h('div', { class: 'gmeta' }, side) : null),
+        h('span', { class: 'gchev', 'aria-hidden': 'true' }, '›')));
+    });
+    var docs = 0; entries.forEach(function (e) { docs += (e.files || []).length; });
+    out.push(h('button', { class: 'gcard gall', type: 'button', id: 'gAll', onclick: function () { enterVehicle('all'); } },
+      h('div', { class: 'gbody' }, h('div', { class: 'gname', style: 'font-size:17px' }, 'Tous les véhicules'),
+        h('div', { class: 'gmeta' }, plural(entries.length, 'ligne', 'lignes') + ' · ' + plural(docs, 'facture', 'factures'))),
+      h('span', { class: 'gchev', 'aria-hidden': 'true' }, '›')));
+    box.replaceChildren.apply(box, out);
+  }
   function renderChips() {
     var box = $('#chips');
-    if (!ready() || !vehicles.length) { box.replaceChildren(); return; }
-    var items = [h('button', { class: 'chip', type: 'button', 'aria-pressed': String(filter === 'all'), onclick: function () { filter = 'all'; render(); } }, 'Tous')];
-    vehicles.forEach(function (v) {
-      items.push(h('button', { class: 'chip', type: 'button', 'aria-pressed': String(filter === v.id), onclick: function () { filter = v.id; render(); } }, v.name));
-    });
-    if (canWrite) items.push(h('button', { class: 'chip add', type: 'button', onclick: function () { openVeh(null); } }, '+ Véhicule'));
-    box.replaceChildren.apply(box, items);
+    if (!ready() || !vehicles.length || screen !== 'vehicle') { box.replaceChildren(); return; }
+    box.replaceChildren(h('div', { class: 'backrow' }, h('button', { class: 'backbtn', type: 'button', id: 'btnBack', onclick: goGarage }, '‹ Garage'),
+      filter === 'all' ? h('span', { class: 'vmeta' }, 'Tous les véhicules') : null));
   }
   function renderVehicleCard() {
     var box = $('#vcard');
     var v = vehicles.filter(function (x) { return x.id === filter; })[0];
     if (!ready() || !v || view === 'rappels') { box.hidden = true; box.replaceChildren(); return; }
-    var meta = [TYPES[v.type] || 'Véhicule', v.model, v.year].filter(Boolean).join(' · ');
+    var meta = [TYPES[v.type] || 'Véhicule', v.model, v.firstDate ? fmtDate(v.firstDate) : v.year].filter(Boolean).join(' · ');
     box.hidden = false;
     box.replaceChildren(
-      h('div', null, h('div', { class: 'vname' }, v.name), h('div', { class: 'vmeta' }, meta)),
+      h('div', { class: 'vhead' }, logoEl(v, 'vlogo', 28), h('div', { style: 'min-width:0' }, h('div', { class: 'vname' }, v.name), h('div', { class: 'vmeta' }, meta))),
       h('div', { class: 'vright' },
         v.plate ? (v.type === 'velo' ? h('span', { class: 'serial' }, v.plate) : plateEl(v.plate)) : null,
         canWrite ? h('button', { class: 'btn ghost', type: 'button', onclick: function () { openVeh(v); } }, 'Modifier') : null)
@@ -943,7 +1052,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   function rowEl(e, vm, cons) {
     var v = vm.get(e.vehicleId);
     var kind = KINDS[e.kind] ? e.kind : 'autre';
-    var isF = kind === 'carburant', st = splitTitle(e.title), fo = isF ? fuelOf(e) : null;
+    var isF = kind === 'carburant', isR = kind === 'recharge', st = splitTitle(e.title), fo = isF ? fuelOf(e) : null;
     var parts = (e.date || '').split('-');
     var parts1 = [];
     if (filter === 'all' && v) parts1.push(v.name);
@@ -951,17 +1060,19 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     if (isF) {
       if (cons.has(e.id)) parts1.push(h('b', null, nf3.format(cons.get(e.id)) + ' L/100km'));
       if (typeof e.liters === 'number') parts1.push(nf3.format(e.liters) + ' L');
+    } else if (isR) {
+      if (typeof e.batStart === 'number' && typeof e.batEnd === 'number') parts1.push(h('b', null, '+' + (e.batEnd - e.batStart) + ' %'));
     } else if (st.place) parts1.push(st.place);
     var docs = (e.files || []).map(function (f) {
       return h('button', { class: 'doc', type: 'button', onclick: function () { openInvoice(f); } },
         h('b', null, f.type === 'application/pdf' ? 'PDF' : 'IMG'), h('span', null, f.name || 'Facture'));
     });
-    if (canWrite && assets && kind !== 'carburant') docs.push(h('button', { class: 'doc add', type: 'button', onclick: function () { quickAttach(e); } }, '+ Facture'));
-    var dot = h('div', { class: 'dotk', 'data-k': kind, 'aria-label': KINDS[kind], title: KINDS[kind] }, svgIcon(isF ? 'pump' : kind === 'controle' ? 'card' : 'wrench', 24));
+    if (canWrite && assets && kind !== 'carburant' && !isR) docs.push(h('button', { class: 'doc add', type: 'button', onclick: function () { quickAttach(e); } }, '+ Facture'));
+    var dot = h('div', { class: 'dotk', 'data-k': kind, 'aria-label': KINDS[kind], title: KINDS[kind] }, svgIcon(isF ? 'pump' : isR ? 'bolt' : kind === 'controle' ? 'card' : 'wrench', 24));
     return h('div', { class: 'row' },
       dot,
       h('div', { style: 'min-width:0' },
-        h('div', { class: 'title' }, st.main || KINDS[kind], isF && !fo.full ? h('small', null, 'plein partiel') : null),
+        h('div', { class: 'title' }, isR && typeof e.batStart === 'number' && typeof e.batEnd === 'number' ? 'Recharge ' + e.batStart + ' % → ' + e.batEnd + ' %' : (st.main || KINDS[kind]), isF && !fo.full ? h('small', null, 'plein partiel') : null),
         h('div', { class: 'meta' }, joinDots(parts1)),
         isF && st.place ? h('div', { class: 'place' }, st.place) : null,
         e.notes && !(isF && /^plein partiel\.?$/i.test(String(e.notes).trim())) ? h('div', { class: 'note' }, e.notes) : null,
@@ -1019,6 +1130,9 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     var bar = $('#bar'), btn = $('#btnAdd');
     if (!ready() || !canWrite) { bar.hidden = true; return; }
     bar.hidden = false;
+    var b2 = $('#btnAdd2'); b2.hidden = true;
+    if (screen === 'garage') { btn.textContent = 'Ajouter un véhicule'; btn.onclick = function () { openVeh(null); }; return; }
+    if (vehicles.length && view === 'journal' && isVelo(filter)) { b2.hidden = false; b2.textContent = '⚡ Recharge'; b2.onclick = function () { openEntry(null, 'recharge'); }; }
     if (vehicles.length && view === 'rappels') { btn.textContent = 'Ajouter un rappel'; btn.onclick = function () { openRem(null); }; }
     else if (vehicles.length && view === 'stats') { btn.textContent = 'Ajouter un plein'; btn.onclick = function () { openEntry(null, 'carburant'); }; }
     else if (vehicles.length) { btn.textContent = 'Ajouter une ligne'; btn.onclick = function () { openEntry(null); }; }
@@ -1027,6 +1141,11 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   function render() {
     if (loaded.v && filter !== 'all' && !vehicles.some(function (v) { return v.id === filter; })) filter = 'all';
     if (view === 'stats' && isVelo(filter)) view = 'journal';
+    if (screen === 'vehicle' && loaded.v && filter !== 'all' && !vehicles.some(function (v) { return v.id === filter; })) screen = 'garage';
+    if (screen === 'garage') {
+      renderSub(); renderBanner(); renderChips(); $('#seg').hidden = true; $('#vcard').hidden = true; $('#kinds').hidden = true; $('#stats').hidden = true; $('#fstats').hidden = true;
+      renderGarage(); renderBar(); return;
+    }
     renderSub(); renderBanner(); renderChips(); renderSeg(); renderVehicleCard();
     if (view !== 'stats') $('#fstats').hidden = true;
     if (view === 'rappels' && vehicles.length) { $('#kinds').hidden = true; $('#stats').hidden = true; renderReminders(); }
@@ -1054,12 +1173,12 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
 
   /* --- lignes --- */
   function syncKind() {
-    var f = $('#fKind').value === 'carburant';
-    $('#litersField').hidden = !f; $('#fuelFields').hidden = !f;
+    var f = $('#fKind').value === 'carburant', r = $('#fKind').value === 'recharge';
+    $('#litersField').hidden = !f; $('#fuelFields').hidden = !f; $('#rechFields').hidden = !r;
   }
   function syncKinds() {
     var velo = isVelo($('#fVehicle').value), sel = $('#fKind');
-    Array.prototype.forEach.call(sel.options, function (o) { var off = velo && (o.value === 'carburant' || o.value === 'controle'); o.hidden = off; o.disabled = off; });
+    Array.prototype.forEach.call(sel.options, function (o) { var off = velo ? (o.value === 'carburant' || o.value === 'controle') : o.value === 'recharge'; o.hidden = off; o.disabled = off; });
     if (sel.options[sel.selectedIndex] && sel.options[sel.selectedIndex].disabled) sel.value = 'entretien';
     var dl2 = $('#stationList'), cnt = {};
     entries.forEach(function (e) { if (e.vehicleId === $('#fVehicle').value && e.kind === 'carburant') { var s2 = fuelOf(e).station; if (s2) cnt[s2] = (cnt[s2] || 0) + 1; } });
@@ -1102,6 +1221,8 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     $('#fStation').value = fo0 ? fo0.station : '';
     $('#fFull').checked = fo0 ? fo0.full : true;
     $('#fMissed').checked = !!(e && e.missed);
+    $('#fBatStart').value = e && typeof e.batStart === 'number' ? String(e.batStart) : '';
+    $('#fBatEnd').value = e && typeof e.batEnd === 'number' ? String(e.batEnd) : '';
     $('#fDate').value = e && e.date ? e.date : ymd(new Date());
     $('#fTitle').value = e && e.title ? e.title : '';
     $('#fKm').value = e && typeof e.km === 'number' ? String(e.km) : '';
@@ -1133,6 +1254,14 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     var km = parseNum($('#fKm').value);
     if ($('#fKm').value.trim() && km == null) { err.textContent = 'Le kilométrage doit être un nombre.'; return; }
     var liters = kind === 'carburant' ? parseNum($('#fLiters').value) : null;
+    var bs = null, be = null;
+    if (kind === 'recharge') {
+      bs = parseNum($('#fBatStart').value); be = parseNum($('#fBatEnd').value);
+      if (bs == null || be == null) { err.textContent = 'Indiquez le pourcentage de batterie au départ et à la fin.'; return; }
+      if (bs < 0 || bs > 100 || be < 0 || be > 100) { err.textContent = 'Les pourcentages doivent être compris entre 0 et 100.'; return; }
+      bs = Math.round(bs); be = Math.round(be);
+      if (be < bs) { err.textContent = 'La batterie à la fin ne peut pas être inférieure à celle du départ.'; return; }
+    }
     busy = true;
     var btn = $('#btnSaveEntry'); btn.disabled = true; btn.textContent = 'Enregistrement…';
     var uploaded = [];
@@ -1148,6 +1277,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
         title: $('#fTitle').value.trim(), notes: $('#fNotes').value.trim(),
         files: ed.keep.concat(uploaded)
       };
+      if (kind === 'recharge') { data.batStart = bs; data.batEnd = be; if (!data.title) data.title = 'Recharge ' + bs + ' % → ' + be + ' %'; }
       if (kind === 'carburant') {
         data.fuelType = $('#fFuel').value; data.station = $('#fStation').value.trim(); data.full = $('#fFull').checked; if ($('#fMissed').checked) data.missed = true;
         if (!data.title) data.title = 'Plein ' + data.fuelType + (data.station ? ' · ' + data.station : '');
@@ -1183,6 +1313,25 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   }
 
   /* --- véhicules --- */
+  var vehLogo = null;
+  function renderLogoPrev() {
+    var t = $('#vType').value, box = $('#vLogoPrev');
+    box.replaceChildren(vehLogo ? h('img', { src: vehLogo, alt: '' }) : typeGlyph(t, 30));
+    $('#btnLogoDel').hidden = !vehLogo;
+  }
+  function loadLogo(file) {
+    return new Promise(function (res, rej) {
+      var url = URL.createObjectURL(file), im = new Image();
+      im.onload = function () {
+        var S = 160, c = document.createElement('canvas'); c.width = c.height = S;
+        var k = Math.min(S / im.width, S / im.height), w = im.width * k, hh = im.height * k;
+        c.getContext('2d').drawImage(im, (S - w) / 2, (S - hh) / 2, w, hh);
+        URL.revokeObjectURL(url); res(c.toDataURL('image/png'));
+      };
+      im.onerror = function () { URL.revokeObjectURL(url); rej(new Error('image')); };
+      im.src = url;
+    });
+  }
   function openVeh(v, type) {
     if (!canWrite || !db) return;
     editingVeh = v;
@@ -1193,6 +1342,8 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     $('#vModel').value = v && v.model ? v.model : '';
     $('#vPlate').value = v && v.plate ? v.plate : '';
     $('#vYear').value = v && v.year ? String(v.year) : '';
+    $('#vFirst').value = v && v.firstDate ? v.firstDate : '';
+    vehLogo = v && v.logo ? v.logo : null; renderLogoPrev();
     $('#vehErr').textContent = '';
     $('#btnDelVeh').hidden = !v;
     if (v) armDelete($('#btnDelVeh'), 'Supprimer', deleteVeh);
@@ -1207,9 +1358,11 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     var year = parseNum($('#vYear').value);
     busy = true;
     try {
-      var data = { name: name, type: $('#vType').value, model: $('#vModel').value.trim(), plate: $('#vPlate').value.trim().toUpperCase(), year: year ? Math.round(year) : null };
+      var first = $('#vFirst').value || null;
+      if (first) year = +first.slice(0, 4);
+      var data = { name: name, type: $('#vType').value, model: $('#vModel').value.trim(), plate: $('#vPlate').value.trim().toUpperCase(), year: year ? Math.round(year) : null, firstDate: first, logo: vehLogo || null };
       if (editingVeh) { await db.collection('vehicles').doc(editingVeh.id).update(data); }
-      else { var ref = db.collection('vehicles').doc(); data.createdAt = Date.now(); await ref.set(data); filter = ref.id; render(); }
+      else { var ref = db.collection('vehicles').doc(); data.createdAt = Date.now(); await ref.set(data); enterVehicle(ref.id); }
       closeSheet('#vehSheet');
       toast('Véhicule enregistré');
     } catch (e) { err.textContent = errText(e); }
@@ -1222,7 +1375,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       return;
     }
     busy = true;
-    try { await db.collection('vehicles').doc(editingVeh.id).delete(); closeSheet('#vehSheet'); toast('Véhicule supprimé'); }
+    try { await db.collection('vehicles').doc(editingVeh.id).delete(); closeSheet('#vehSheet'); toast('Véhicule supprimé'); goGarage(); }
     catch (e) { $('#vehErr').textContent = errText(e); }
     finally { busy = false; }
   }
@@ -1621,10 +1774,10 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   }
   function exportCsv() {
     var vm = vmap();
-    var lines = [['Date', 'Véhicule', 'Immatriculation', 'Type', 'Description', 'Kilométrage', 'Litres', 'Montant (€)', 'Factures', 'Notes'].join(';')];
+    var lines = [['Date', 'Véhicule', 'Immatriculation', 'Type', 'Description', 'Kilométrage', 'Litres', 'Batterie départ (%)', 'Batterie fin (%)', 'Montant (€)', 'Factures', 'Notes'].join(';')];
     entries.slice().sort(function (a, b) { return String(a.date || '').localeCompare(String(b.date || '')); }).forEach(function (e) {
       var v = vm.get(e.vehicleId) || {};
-      lines.push([e.date, v.name, v.plate, KINDS[e.kind] || 'Autre', e.title, numFr(e.km), numFr(e.liters), numFr(e.cost),
+      lines.push([e.date, v.name, v.plate, KINDS[e.kind] || 'Autre', e.title, numFr(e.km), numFr(e.liters), numFr(e.batStart), numFr(e.batEnd), numFr(e.cost),
         (e.files || []).map(function (f) { return f.name; }).join(' | '), e.notes].map(csvCell).join(';'));
     });
     saveFile('carnet-entretien-' + ymd(new Date()) + '.csv', '﻿' + lines.join('\r\n'));
@@ -1657,6 +1810,15 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     });
     $('#btnCancelEntry').addEventListener('click', function () { closeSheet('#entrySheet'); ed = null; });
     $('#btnCancelVeh').addEventListener('click', function () { closeSheet('#vehSheet'); });
+    $('#btnLogo').addEventListener('click', function () { $('#vLogoFile').click(); });
+    $('#btnLogoDel').addEventListener('click', function () { vehLogo = null; renderLogoPrev(); });
+    $('#vType').addEventListener('change', renderLogoPrev);
+    $('#vLogoFile').addEventListener('change', async function (ev) {
+      var f = ev.target.files[0]; ev.target.value = '';
+      if (!f) return;
+      try { vehLogo = await loadLogo(f); renderLogoPrev(); $('#vehErr').textContent = ''; } catch (x) { $('#vehErr').textContent = 'Image illisible. Essayez un JPEG ou un PNG.'; }
+    });
+    window.addEventListener('popstate', function (ev) { screen = ev.state && ev.state.s === 'v' ? 'vehicle' : 'garage'; if (screen === 'garage') filter = 'all'; render(); });
     $('#btnCancelImp').addEventListener('click', function () { closeSheet('#impSheet'); });
     $('#btnCancelExp').addEventListener('click', function () { closeSheet('#expSheet'); });
     $('#tabJ').addEventListener('click', function () { view = 'journal'; render(); });
@@ -1780,6 +1942,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   }
 
   async function init() {
+    try { history.replaceState({ s: 'g' }, ''); } catch (x) {}
     wire();
     wireSync();
     render();

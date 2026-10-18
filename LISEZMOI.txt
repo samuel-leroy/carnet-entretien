@@ -1,11 +1,17 @@
-Carnet d'entretien - mise à jour v2 (timeline, statistiques carburant, vélos)
+Carnet d'entretien - mise à jour v3 (garage, recharges de vélo, nouveau logo)
+
+AVANT TOUT : SAUVEGARDE
+Dans l'appli : Exporter > sauvegarde complète JSON. Gardez ce fichier de côté.
 
 MISE À JOUR SUR GITHUB
 1. Dans votre dépôt GitHub (carnet-entretien) : Add file > Upload files.
-2. Glissez les fichiers de ce dossier (index.html, store.js, sw.js, etc.) : ils remplacent les anciens. Commit changes.
-3. Attendez 1 à 2 minutes. Fermez complètement l'appli sur le téléphone et rouvrez-la (deux fois si l'ancienne version s'affiche encore).
-4. N'ajoutez JAMAIS donnees-carnet.json dans le dépôt.
+2. Glissez tous les fichiers de ce dossier (index.html, sw.js, manifest.webmanifest, les 4 icônes png, etc.) : ils remplacent les anciens. Commit changes.
+3. Attendez 1 à 2 minutes. Fermez complètement l'appli sur le téléphone et rouvrez-la, deux fois : la première ouverture télécharge la v3, la seconde l'affiche.
+4. N'ajoutez JAMAIS de fichier de données (donnees-carnet.json, sauvegardes) dans le dépôt.
+5. Aucune donnée à réimporter : vos véhicules, lignes, rappels et factures sont conservés.
 
-ENRICHIR VOS DONNÉES (une seule fois)
-Dans l'appli : Synchro > Importer un fichier carnet > donnees-carnet.json (version 2 fournie à part).
-Cela ajoute à vos pleins existants le carburant, la station et l'information « plein complet », sans rien dupliquer.
+NOUVEAUTÉS
+- Écran d'accueil « Garage » : un véhicule par carte (logo, nom, plaque, mise en circulation, rappels en retard). « Tous les véhicules » en bas.
+- Fiche véhicule (Modifier) : logo au choix, date de mise en circulation.
+- Vélos : bouton « Recharge » (date, km, batterie départ et fin, pastille jaune avec éclair).
+- Nouveau logo. Si l'ancienne icône reste sur l'écran d'accueil d'Android, désinstallez puis réinstallez l'appli depuis Chrome (vos données se rechargent depuis Google Drive).
