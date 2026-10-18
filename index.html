@@ -1062,7 +1062,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     var out = [h('div', { class: 'gtitle' }, 'Choisissez un véhicule')];
     vehicles.forEach(function (v) {
       var lc = loaded.r ? lateCounts(v.id) : { late: 0, soon: 0 };
-      var date = v.firstDate ? 'Mise en circulation ' + fmtDate(v.firstDate) : (v.year ? String(v.year) : '');
+      var date = v.firstDate ? v.firstDate.slice(5, 7) + '/' + v.firstDate.slice(0, 4) : (v.year ? String(v.year) : '');
       var side = [];
       if (lc.late) side.push(h('span', { class: 'pill late' }, plural(lc.late, 'rappel en retard', 'rappels en retard')));
       else if (lc.soon) side.push(h('span', { class: 'pill', style: '--k:var(--st-soon)' }, plural(lc.soon, 'rappel bientôt', 'rappels bientôt')));
