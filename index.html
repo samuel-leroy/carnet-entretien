@@ -1259,7 +1259,8 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     if (sel.options[sel.selectedIndex] && sel.options[sel.selectedIndex].disabled) sel.value = 'entretien';
     var dl2 = $('#stationList'), cnt = {};
     entries.forEach(function (e) { if (e.vehicleId === $('#fVehicle').value && e.kind === 'carburant') { var s2 = fuelOf(e).station; if (s2) cnt[s2] = (cnt[s2] || 0) + 1; } });
-    dl2.replaceChildren.apply(dl2, Object.keys(cnt).sort(function (a, b) { return cnt[b] - cnt[a]; }).map(function (n) { return h('option', { value: n }); }));
+    var names = Object.keys(cnt).sort(function (a, b) { return cnt[b] - cnt[a]; }).filter(function (n) { return n !== 'Autre'; }); names.push('Autre');
+    dl2.replaceChildren.apply(dl2, names.map(function (n) { return h('option', { value: n }); }));
     syncKind();
   }
   function syncVehType() {
