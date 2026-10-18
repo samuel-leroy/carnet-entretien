@@ -230,6 +230,11 @@ details.tbl th,details.tbl td{text-align:right;padding:3px 6px;border-bottom:1px
 details.tbl th:first-child,details.tbl td:first-child{text-align:left}
 :root{--dot-bolt:#F5C400}
 .dotk[data-k="recharge"]{background:var(--dot-bolt);color:#3a2d00}
+.fico.bolt{background:var(--dot-bolt);color:#3a2d00}
+.fbar.bolt i{background:var(--dot-bolt)}
+:root{--b1:#C28F00}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--b1:#F5C400}}
+:root[data-theme="dark"]{--b1:#F5C400}
 .btn.rechbtn{flex:0 0 auto;background:var(--dot-bolt);color:#3a2d00;border-color:transparent;font-weight:700}
 
 /* v3 */
@@ -846,13 +851,84 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     return h('div', { class: 'fcard chartc wide' }, h('h3', null, title), h('div', { class: 'per' }, sub), wrap,
       series.length > 1 ? h('div', { class: 'legend' }, series.map(function (s) { return h('span', null, h('i', { style: 'background:' + s.color }), s.name); })) : null, table);
   }
+  /* ---------- statistiques batterie (vélos) ---------- */
+  function computeBike(vid) {
+    var all = entries.filter(function (e) { return e.vehicleId === vid && e.kind === 'recharge' && typeof e.km === 'number' && typeof e.batStart === 'number' && typeof e.batEnd === 'number'; })
+      .sort(function (a, b) { return a.km - b.km || String(a.date).localeCompare(String(b.date)); });
+    var ivs = [], bad = 0;
+    for (var i = 1; i < all.length; i++) {
+      var dk = all[i].km - all[i - 1].km, used = all[i - 1].batEnd - all[i].batStart;
+      if (dk > 0 && used >= 5) ivs.push({ date: all[i].date, dk: dk, used: used, c: dk / used * 100 }); else bad++;
+    }
+    var cut = null;
+    if (fsPeriod !== 'all') { var d = new Date(); d.setMonth(d.getMonth() - (fsPeriod === '12' ? 12 : 6)); cut = ymd(d); }
+    var F = all.filter(function (f) { return !cut || f.date >= cut; });
+    var iv = ivs.filter(function (x) { return !cut || x.date >= cut; });
+    var r = { all: all.length, F: F, iv: iv, bad: bad, n: F.length };
+    if (!F.length) return r;
+    var dates = F.map(function (f) { return f.date; }).sort();
+    r.span = Math.max(1, daysBetween(dates[0], dates[dates.length - 1]));
+    r.charged = F.reduce(function (a, f) { return a + (f.batEnd - f.batStart); }, 0);
+    r.avgStart = F.reduce(function (a, f) { return a + f.batStart; }, 0) / F.length;
+    r.avgEnd = F.reduce(function (a, f) { return a + f.batEnd; }, 0) / F.length;
+    r.full = F.filter(function (f) { return f.batEnd >= 100; }).length;
+    var kms = F.map(function (f) { return f.km; });
+    r.kmSpan = Math.max.apply(null, kms) - Math.min.apply(null, kms);
+    if (iv.length) {
+      r.sumKm = iv.reduce(function (a, x) { return a + x.dk; }, 0); r.sumUsed = iv.reduce(function (a, x) { return a + x.used; }, 0);
+      r.range = r.sumKm / r.sumUsed * 100;
+      r.rmin = Math.min.apply(null, iv.map(function (x) { return x.c; })); r.rmax = Math.max.apply(null, iv.map(function (x) { return x.c; }));
+      r.avgKm = r.sumKm / iv.length;
+    }
+    return r;
+  }
+  function bcard(icon, title, big, bigLab, rows) {
+    var el = fcard(icon, title, big, bigLab, rows); el.querySelector('.fico').classList.add('bolt'); return el;
+  }
+  function renderBikeStats(v) {
+    var box = $('#fstats');
+    var r = computeBike(v.id);
+    if (!r.all) {
+      box.replaceChildren(emptyCard('Aucune recharge exploitable', 'Ajoutez des recharges avec le kilométrage et la batterie au départ et à la fin pour voir les statistiques.',
+        canWrite ? [h('button', { class: 'btn primary', type: 'button', onclick: function () { openEntry(null, 'recharge'); } }, '⚡ Ajouter une recharge')] : []));
+      return;
+    }
+    var pchips = [['all', 'Tout'], ['12', '12 mois'], ['6', '6 mois']].map(function (p) {
+      return h('button', { class: 'fchip', type: 'button', 'aria-pressed': String(fsPeriod === p[0]), onclick: function () { fsPeriod = p[0]; render(); } }, p[1]);
+    });
+    var out = [h('div', { class: 'fs-filters' }, pchips)];
+    if (!r.n) { out.push(emptyCard('Aucune recharge sur cette période', 'Choisissez une période plus large.', [])); box.replaceChildren.apply(box, out); return; }
+    var per = fsPeriod === 'all' ? 'Depuis le début' : 'Sur ' + fsPeriod + ' derniers mois';
+    var dash = function (x, f) { return x != null && isFinite(x) ? f(x) : '—'; };
+    out.push(h('div', { class: 'fs-grid' },
+      bcard('bolt', 'Autonomie', r.range != null ? bigV(nf.format(Math.round(r.range)), 'km') : '—', 'Pour 100 % de batterie', [['Minimum', dash(r.rmin, function (x) { return nf.format(Math.round(x)) + ' km'; })], ['Maximum', dash(r.rmax, function (x) { return nf.format(Math.round(x)) + ' km'; })]]),
+      bcard('chart', 'Distance', bigV(nf.format(r.kmSpan), 'km'), 'Parcourus', [['Entre 2 recharges', dash(r.avgKm, function (x) { return nf.format(Math.round(x)) + ' km'; })], ['Par mois', r.span > 14 ? nf.format(Math.round(r.kmSpan / r.span * 30)) + ' km' : '—']]),
+      bcard('bolt', 'Recharges', bigV(String(r.n)), 'Nombre', [['Charge moyenne', '+' + nf.format(Math.round(r.charged / r.n)) + ' %'], ['Fréquence', r.n > 1 ? nf1.format(r.span / (r.n - 1)) + ' jours' : '—']]),
+      bcard('down', 'Batterie', bigV(nf.format(Math.round(r.avgStart)), '%'), 'Départ moyen', [['Fin moyenne', nf.format(Math.round(r.avgEnd)) + ' %'], ['Jusqu\'à 100 %', r.full + ' sur ' + r.n]])));
+    var pct = Math.round(r.full / r.n * 1000) / 10;
+    out.push(h('div', { class: 'fcard wide', style: 'margin-top:12px' },
+      h('div', { class: 'fhead' }, h('span', { class: 'fico bolt' }, svgIcon('bolt', 22)), 'Habitudes de recharge'),
+      h('div', { class: 'fbar bolt' }, h('i', { style: 'width:' + pct + '%' })),
+      h('p', { class: 'fnote' }, r.full + ' recharges sur ' + r.n + ' vont jusqu\'à 100 % (' + nf1.format(pct) + ' %). L\'autonomie se calcule entre deux recharges : kilomètres parcourus divisés par les % de batterie consommés (fin de la recharge précédente moins départ de la suivante).' +
+        (r.bad ? ' ' + plural(r.bad, 'intervalle ignoré', 'intervalles ignorés') + ' (recharge manquante ou moins de 5 % consommés).' : ''))));
+    var rm = {}, km = {}, ch = {};
+    r.iv.forEach(function (x) { var k = mIdx(mKey(x.date)); (rm[k] || (rm[k] = { d: 0, u: 0 })); rm[k].d += x.dk; rm[k].u += x.used; km[k] = (km[k] || 0) + x.dk; });
+    r.F.forEach(function (f) { var k = mIdx(mKey(f.date)); ch[k] = (ch[k] || 0) + (f.batEnd - f.batStart); });
+    var pts = function (o, fn) { return Object.keys(o).map(function (k) { return { t: +k, v: fn(o[k]) }; }); };
+    var c1 = r.iv.length ? chartBox('Autonomie (km pour 100 %)', per, [{ name: 'Autonomie', color: 'var(--b1)', pts: pts(rm, function (o) { return o.d / o.u * 100; }) }], 'line', function (x, axis) { return axis ? nf.format(Math.round(x)) : nf.format(Math.round(x)) + ' km'; }, r.range) : null;
+    var c2 = r.iv.length ? chartBox('Kilomètres par mois', per, [{ name: 'Distance', color: 'var(--b1)', pts: pts(km, function (o) { return o; }) }], 'bar', function (x, axis) { return axis ? nf.format(Math.round(x)) : nf.format(Math.round(x)) + ' km'; }, null) : null;
+    var c3 = chartBox('Batterie rechargée par mois (%)', per, [{ name: 'Recharge', color: 'var(--b1)', pts: pts(ch, function (o) { return o; }) }], 'bar', function (x, axis) { return axis ? nf.format(Math.round(x)) : nf.format(Math.round(x)) + ' %'; }, null);
+    [c1, c2, c3].forEach(function (c) { if (c) out.push(c); });
+    box.replaceChildren.apply(box, out);
+  }
   function renderFuelStats() {
     var box = $('#fstats');
     box.hidden = false;
     var v = vehicles.filter(function (x) { return x.id === filter; })[0];
+    if (v && v.type === 'velo') { renderBikeStats(v); return; }
     if (!v) {
-      var btns = vehicles.filter(function (x) { return x.type !== 'velo'; }).map(function (x) { return h('button', { class: 'btn', type: 'button', onclick: function () { filter = x.id; render(); } }, x.name); });
-      box.replaceChildren(emptyCard('Choisissez un véhicule', 'Les statistiques de carburant se calculent véhicule par véhicule.', btns));
+      var btns = vehicles.map(function (x) { return h('button', { class: 'btn', type: 'button', onclick: function () { filter = x.id; render(); } }, x.name); });
+      box.replaceChildren(emptyCard('Choisissez un véhicule', 'Les statistiques se calculent véhicule par véhicule.', btns));
       return;
     }
     var r = computeFuel(v.id);
@@ -1136,13 +1212,12 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     if (screen === 'garage') { btn.textContent = 'Ajouter un véhicule'; btn.onclick = function () { openVeh(null); }; return; }
     if (vehicles.length && view === 'journal' && isVelo(filter)) { b2.hidden = false; b2.textContent = '⚡ Recharge'; b2.onclick = function () { openEntry(null, 'recharge'); }; }
     if (vehicles.length && view === 'rappels') { btn.textContent = 'Ajouter un rappel'; btn.onclick = function () { openRem(null); }; }
-    else if (vehicles.length && view === 'stats') { btn.textContent = 'Ajouter un plein'; btn.onclick = function () { openEntry(null, 'carburant'); }; }
+    else if (vehicles.length && view === 'stats') { var bk = isVelo(filter); btn.textContent = bk ? 'Ajouter une recharge' : 'Ajouter un plein'; btn.onclick = function () { openEntry(null, bk ? 'recharge' : 'carburant'); }; }
     else if (vehicles.length) { btn.textContent = 'Ajouter une ligne'; btn.onclick = function () { openEntry(null); }; }
     else { btn.textContent = 'Ajouter un véhicule'; btn.onclick = function () { openVeh(null); }; }
   }
   function render() {
     if (loaded.v && filter !== 'all' && !vehicles.some(function (v) { return v.id === filter; })) filter = 'all';
-    if (view === 'stats' && isVelo(filter)) view = 'journal';
     if (screen === 'vehicle' && loaded.v && filter !== 'all' && !vehicles.some(function (v) { return v.id === filter; })) screen = 'garage';
     if (screen === 'garage') {
       renderSub(); renderBanner(); renderChips(); $('#seg').hidden = true; $('#vcard').hidden = true; $('#kinds').hidden = true; $('#stats').hidden = true; $('#fstats').hidden = true;
@@ -1485,7 +1560,6 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     $('#tabJ').setAttribute('aria-selected', String(view === 'journal'));
     $('#tabR').setAttribute('aria-selected', String(view === 'rappels'));
     $('#tabS').setAttribute('aria-selected', String(view === 'stats'));
-    $('#tabS').hidden = isVelo(filter);
     var n = loaded.r ? dueCount() : 0, b = $('#remBadge');
     b.hidden = n === 0; b.textContent = String(n);
   }
