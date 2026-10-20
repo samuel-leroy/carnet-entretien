@@ -261,11 +261,23 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
 .logoprev{width:56px;height:56px;border-radius:12px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;color:var(--muted);flex:none}
 .logoprev img{width:100%;height:100%;object-fit:contain}
 .pill.late{--k:var(--st-late)}
+.top{position:relative}
+.top > div:first-of-type{padding-right:56px}
+.gear{position:absolute;top:calc(env(safe-area-inset-top,0px) + 2px);right:0;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer}
+.gear[hidden]{display:none}
+.srow{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;cursor:pointer;font:inherit;min-height:68px}
+.srow .sico{flex:none;width:42px;height:42px;border-radius:12px;background:var(--dot-fuel);color:#fff;display:grid;place-items:center}
+.srow .sname{font:700 18px var(--display);letter-spacing:.02em;text-transform:uppercase}
+.srow .smeta{color:var(--muted);font-size:14px;margin-top:2px}
+.irow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 4px;border-bottom:1px solid var(--line)}
+.irow .in{font:600 16px var(--body);text-transform:uppercase;letter-spacing:.02em;overflow-wrap:anywhere}
+.irow .im{color:var(--muted);font-size:13px;margin-top:2px;text-transform:none;font-weight:400}
 </style>
 </head><body>
 
 <div class="wrap">
   <header class="top">
+    <button class="gear" id="btnGear" type="button" aria-label="Paramètres" hidden></button>
     <div>
       <h1>Carnet d'entretien</h1>
       <p class="sub" id="sub">Voitures et moto</p>
@@ -455,6 +467,19 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   </form>
 </div>
 
+<div class="overlay" id="itemSheet" hidden role="dialog" aria-modal="true" aria-labelledby="itemTitle">
+  <form class="sheet" id="itemForm" novalidate>
+    <h2 id="itemTitle">Ajouter</h2>
+    <div class="field"><label for="itemName" id="itemLbl">Nom</label><input id="itemName" type="text" autocomplete="off"></div>
+    <p class="err" id="itemErr" role="alert"></p>
+    <div class="foot">
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="btnCancelItem">Annuler</button>
+      <button type="submit" class="btn primary" id="btnSaveItem">Ajouter</button>
+    </div>
+  </form>
+</div>
+
 <div class="overlay" id="kmSheet" hidden role="dialog" aria-modal="true" aria-labelledby="kmTitle">
   <form class="sheet" id="kmForm" novalidate>
     <h2 id="kmTitle">Compteur</h2>
@@ -637,6 +662,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     card: 'M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z',
     down: 'M16 18l2.29-2.29-4.88-4.88-4 4L2 7.41 3.41 6l6 6 4-4 6.3 6.29L22 12v6z',
     money: 'M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z',
+    gear: 'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z',
     bolt: 'M13 2L4.5 13.5H10L9 22l8.5-11.5H12z',
     chart: 'M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z'
   };
@@ -1081,8 +1107,100 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       h('span', { class: 'gchev', 'aria-hidden': 'true' }, '›')));
     box.replaceChildren.apply(box, out);
   }
+  /* ---------- paramètres : stations et carburants ---------- */
+  var settings = { stations: null, fuels: null };
+  var settingsPage = null;
+  var DEFAULT_FUELS = ['SP98', 'SP95', 'SP95 E10', 'E85', 'Gazole', 'Autre'];
+  function ciHas(list, name) { var n = norm(name); return list.some(function (x) { return norm(x) === n; }); }
+  function stationList() {
+    if (settings.stations && Array.isArray(settings.stations.items)) return settings.stations.items.slice();
+    var seen = [], out = [];
+    entries.forEach(function (e) { if (e.kind !== 'carburant') return; var n = fuelOf(e).station; if (n && !ciHas(seen, n)) { seen.push(n); out.push(n); } });
+    if (!ciHas(out, 'Autre')) out.push('Autre');
+    return out;
+  }
+  function fuelList() {
+    return settings.fuels && Array.isArray(settings.fuels.items) && settings.fuels.items.length ? settings.fuels.items.slice() : DEFAULT_FUELS.slice();
+  }
+  async function saveList(key, items) { await db.collection('settings').doc(key).set({ items: items }); }
+  function openSettings() {
+    screen = 'settings'; settingsPage = null;
+    try { history.pushState({ s: 's' }, ''); } catch (x) {}
+    window.scrollTo(0, 0); render();
+  }
+  function openSettingsPage(pg) {
+    settingsPage = pg;
+    try { history.pushState({ s: 's2', p: pg }, ''); } catch (x) {}
+    window.scrollTo(0, 0); render();
+  }
+  function backFromSettings() {
+    if (history.state && (history.state.s === 's' || history.state.s === 's2')) { history.back(); return; }
+    if (screen === 'settings' && settingsPage) { settingsPage = null; render(); } else { screen = 'garage'; settingsPage = null; render(); }
+  }
+  function usageCount(key, name) {
+    var n = norm(name), c = 0;
+    entries.forEach(function (e) {
+      if (e.kind !== 'carburant') return;
+      var fo = fuelOf(e);
+      if (norm(key === 'stations' ? fo.station : fo.type) === n) c++;
+    });
+    return c;
+  }
+  function renderSettings() {
+    var box = $('#list'); box.className = 'settings';
+    if (!ready()) { box.replaceChildren(h('p', { class: 'muted center' }, 'Chargement…')); return; }
+    if (!settingsPage) {
+      box.replaceChildren(
+        h('div', { class: 'gtitle' }, 'Paramètres'),
+        h('button', { class: 'srow', type: 'button', id: 'rowStations', onclick: function () { openSettingsPage('stations'); } },
+          h('span', { class: 'sico' }, svgIcon('pump', 24)), h('div', { style: 'flex:1;min-width:0' }, h('div', { class: 'sname' }, 'Stations service'), h('div', { class: 'smeta' }, plural(stationList().length, 'station', 'stations'))),
+          h('span', { class: 'gchev', 'aria-hidden': 'true' }, '›')),
+        h('button', { class: 'srow', type: 'button', id: 'rowFuels', onclick: function () { openSettingsPage('fuels'); } },
+          h('span', { class: 'sico' }, svgIcon('pump', 24)), h('div', { style: 'flex:1;min-width:0' }, h('div', { class: 'sname' }, 'Carburants'), h('div', { class: 'smeta' }, plural(fuelList().length, 'carburant', 'carburants'))),
+          h('span', { class: 'gchev', 'aria-hidden': 'true' }, '›')));
+      return;
+    }
+    var key = settingsPage, isS = key === 'stations';
+    var items = isS ? stationList().sort(function (a, b) { return a.localeCompare(b, 'fr', { sensitivity: 'base' }); }) : fuelList();
+    var out = [h('div', { class: 'gtitle' }, isS ? 'Stations service' : 'Carburants')];
+    items.forEach(function (name) {
+      var u = usageCount(key, name);
+      var del = h('button', { class: 'linkbtn', type: 'button' }, 'Supprimer');
+      armDelete(del, 'Supprimer', async function () {
+        var cur = (isS ? stationList() : fuelList()).filter(function (x) { return norm(x) !== norm(name); });
+        try { await saveList(key, cur); toast(isS ? 'Station retirée de la liste' : 'Carburant retiré de la liste'); } catch (e) { toast(errText(e)); }
+      });
+      out.push(h('div', { class: 'irow' }, h('div', { style: 'min-width:0' }, h('div', { class: 'in' }, name), u ? h('div', { class: 'im' }, plural(u, 'plein enregistré', 'pleins enregistrés')) : null), canWrite ? del : null));
+    });
+    if (!items.length) out.push(h('p', { class: 'muted', style: 'padding:14px 0' }, 'La liste est vide.'));
+    out.push(h('p', { class: 'fnote', style: 'margin-top:14px' }, 'Retirer un élément de la liste ne modifie pas les pleins déjà enregistrés.'));
+    box.replaceChildren.apply(box, out);
+  }
+  function openItem() {
+    if (!canWrite || !db) return;
+    var isS = settingsPage === 'stations';
+    $('#itemTitle').textContent = isS ? 'Nouvelle station' : 'Nouveau carburant';
+    $('#itemLbl').textContent = isS ? 'Nom de la station' : 'Nom du carburant';
+    $('#itemName').placeholder = isS ? 'Leclerc Frouard' : 'SP95 E10';
+    $('#itemName').value = ''; $('#itemErr').textContent = '';
+    openSheet('#itemSheet'); setTimeout(function () { $('#itemName').focus(); }, 50);
+  }
+  async function saveItem(ev) {
+    ev.preventDefault();
+    if (busy) return;
+    var isS = settingsPage === 'stations', key = settingsPage, name = $('#itemName').value.trim();
+    if (!name) { $('#itemErr').textContent = 'Saisissez un nom.'; return; }
+    var cur = isS ? stationList() : fuelList();
+    if (ciHas(cur, name)) { $('#itemErr').textContent = 'Cet élément existe déjà dans la liste.'; return; }
+    busy = true;
+    try { cur.push(name); await saveList(key, cur); closeSheet('#itemSheet'); toast(isS ? 'Station ajoutée' : 'Carburant ajouté'); }
+    catch (e) { $('#itemErr').textContent = errText(e); }
+    finally { busy = false; }
+  }
+
   function renderChips() {
     var box = $('#chips');
+    if (ready() && screen === 'settings') { box.replaceChildren(h('div', { class: 'backrow' }, h('button', { class: 'backbtn', type: 'button', id: 'btnBack', onclick: backFromSettings }, settingsPage ? '‹ Paramètres' : '‹ Garage'))); return; }
     if (!ready() || !vehicles.length || screen !== 'vehicle') { box.replaceChildren(); return; }
     box.replaceChildren(h('div', { class: 'backrow' }, h('button', { class: 'backbtn', type: 'button', id: 'btnBack', onclick: goGarage }, '‹ Garage'),
       filter === 'all' ? h('span', { class: 'vmeta' }, 'Tous les véhicules') : null));
@@ -1209,6 +1327,10 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     if (!ready() || !canWrite) { bar.hidden = true; return; }
     bar.hidden = false;
     var b2 = $('#btnAdd2'); b2.hidden = true;
+    if (screen === 'settings') {
+      if (!settingsPage) { bar.hidden = true; return; }
+      btn.textContent = settingsPage === 'stations' ? 'Ajouter une station' : 'Ajouter un carburant'; btn.onclick = openItem; return;
+    }
     if (screen === 'garage') { btn.textContent = 'Ajouter un véhicule'; btn.onclick = function () { openVeh(null); }; return; }
     if (vehicles.length && view === 'journal' && isVelo(filter)) { b2.hidden = false; b2.textContent = '⚡ Recharge'; b2.onclick = function () { openEntry(null, 'recharge'); }; }
     if (vehicles.length && view === 'rappels') { btn.textContent = 'Ajouter un rappel'; btn.onclick = function () { openRem(null); }; }
@@ -1219,6 +1341,11 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   function render() {
     if (loaded.v && filter !== 'all' && !vehicles.some(function (v) { return v.id === filter; })) filter = 'all';
     if (screen === 'vehicle' && loaded.v && filter !== 'all' && !vehicles.some(function (v) { return v.id === filter; })) screen = 'garage';
+    if (screen === 'settings') {
+      renderSub(); renderBanner(); renderChips(); $('#seg').hidden = true; $('#vcard').hidden = true; $('#kinds').hidden = true; $('#stats').hidden = true; $('#fstats').hidden = true;
+      $('#btnGear').hidden = true; renderSettings(); renderBar(); return;
+    }
+    $('#btnGear').hidden = !(screen === 'garage' && ready());
     if (screen === 'garage') {
       renderSub(); renderBanner(); renderChips(); $('#seg').hidden = true; $('#vcard').hidden = true; $('#kinds').hidden = true; $('#stats').hidden = true; $('#fstats').hidden = true;
       renderGarage(); renderBar(); return;
@@ -1259,7 +1386,8 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     if (sel.options[sel.selectedIndex] && sel.options[sel.selectedIndex].disabled) sel.value = 'entretien';
     var dl2 = $('#stationList'), cnt = {};
     entries.forEach(function (e) { if (e.vehicleId === $('#fVehicle').value && e.kind === 'carburant') { var s2 = fuelOf(e).station; if (s2) cnt[s2] = (cnt[s2] || 0) + 1; } });
-    var names = Object.keys(cnt).sort(function (a, b) { return cnt[b] - cnt[a]; }).filter(function (n) { return n !== 'Autre'; }); names.push('Autre');
+    var base = stationList().filter(function (n) { return norm(n) !== 'autre'; });
+    var names = base.sort(function (a, b) { return (cnt[b] || 0) - (cnt[a] || 0) || a.localeCompare(b, 'fr', { sensitivity: 'base' }); }); names.push('Autre');
     dl2.replaceChildren.apply(dl2, names.map(function (n) { return h('option', { value: n }); }));
     syncKind();
   }
@@ -1283,6 +1411,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     });
     box.replaceChildren.apply(box, items);
   }
+  function fillFuels() { var f = $('#fFuel'); f.replaceChildren.apply(f, fuelList().map(function (x) { return h('option', null, x); })); }
   function openEntry(e, presetKind) {
     if (!canWrite || !db) return;
     if (!vehicles.length) { openVeh(null); return; }
@@ -1292,10 +1421,12 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     sel.replaceChildren.apply(sel, vehicles.map(function (v) { return h('option', { value: v.id }, v.name); }));
     sel.value = e ? e.vehicleId : (filter !== 'all' ? filter : vehicles[0].id);
     if (!sel.value) sel.selectedIndex = 0;
+    fillFuels();
     $('#fKind').value = e ? (KINDS[e.kind] ? e.kind : 'autre') : (presetKind || 'entretien');
     var fo0 = e && e.kind === 'carburant' ? fuelOf(e) : null;
     if (fo0) { var fsel = $('#fFuel'); if (!Array.prototype.some.call(fsel.options, function (o) { return o.value === fo0.type; })) fsel.append(h('option', null, fo0.type)); fsel.value = fo0.type; }
     else $('#fFuel').value = (function () { var l = entries.filter(function (x) { return x.vehicleId === sel.value && x.kind === 'carburant'; }).sort(function (a, b) { return String(b.date).localeCompare(String(a.date)); })[0]; return l ? fuelOf(l).type : 'SP98'; })();
+    if (!$('#fFuel').value) $('#fFuel').selectedIndex = 0;
     $('#fStation').value = fo0 ? fo0.station : '';
     $('#fFull').checked = fo0 ? fo0.full : true;
     $('#fMissed').checked = !!(e && e.missed);
@@ -1360,6 +1491,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
         data.fuelType = $('#fFuel').value; data.station = $('#fStation').value.trim(); data.full = $('#fFull').checked; if ($('#fMissed').checked) data.missed = true;
         if (!data.title) data.title = 'Plein ' + data.fuelType + (data.station ? ' · ' + data.station : '');
       }
+      if (kind === 'carburant' && data.station && !ciHas(stationList(), data.station)) { try { var sl = stationList(); sl.push(data.station); await saveList('stations', sl); } catch (x) {} }
       var ref = ed.id ? db.collection('entries').doc(ed.id) : db.collection('entries').doc();
       try { await ref.set(data); }
       catch (e2) {
@@ -1895,7 +2027,16 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       if (!f) return;
       try { vehLogo = await loadLogo(f); renderLogoPrev(); $('#vehErr').textContent = ''; } catch (x) { $('#vehErr').textContent = 'Image illisible. Essayez un JPEG ou un PNG.'; }
     });
-    window.addEventListener('popstate', function (ev) { screen = ev.state && ev.state.s === 'v' ? 'vehicle' : 'garage'; if (screen === 'garage') filter = 'all'; render(); });
+    window.addEventListener('popstate', function (ev) {
+      var st = ev.state || {};
+      if (st.s === 's') { screen = 'settings'; settingsPage = null; }
+      else if (st.s === 's2') { screen = 'settings'; settingsPage = st.p || null; }
+      else { screen = st.s === 'v' ? 'vehicle' : 'garage'; settingsPage = null; if (screen === 'garage') filter = 'all'; }
+      render();
+    });
+    $('#btnGear').innerHTML = ''; $('#btnGear').append(svgIcon('gear', 24)); $('#btnGear').addEventListener('click', openSettings);
+    $('#itemForm').addEventListener('submit', saveItem);
+    $('#btnCancelItem').addEventListener('click', function () { closeSheet('#itemSheet'); });
     $('#btnCancelImp').addEventListener('click', function () { closeSheet('#impSheet'); });
     $('#btnCancelExp').addEventListener('click', function () { closeSheet('#expSheet'); });
     $('#tabJ').addEventListener('click', function () { view = 'journal'; render(); });
@@ -1925,12 +2066,12 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       rd.onerror = function () { $('#iInfo').textContent = 'Impossible de lire ce fichier.'; };
       rd.readAsText(f, 'utf-8');
     });
-    ['#entrySheet', '#vehSheet', '#impSheet', '#expSheet', '#remSheet', '#doneSheet', '#kmSheet'].forEach(function (id) {
+    ['#entrySheet', '#vehSheet', '#impSheet', '#expSheet', '#remSheet', '#doneSheet', '#kmSheet', '#itemSheet'].forEach(function (id) {
       $(id).addEventListener('click', function (ev) { if (ev.target === ev.currentTarget && !busy) { closeSheet(id); if (id === '#entrySheet') ed = null; } });
     });
     document.addEventListener('keydown', function (ev) {
       if (ev.key !== 'Escape' || busy) return;
-      ['#entrySheet', '#vehSheet', '#impSheet', '#expSheet', '#remSheet', '#doneSheet', '#kmSheet'].forEach(function (id) { closeSheet(id); });
+      ['#entrySheet', '#vehSheet', '#impSheet', '#expSheet', '#remSheet', '#doneSheet', '#kmSheet', '#itemSheet'].forEach(function (id) { closeSheet(id); });
       ed = null;
     });
   }
@@ -2044,6 +2185,11 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
         entries = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
         loaded.e = true; render();
       }, function () { status = 'error'; render(); });
+      db.collection('settings').onSnapshot(function (snap) {
+        var o = { stations: null, fuels: null };
+        snap.docs.forEach(function (d) { if (d.id === 'stations' || d.id === 'fuels') o[d.id] = d.data(); });
+        settings = o; render();
+      }, function () {});
       db.collection('reminders').onSnapshot(function (snap) {
         reminders = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
         loaded.r = true; render();

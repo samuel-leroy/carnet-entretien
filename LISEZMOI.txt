@@ -1,17 +1,17 @@
-Carnet d'entretien - mise à jour v3 (garage, recharges de vélo, nouveau logo)
+Carnet d'entretien - mise à jour v4 (menu Paramètres : stations service et carburants)
 
 AVANT TOUT : SAUVEGARDE
 Dans l'appli : Exporter > sauvegarde complète JSON. Gardez ce fichier de côté.
 
 MISE À JOUR SUR GITHUB
 1. Dans votre dépôt GitHub (carnet-entretien) : Add file > Upload files.
-2. Glissez tous les fichiers de ce dossier (index.html, sw.js, manifest.webmanifest, les 4 icônes png, etc.) : ils remplacent les anciens. Commit changes.
-3. Attendez 1 à 2 minutes. Fermez complètement l'appli sur le téléphone et rouvrez-la, deux fois : la première ouverture télécharge la v3, la seconde l'affiche.
-4. N'ajoutez JAMAIS de fichier de données (donnees-carnet.json, sauvegardes) dans le dépôt.
-5. Aucune donnée à réimporter : vos véhicules, lignes, rappels et factures sont conservés.
+2. Glissez tous les fichiers de ce dossier (index.html, store.js, sw.js, manifest.webmanifest, les icônes png, etc.) : ils remplacent les anciens. Commit changes.
+3. Attendez 1 à 2 minutes. Fermez complètement l'appli sur le téléphone et rouvrez-la, deux fois si l'ancienne version s'affiche encore.
+4. N'ajoutez JAMAIS de fichier de données (sauvegardes, donnees-carnet.json) dans le dépôt.
+5. Aucune donnée à réimporter. Mettez à jour tous les appareils (téléphones) qui utilisent le carnet.
 
 NOUVEAUTÉS
-- Écran d'accueil « Garage » : un véhicule par carte (logo, nom, plaque, mise en circulation, rappels en retard). « Tous les véhicules » en bas.
-- Fiche véhicule (Modifier) : logo au choix, date de mise en circulation.
-- Vélos : bouton « Recharge » (date, km, batterie départ et fin, pastille jaune avec éclair).
-- Nouveau logo. Si l'ancienne icône reste sur l'écran d'accueil d'Android, désinstallez puis réinstallez l'appli depuis Chrome (vos données se rechargent depuis Google Drive).
+- Engrenage en haut à droite de l'écran d'accueil : menu Paramètres.
+- Stations service : liste reprise de vos pleins existants, avec « Autre ». Ajout et retrait possibles. Une station saisie à la main dans un plein est ajoutée à la liste.
+- Carburants : liste du menu déroulant des pleins (SP98, SP95, SP95 E10, E85, Gazole, Autre), avec ajout et retrait.
+- Retirer un élément de la liste ne modifie jamais les pleins déjà enregistrés.

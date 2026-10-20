@@ -4,7 +4,7 @@
 (function () {
   'use strict';
 
-  var COLS = ['vehicles', 'entries', 'reminders'];
+  var COLS = ['vehicles', 'entries', 'reminders', 'settings'];
   var ALLOWED = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'application/pdf'];
   var idb = null, mem = {}, subs = [], localFns = [], pending = {}, queued = false, lastTs = 0;
   COLS.forEach(function (c) { mem[c] = new Map(); });

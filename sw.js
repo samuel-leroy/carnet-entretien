@@ -1,6 +1,6 @@
 /* Carnet d'entretien : fonctionnement hors ligne.
    Changez VERSION à chaque mise à jour des fichiers pour que les appareils récupèrent la nouvelle version. */
-var VERSION = 'carnet-v8';
+var VERSION = 'carnet-v9';
 var SHELL = ['./', 'index.html', 'store.js', 'drive.js', 'config.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png'];
 
 self.addEventListener('install', function (e) {
