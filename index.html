@@ -342,6 +342,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       <label class="check"><input type="checkbox" id="fMissed"> J'ai oublié d'enregistrer le plein précédent</label>
       <p class="hint">La consommation se calcule d'un plein complet au suivant. Décochez pour un appoint.</p>
     </div>
+    <div class="field" id="doerField"><label for="fDoer">Réalisé par</label><input id="fDoer" list="doerList" type="text" autocomplete="off" placeholder="Garage ou personne"><datalist id="doerList"></datalist></div>
     <div class="field"><label for="fNotes">Notes</label><textarea id="fNotes" placeholder="Garage, pièces changées, prochaine échéance…"></textarea></div>
     <div class="field" id="fileBlock">
       <span class="lbl">Factures</span>
@@ -1108,7 +1109,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     box.replaceChildren.apply(box, out);
   }
   /* ---------- paramètres : stations et carburants ---------- */
-  var settings = { stations: null, fuels: null };
+  var settings = { stations: null, fuels: null, doers: null };
   var settingsPage = null;
   var DEFAULT_FUELS = ['SP98', 'SP95', 'SP95 E10', 'E85', 'Gazole', 'Autre'];
   function ciHas(list, name) { var n = norm(name); return list.some(function (x) { return norm(x) === n; }); }
@@ -1121,6 +1122,13 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   }
   function fuelList() {
     return settings.fuels && Array.isArray(settings.fuels.items) && settings.fuels.items.length ? settings.fuels.items.slice() : DEFAULT_FUELS.slice();
+  }
+  var DEFAULT_DOERS = ['AMC AUTO', 'AUTOSUR', 'Achat en ligne', 'CHRISTOPHE', 'Culture Velo', 'DAFY', 'FABIEN', 'GAM AUTO', 'GARAGE DU SAULE GAILLARD', 'Garage Frouard Automobiles', 'LECLERC AUTO', 'MIDAS Frouard', 'PALMI NEW BIKE', 'SAMUEL', 'SECURITEST', 'TOTAL ACCES CUSTINES', 'ÉLÉPHANT BLEU FROUARD'];
+  function doerList() {
+    if (settings.doers && Array.isArray(settings.doers.items)) return settings.doers.items.slice();
+    var out = DEFAULT_DOERS.slice();
+    entries.forEach(function (e) { if (e.doneBy && !ciHas(out, e.doneBy)) out.push(e.doneBy); });
+    return out;
   }
   async function saveList(key, items) { await db.collection('settings').doc(key).set({ items: items }); }
   function openSettings() {
@@ -1137,9 +1145,16 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     if (history.state && (history.state.s === 's' || history.state.s === 's2')) { history.back(); return; }
     if (screen === 'settings' && settingsPage) { settingsPage = null; render(); } else { screen = 'garage'; settingsPage = null; render(); }
   }
+  var SET_LABELS = {
+    stations: { title: 'Stations service', one: 'station', many: 'stations', add: 'Ajouter une station', newT: 'Nouvelle station', lbl: 'Nom de la station', ph: 'Leclerc Frouard', done: 'Station ajoutée', gone: 'Station retirée de la liste', icon: 'pump' },
+    fuels: { title: 'Carburants', one: 'carburant', many: 'carburants', add: 'Ajouter un carburant', newT: 'Nouveau carburant', lbl: 'Nom du carburant', ph: 'SP95 E10', done: 'Carburant ajouté', gone: 'Carburant retiré de la liste', icon: 'pump' },
+    doers: { title: 'Réalisé par', one: 'garage ou personne', many: 'garages et personnes', add: 'Ajouter un garage ou une personne', newT: 'Nouveau garage ou personne', lbl: 'Nom du garage ou de la personne', ph: 'Garage Dupont', done: 'Ajouté à la liste', gone: 'Retiré de la liste', icon: 'wrench' }
+  };
+  function listFor(key) { return key === 'stations' ? stationList() : key === 'fuels' ? fuelList() : doerList(); }
   function usageCount(key, name) {
     var n = norm(name), c = 0;
     entries.forEach(function (e) {
+      if (key === 'doers') { if (e.doneBy && norm(e.doneBy) === n) c++; return; }
       if (e.kind !== 'carburant') return;
       var fo = fuelOf(e);
       if (norm(key === 'stations' ? fo.station : fo.type) === n) c++;
@@ -1150,50 +1165,48 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     var box = $('#list'); box.className = 'settings';
     if (!ready()) { box.replaceChildren(h('p', { class: 'muted center' }, 'Chargement…')); return; }
     if (!settingsPage) {
-      box.replaceChildren(
-        h('div', { class: 'gtitle' }, 'Paramètres'),
-        h('button', { class: 'srow', type: 'button', id: 'rowStations', onclick: function () { openSettingsPage('stations'); } },
-          h('span', { class: 'sico' }, svgIcon('pump', 24)), h('div', { style: 'flex:1;min-width:0' }, h('div', { class: 'sname' }, 'Stations service'), h('div', { class: 'smeta' }, plural(stationList().length, 'station', 'stations'))),
-          h('span', { class: 'gchev', 'aria-hidden': 'true' }, '›')),
-        h('button', { class: 'srow', type: 'button', id: 'rowFuels', onclick: function () { openSettingsPage('fuels'); } },
-          h('span', { class: 'sico' }, svgIcon('pump', 24)), h('div', { style: 'flex:1;min-width:0' }, h('div', { class: 'sname' }, 'Carburants'), h('div', { class: 'smeta' }, plural(fuelList().length, 'carburant', 'carburants'))),
+      var rows = [h('div', { class: 'gtitle' }, 'Paramètres')];
+      ['stations', 'fuels', 'doers'].forEach(function (k) {
+        var L = SET_LABELS[k];
+        rows.push(h('button', { class: 'srow', type: 'button', id: 'row_' + k, onclick: function () { openSettingsPage(k); } },
+          h('span', { class: 'sico' }, svgIcon(L.icon, 24)), h('div', { style: 'flex:1;min-width:0' }, h('div', { class: 'sname' }, L.title), h('div', { class: 'smeta' }, plural(listFor(k).length, L.one, L.many))),
           h('span', { class: 'gchev', 'aria-hidden': 'true' }, '›')));
+      });
+      box.replaceChildren.apply(box, rows);
       return;
     }
-    var key = settingsPage, isS = key === 'stations';
-    var items = isS ? stationList().sort(function (a, b) { return a.localeCompare(b, 'fr', { sensitivity: 'base' }); }) : fuelList();
-    var out = [h('div', { class: 'gtitle' }, isS ? 'Stations service' : 'Carburants')];
+    var key = settingsPage, L = SET_LABELS[key];
+    var items = listFor(key); if (key !== 'fuels') items = items.sort(function (a, b) { return a.localeCompare(b, 'fr', { sensitivity: 'base' }); });
+    var out = [h('div', { class: 'gtitle' }, L.title)];
     items.forEach(function (name) {
       var u = usageCount(key, name);
       var del = h('button', { class: 'linkbtn', type: 'button' }, 'Supprimer');
       armDelete(del, 'Supprimer', async function () {
-        var cur = (isS ? stationList() : fuelList()).filter(function (x) { return norm(x) !== norm(name); });
-        try { await saveList(key, cur); toast(isS ? 'Station retirée de la liste' : 'Carburant retiré de la liste'); } catch (e) { toast(errText(e)); }
+        var cur = listFor(key).filter(function (x) { return norm(x) !== norm(name); });
+        try { await saveList(key, cur); toast(L.gone); } catch (e) { toast(errText(e)); }
       });
-      out.push(h('div', { class: 'irow' }, h('div', { style: 'min-width:0' }, h('div', { class: 'in' }, name), u ? h('div', { class: 'im' }, plural(u, 'plein enregistré', 'pleins enregistrés')) : null), canWrite ? del : null));
+      out.push(h('div', { class: 'irow' }, h('div', { style: 'min-width:0' }, h('div', { class: 'in' }, name), u ? h('div', { class: 'im' }, key === 'doers' ? plural(u, 'ligne', 'lignes') : plural(u, 'plein enregistré', 'pleins enregistrés')) : null), canWrite ? del : null));
     });
     if (!items.length) out.push(h('p', { class: 'muted', style: 'padding:14px 0' }, 'La liste est vide.'));
-    out.push(h('p', { class: 'fnote', style: 'margin-top:14px' }, 'Retirer un élément de la liste ne modifie pas les pleins déjà enregistrés.'));
+    out.push(h('p', { class: 'fnote', style: 'margin-top:14px' }, key === 'doers' ? 'Retirer un nom de la liste ne modifie pas les lignes déjà enregistrées. La liste n\'est pas limitative : vous pouvez aussi saisir un nom directement dans une ligne.' : 'Retirer un élément de la liste ne modifie jamais les pleins déjà enregistrés.'));
     box.replaceChildren.apply(box, out);
   }
   function openItem() {
     if (!canWrite || !db) return;
-    var isS = settingsPage === 'stations';
-    $('#itemTitle').textContent = isS ? 'Nouvelle station' : 'Nouveau carburant';
-    $('#itemLbl').textContent = isS ? 'Nom de la station' : 'Nom du carburant';
-    $('#itemName').placeholder = isS ? 'Leclerc Frouard' : 'SP95 E10';
+    var L = SET_LABELS[settingsPage];
+    $('#itemTitle').textContent = L.newT; $('#itemLbl').textContent = L.lbl; $('#itemName').placeholder = L.ph;
     $('#itemName').value = ''; $('#itemErr').textContent = '';
     openSheet('#itemSheet'); setTimeout(function () { $('#itemName').focus(); }, 50);
   }
   async function saveItem(ev) {
     ev.preventDefault();
     if (busy) return;
-    var isS = settingsPage === 'stations', key = settingsPage, name = $('#itemName').value.trim();
+    var key = settingsPage, L = SET_LABELS[key], name = $('#itemName').value.trim();
     if (!name) { $('#itemErr').textContent = 'Saisissez un nom.'; return; }
-    var cur = isS ? stationList() : fuelList();
+    var cur = listFor(key);
     if (ciHas(cur, name)) { $('#itemErr').textContent = 'Cet élément existe déjà dans la liste.'; return; }
     busy = true;
-    try { cur.push(name); await saveList(key, cur); closeSheet('#itemSheet'); toast(isS ? 'Station ajoutée' : 'Carburant ajouté'); }
+    try { cur.push(name); await saveList(key, cur); closeSheet('#itemSheet'); toast(L.done); }
     catch (e) { $('#itemErr').textContent = errText(e); }
     finally { busy = false; }
   }
@@ -1271,6 +1284,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
         h('div', { class: 'title' }, isR && typeof e.batStart === 'number' && typeof e.batEnd === 'number' ? 'Recharge ' + e.batStart + ' % → ' + e.batEnd + ' %' : (st.main || KINDS[kind]), isF && !fo.full ? h('small', null, 'plein partiel') : null),
         h('div', { class: 'meta' }, joinDots(parts1)),
         isF && st.place ? h('div', { class: 'place' }, st.place) : null,
+        e.doneBy && !isF && !isR ? h('div', { class: 'place' }, 'Réalisé par ' + e.doneBy) : null,
         e.notes && !(isF && /^plein partiel\.?$/i.test(String(e.notes).trim())) ? h('div', { class: 'note' }, e.notes) : null,
         docs.length ? h('div', { class: 'docs' }, docs) : null),
       h('div', { class: 'side' },
@@ -1329,7 +1343,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     var b2 = $('#btnAdd2'); b2.hidden = true;
     if (screen === 'settings') {
       if (!settingsPage) { bar.hidden = true; return; }
-      btn.textContent = settingsPage === 'stations' ? 'Ajouter une station' : 'Ajouter un carburant'; btn.onclick = openItem; return;
+      btn.textContent = SET_LABELS[settingsPage].add; btn.onclick = openItem; return;
     }
     if (screen === 'garage') { btn.textContent = 'Ajouter un véhicule'; btn.onclick = function () { openVeh(null); }; return; }
     if (vehicles.length && view === 'journal' && isVelo(filter)) { b2.hidden = false; b2.textContent = '⚡ Recharge'; b2.onclick = function () { openEntry(null, 'recharge'); }; }
@@ -1379,6 +1393,9 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   function syncKind() {
     var f = $('#fKind').value === 'carburant', r = $('#fKind').value === 'recharge';
     $('#litersField').hidden = !f; $('#fuelFields').hidden = !f; $('#rechFields').hidden = !r;
+    $('#doerField').hidden = f || r;
+    var dcnt = {}; entries.forEach(function (e) { if (e.doneBy) dcnt[norm(e.doneBy)] = (dcnt[norm(e.doneBy)] || 0) + 1; });
+    var dl = $('#doerList'); dl.replaceChildren.apply(dl, doerList().sort(function (a, b) { return (dcnt[norm(b)] || 0) - (dcnt[norm(a)] || 0) || a.localeCompare(b, 'fr', { sensitivity: 'base' }); }).map(function (n) { return h('option', { value: n }); }));
   }
   function syncKinds() {
     var velo = isVelo($('#fVehicle').value), sel = $('#fKind');
@@ -1437,6 +1454,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     $('#fKm').value = e && typeof e.km === 'number' ? String(e.km) : '';
     $('#fCost').value = e && typeof e.cost === 'number' ? String(e.cost).replace('.', ',') : '';
     $('#fLiters').value = e && typeof e.liters === 'number' ? String(e.liters).replace('.', ',') : '';
+    $('#fDoer').value = e && e.doneBy ? e.doneBy : '';
     $('#fNotes').value = e && e.notes ? e.notes : '';
     $('#entryErr').textContent = '';
     $('#fileBlock').hidden = !assets;
@@ -1486,6 +1504,8 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
         title: $('#fTitle').value.trim(), notes: $('#fNotes').value.trim(),
         files: ed.keep.concat(uploaded)
       };
+      var doer = $('#fDoer').value.trim();
+      if (doer && kind !== 'carburant' && kind !== 'recharge') { data.doneBy = doer; if (!ciHas(doerList(), doer)) { try { var dl3 = doerList(); dl3.push(doer); await saveList('doers', dl3); } catch (x) {} } }
       if (kind === 'recharge') { data.batStart = bs; data.batEnd = be; if (!data.title) data.title = 'Recharge ' + bs + ' % → ' + be + ' %'; }
       if (kind === 'carburant') {
         data.fuelType = $('#fFuel').value; data.station = $('#fStation').value.trim(); data.full = $('#fFull').checked; if ($('#fMissed').checked) data.missed = true;
@@ -1983,10 +2003,10 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   }
   function exportCsv() {
     var vm = vmap();
-    var lines = [['Date', 'Véhicule', 'Immatriculation', 'Type', 'Description', 'Kilométrage', 'Litres', 'Batterie départ (%)', 'Batterie fin (%)', 'Montant (€)', 'Factures', 'Notes'].join(';')];
+    var lines = [['Date', 'Véhicule', 'Immatriculation', 'Type', 'Description', 'Kilométrage', 'Litres', 'Batterie départ (%)', 'Batterie fin (%)', 'Montant (€)', 'Réalisé par', 'Factures', 'Notes'].join(';')];
     entries.slice().sort(function (a, b) { return String(a.date || '').localeCompare(String(b.date || '')); }).forEach(function (e) {
       var v = vm.get(e.vehicleId) || {};
-      lines.push([e.date, v.name, v.plate, KINDS[e.kind] || 'Autre', e.title, numFr(e.km), numFr(e.liters), numFr(e.batStart), numFr(e.batEnd), numFr(e.cost),
+      lines.push([e.date, v.name, v.plate, KINDS[e.kind] || 'Autre', e.title, numFr(e.km), numFr(e.liters), numFr(e.batStart), numFr(e.batEnd), numFr(e.cost), e.doneBy,
         (e.files || []).map(function (f) { return f.name; }).join(' | '), e.notes].map(csvCell).join(';'));
     });
     saveFile('carnet-entretien-' + ymd(new Date()) + '.csv', '﻿' + lines.join('\r\n'));
@@ -2186,8 +2206,8 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
         loaded.e = true; render();
       }, function () { status = 'error'; render(); });
       db.collection('settings').onSnapshot(function (snap) {
-        var o = { stations: null, fuels: null };
-        snap.docs.forEach(function (d) { if (d.id === 'stations' || d.id === 'fuels') o[d.id] = d.data(); });
+        var o = { stations: null, fuels: null, doers: null };
+        snap.docs.forEach(function (d) { if (d.id === 'stations' || d.id === 'fuels' || d.id === 'doers') o[d.id] = d.data(); });
         settings = o; render();
       }, function () {});
       db.collection('reminders').onSnapshot(function (snap) {
