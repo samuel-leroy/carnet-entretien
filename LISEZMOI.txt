@@ -1,4 +1,4 @@
-Carnet d'entretien - mise à jour v4.1 (champ « Réalisé par »)
+Carnet d'entretien - mise à jour v4.2 (icônes du menu Paramètres)
 
 AVANT TOUT : SAUVEGARDE
 Dans l'appli : Exporter > sauvegarde complète JSON. Gardez ce fichier de côté.
@@ -11,6 +11,7 @@ MISE À JOUR SUR GITHUB
 5. Aucune donnée à réimporter. Mettez à jour tous les appareils qui utilisent le carnet.
 
 NOUVEAUTÉS
+- Icônes du menu Paramètres : bidon pour les carburants, pompe avec repère pour les stations service, repère de lieu pour « Réalisé par ». Les rubriques sont dans cet ordre.
 - Dans une ligne (entretien, réparation, contrôle, assurance, autre) : champ « Réalisé par » entre le kilométrage et les notes, avec une liste de garages et de personnes. Un nom saisi à la main est ajouté à la liste.
 - Paramètres (engrenage) > « Réalisé par » : la liste, avec ajout et retrait (17 noms fournis au départ).
 - Le nom s'affiche dans le journal sous la ligne, et dans l'export CSV (colonne « Réalisé par »).

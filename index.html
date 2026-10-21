@@ -663,6 +663,9 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     card: 'M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z',
     down: 'M16 18l2.29-2.29-4.88-4.88-4 4L2 7.41 3.41 6l6 6 4-4 6.3 6.29L22 12v6z',
     money: 'M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z',
+    can: 'M5 3.5A1.5 1.5 0 0 1 6.5 2h4A1.5 1.5 0 0 1 12 3.5V5h2.2c.5 0 1 .2 1.4.6l2.8 2.8c.4.4.6.9.6 1.4V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 1-1.7zM13 12.2a2.2 2.2 0 1 0 4.4 0 2.2 2.2 0 0 0-4.4 0z',
+    pumppin: 'M3 4.5A2.5 2.5 0 0 1 5.5 2h5A2.5 2.5 0 0 1 13 4.5V20h.5v2H2.5v-2H3zM5.5 4.5v4h5v-4zM14.5 6.3l1.4-1.4 3.4 3.4c.6.6.9 1.2.9 2V12h-2v-1.4c0-.2-.1-.4-.2-.5zM17.8 13.2a3 3 0 0 0-3 3c0 2.3 3 5.3 3 5.3s3-3 3-5.3a3 3 0 0 0-3-3zm0 4.2a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4z',
+    place: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z',
     gear: 'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z',
     bolt: 'M13 2L4.5 13.5H10L9 22l8.5-11.5H12z',
     chart: 'M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z'
@@ -671,7 +674,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     var NS = 'http://www.w3.org/2000/svg';
     var sv = document.createElementNS(NS, 'svg'), p = document.createElementNS(NS, 'path');
     sv.setAttribute('viewBox', '0 0 24 24'); sv.setAttribute('width', size || 24); sv.setAttribute('height', size || 24); sv.setAttribute('aria-hidden', 'true');
-    p.setAttribute('d', ICONS[name]); p.setAttribute('fill', 'currentColor'); sv.appendChild(p);
+    p.setAttribute('d', ICONS[name]); p.setAttribute('fill', 'currentColor'); if (name === 'can' || name === 'pumppin' || name === 'place') p.setAttribute('fill-rule', 'evenodd'); sv.appendChild(p);
     return sv;
   }
   function typeGlyph(type, size) {
@@ -1146,9 +1149,9 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     if (screen === 'settings' && settingsPage) { settingsPage = null; render(); } else { screen = 'garage'; settingsPage = null; render(); }
   }
   var SET_LABELS = {
-    stations: { title: 'Stations service', one: 'station', many: 'stations', add: 'Ajouter une station', newT: 'Nouvelle station', lbl: 'Nom de la station', ph: 'Leclerc Frouard', done: 'Station ajoutée', gone: 'Station retirée de la liste', icon: 'pump' },
-    fuels: { title: 'Carburants', one: 'carburant', many: 'carburants', add: 'Ajouter un carburant', newT: 'Nouveau carburant', lbl: 'Nom du carburant', ph: 'SP95 E10', done: 'Carburant ajouté', gone: 'Carburant retiré de la liste', icon: 'pump' },
-    doers: { title: 'Réalisé par', one: 'garage ou personne', many: 'garages et personnes', add: 'Ajouter un garage ou une personne', newT: 'Nouveau garage ou personne', lbl: 'Nom du garage ou de la personne', ph: 'Garage Dupont', done: 'Ajouté à la liste', gone: 'Retiré de la liste', icon: 'wrench' }
+    stations: { title: 'Stations service', one: 'station', many: 'stations', add: 'Ajouter une station', newT: 'Nouvelle station', lbl: 'Nom de la station', ph: 'Leclerc Frouard', done: 'Station ajoutée', gone: 'Station retirée de la liste', icon: 'pumppin' },
+    fuels: { title: 'Carburants', one: 'carburant', many: 'carburants', add: 'Ajouter un carburant', newT: 'Nouveau carburant', lbl: 'Nom du carburant', ph: 'SP95 E10', done: 'Carburant ajouté', gone: 'Carburant retiré de la liste', icon: 'can' },
+    doers: { title: 'Réalisé par', one: 'garage ou personne', many: 'garages et personnes', add: 'Ajouter un garage ou une personne', newT: 'Nouveau garage ou personne', lbl: 'Nom du garage ou de la personne', ph: 'Garage Dupont', done: 'Ajouté à la liste', gone: 'Retiré de la liste', icon: 'place' }
   };
   function listFor(key) { return key === 'stations' ? stationList() : key === 'fuels' ? fuelList() : doerList(); }
   function usageCount(key, name) {
@@ -1166,7 +1169,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     if (!ready()) { box.replaceChildren(h('p', { class: 'muted center' }, 'Chargement…')); return; }
     if (!settingsPage) {
       var rows = [h('div', { class: 'gtitle' }, 'Paramètres')];
-      ['stations', 'fuels', 'doers'].forEach(function (k) {
+      ['fuels', 'stations', 'doers'].forEach(function (k) {
         var L = SET_LABELS[k];
         rows.push(h('button', { class: 'srow', type: 'button', id: 'row_' + k, onclick: function () { openSettingsPage(k); } },
           h('span', { class: 'sico' }, svgIcon(L.icon, 24)), h('div', { style: 'flex:1;min-width:0' }, h('div', { class: 'sname' }, L.title), h('div', { class: 'smeta' }, plural(listFor(k).length, L.one, L.many))),
