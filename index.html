@@ -743,25 +743,34 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   }
   var CMIN = 3, CMAX = 25;
   function consFor(vid) {
-    var fills = entries.filter(function (e) { return e.vehicleId === vid && e.kind === 'carburant' && typeof e.km === 'number' && typeof e.liters === 'number' && e.liters > 0; })
-      .sort(function (a, b) { return a.km - b.km || String(a.date).localeCompare(String(b.date)) || String(a.id).localeCompare(String(b.id)); });
+    var all = entries.filter(function (e) { return e.vehicleId === vid && e.kind === 'carburant'; }), why = new Map();
+    var fills = all.filter(function (e) {
+      var okf = typeof e.km === 'number' && typeof e.liters === 'number' && e.liters > 0;
+      if (!okf) why.set(e.id, 'kilométrage ou litres manquants');
+      return okf;
+    }).sort(function (a, b) { return String(a.date).localeCompare(String(b.date)) || a.km - b.km || String(a.id).localeCompare(String(b.id)); });
     var prev = null, acc = 0, ivs = [], bad = 0;
     fills.forEach(function (f) {
       var fo = fuelOf(f);
-      if (prev == null) { if (fo.full) { prev = f.km; acc = 0; } return; }
+      if (prev == null) { if (fo.full) { prev = f.km; acc = 0; why.set(f.id, 'premier plein complet : pas de plein précédent'); } else why.set(f.id, 'aucun plein complet avant celui-ci'); return; }
       acc += f.liters;
-      if (!fo.full) return;
-      if (f.missed) { prev = f.km; acc = 0; return; }
+      if (!fo.full) { why.set(f.id, 'plein partiel : calculé au prochain plein complet'); return; }
+      if (f.missed) { prev = f.km; acc = 0; why.set(f.id, 'plein précédent non enregistré'); return; }
       var dk = f.km - prev, c = dk > 0 ? acc / dk * 100 : NaN;
       if (dk >= 30 && c >= CMIN && c <= CMAX) ivs.push({ id: f.id, c: c, dk: dk, l: acc, date: f.date, type: fo.type });
-      else bad++;
+      else { bad++; why.set(f.id, dk < 30 ? 'écart de ' + nf.format(dk) + ' km depuis le plein complet précédent (kilométrage à vérifier)' : 'valeur aberrante (' + nf3.format(c) + ' L/100km) : litres ou km à vérifier'); }
       prev = f.km; acc = 0;
     });
-    return { ivs: ivs, bad: bad };
+    return { ivs: ivs, bad: bad, why: why };
   }
   function consMapAll() {
-    var m = new Map();
-    vehicles.forEach(function (v) { if (v.type !== 'velo') consFor(v.id).ivs.forEach(function (i) { m.set(i.id, i.c); }); });
+    var m = new Map(); m.why = new Map();
+    vehicles.forEach(function (v) {
+      if (v.type === 'velo') return;
+      var r = consFor(v.id);
+      r.ivs.forEach(function (i) { m.set(i.id, i.c); });
+      r.why.forEach(function (w, id) { m.why.set(id, w); });
+    });
     return m;
   }
   function joinDots(parts) {
@@ -1350,7 +1359,8 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       out.push(h('div', { class: 'stt' }, 'Carburant'));
       out.push(kv(fo.type, typeof e.cost === 'number' ? eur.format(e.cost) : '', 'main'));
       if (typeof e.liters === 'number') out.push(h('div', { class: 'kv' }, h('span', { class: 'k', style: 'color:var(--muted)' }, nf3.format(e.liters) + ' L' + (price != null ? ' · ' + nf3.format(price) + ' €/L' : '')), h('span', null)));
-      out.push(kv('Consommation', cons && cons.has(e.id) ? nf3.format(cons.get(e.id)) + ' L/100km' : '—'));
+      if (cons && cons.has(e.id)) out.push(kv('Consommation', nf3.format(cons.get(e.id)) + ' L/100km'));
+      else { out.push(kv('Consommation', '—')); var wy = cons && cons.why && cons.why.get(e.id); if (wy) out.push(h('div', { class: 'muted', style: 'font-size:14px;padding:0 0 4px' }, wy.charAt(0).toUpperCase() + wy.slice(1) + '.')); }
       out.push(kv('Réservoir rempli', fo.full ? 'Oui' : 'Non'));
       out.push(kv('Station service', fo.station ? fo.station.toUpperCase() : '—'));
       if (e.missed) out.push(kv('Plein précédent', 'non enregistré'));
