@@ -1,18 +1,12 @@
-Carnet d'entretien - mise à jour v4.2 (icônes du menu Paramètres)
+CARNET D'ENTRETIEN - version 4.3
 
-AVANT TOUT : SAUVEGARDE
-Dans l'appli : Exporter > sauvegarde complète JSON. Gardez ce fichier de côté.
+NOUVEAUTE : lignes du journal dépliables
+- Touchez n'importe où sur une ligne pour la déplier / replier.
+- Ravitaillement : carburant, litres · €/L, consommation, réservoir rempli, station.
+- Entretien : réalisé par + contenu des notes.
+- Icônes : poubelle (2 touches pour confirmer), crayon (modifier), oeil (vue complète avec la facture jointe).
 
-MISE À JOUR SUR GITHUB
-1. Dans votre dépôt GitHub (carnet-entretien) : Add file > Upload files.
-2. Glissez tous les fichiers de ce dossier (index.html, store.js, sw.js, manifest.webmanifest, les icônes png, etc.) : ils remplacent les anciens. Commit changes.
-3. Attendez 1 à 2 minutes. Fermez complètement l'appli sur le téléphone et rouvrez-la, deux fois si l'ancienne version s'affiche encore.
-4. N'ajoutez JAMAIS de fichier de données (sauvegardes, donnees-carnet.json) dans le dépôt.
-5. Aucune donnée à réimporter. Mettez à jour tous les appareils qui utilisent le carnet.
-
-NOUVEAUTÉS
-- Icônes du menu Paramètres : bidon pour les carburants, pompe avec repère pour les stations service, repère de lieu pour « Réalisé par ». Les rubriques sont dans cet ordre.
-- Dans une ligne (entretien, réparation, contrôle, assurance, autre) : champ « Réalisé par » entre le kilométrage et les notes, avec une liste de garages et de personnes. Un nom saisi à la main est ajouté à la liste.
-- Paramètres (engrenage) > « Réalisé par » : la liste, avec ajout et retrait (17 noms fournis au départ).
-- Le nom s'affiche dans le journal sous la ligne, et dans l'export CSV (colonne « Réalisé par »).
-- Les notes existantes (par exemple « GAM AUTO ») ne sont pas modifiées.
+MISE A JOUR (vos données sont conservées)
+1. Faites d'abord un export JSON complet (bouton Exporter) par sécurité.
+2. Sur GitHub (repo carnet-entretien) : remplacez tous les fichiers par ceux de ce dossier.
+3. Ouvrez l'application, puis rechargez-la une deuxième fois pour activer la nouvelle version.

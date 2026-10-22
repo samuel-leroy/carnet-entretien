@@ -272,6 +272,24 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
 .irow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 4px;border-bottom:1px solid var(--line)}
 .irow .in{font:600 16px var(--body);text-transform:uppercase;letter-spacing:.02em;overflow-wrap:anywhere}
 .irow .im{color:var(--muted);font-size:13px;margin-top:2px;text-transform:none;font-weight:400}
+.row{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.row:focus-visible{outline:2px solid var(--accent,#3b82f6);outline-offset:2px;border-radius:8px}
+.row .rdet{grid-column:2 / -1;margin-top:4px;padding-top:12px;border-top:1px solid var(--line);cursor:default}
+.rdet[hidden]{display:none}
+.stt{font:600 13px var(--body);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:2px 0 6px}
+.stt.sp{margin-top:14px}
+.kv{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:6px 0;font-size:16px}
+.kv .k{color:var(--ink)}
+.kv .v{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.kv .v small{color:var(--muted);font-size:14px;margin-left:6px}
+.kv.main .k{font-weight:600}
+.nbody{white-space:pre-wrap;overflow-wrap:anywhere;font-size:16px;line-height:1.4;padding:2px 0}
+.ract{display:flex;justify-content:flex-end;gap:6px;margin-top:10px}
+.ibtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:46px;height:46px;padding:0 10px;border:0;border-radius:12px;background:transparent;color:var(--muted);cursor:pointer;font:600 14px var(--body)}
+.ibtn:active{background:var(--surface)}
+.ibtn.armed{background:var(--bad,#B3261E);color:#fff}
+.lineimg{display:block;width:100%;border-radius:10px;border:1px solid var(--line);margin:8px 0}
+.lfile{display:flex;align-items:center;gap:10px;margin:8px 0}
 </style>
 </head><body>
 
@@ -520,6 +538,15 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     </div>
   </div>
 </div>
+<div class="overlay" id="lineSheet" hidden role="dialog" aria-modal="true" aria-labelledby="lineTitle">
+  <div class="sheet viewer">
+    <h2 id="lineTitle">Ligne</h2>
+    <div id="lineBody"></div>
+    <p class="err" id="lineErr" role="alert"></p>
+    <div class="foot"><button type="button" class="btn" id="btnLineEdit">Modifier</button><span class="spacer"></span><button type="button" class="btn primary" id="btnLineClose">Fermer</button></div>
+  </div>
+</div>
+
 <div class="overlay" id="viewSheet" hidden role="dialog" aria-modal="true" aria-labelledby="viewTitle">
   <div class="sheet viewer">
     <h2 id="viewTitle">Facture</h2>
@@ -666,6 +693,9 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     can: 'M5 3.5A1.5 1.5 0 0 1 6.5 2h4A1.5 1.5 0 0 1 12 3.5V5h2.2c.5 0 1 .2 1.4.6l2.8 2.8c.4.4.6.9.6 1.4V20a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 1-1.7zM13 12.2a2.2 2.2 0 1 0 4.4 0 2.2 2.2 0 0 0-4.4 0z',
     pumppin: 'M3 4.5A2.5 2.5 0 0 1 5.5 2h5A2.5 2.5 0 0 1 13 4.5V20h.5v2H2.5v-2H3zM5.5 4.5v4h5v-4zM14.5 6.3l1.4-1.4 3.4 3.4c.6.6.9 1.2.9 2V12h-2v-1.4c0-.2-.1-.4-.2-.5zM17.8 13.2a3 3 0 0 0-3 3c0 2.3 3 5.3 3 5.3s3-3 3-5.3a3 3 0 0 0-3-3zm0 4.2a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4z',
     place: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z',
+    trash: 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z',
+    pen: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
+    eye: 'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z',
     gear: 'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z',
     bolt: 'M13 2L4.5 13.5H10L9 22l8.5-11.5H12z',
     chart: 'M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z'
@@ -1281,20 +1311,130 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     });
     if (canWrite && assets && kind !== 'carburant' && !isR) docs.push(h('button', { class: 'doc add', type: 'button', onclick: function () { quickAttach(e); } }, '+ Facture'));
     var dot = h('div', { class: 'dotk', 'data-k': kind, 'aria-label': KINDS[kind], title: KINDS[kind] }, svgIcon(isF ? 'pump' : isR ? 'bolt' : kind === 'controle' ? 'card' : 'wrench', 24));
-    return h('div', { class: 'row' },
+    var row = h('div', { class: 'row', role: 'button', tabindex: '0', 'aria-expanded': 'false' },
       dot,
       h('div', { style: 'min-width:0' },
         h('div', { class: 'title' }, isR && typeof e.batStart === 'number' && typeof e.batEnd === 'number' ? 'Recharge ' + e.batStart + ' % → ' + e.batEnd + ' %' : (st.main || KINDS[kind]), isF && !fo.full ? h('small', null, 'plein partiel') : null),
         h('div', { class: 'meta' }, joinDots(parts1)),
         isF && st.place ? h('div', { class: 'place' }, st.place) : null,
         e.doneBy && !isF && !isR ? h('div', { class: 'place' }, 'Réalisé par ' + e.doneBy) : null,
-        e.notes && !(isF && /^plein partiel\.?$/i.test(String(e.notes).trim())) ? h('div', { class: 'note' }, e.notes) : null,
         docs.length ? h('div', { class: 'docs' }, docs) : null),
       h('div', { class: 'side' },
         typeof e.cost === 'number' ? h('div', { class: 'amt' }, eur.format(e.cost)) : null,
-        h('div', { class: 'dt' }, parts[2] ? pad(+parts[2]) + ' ' + (MONTHS[+parts[1] - 1] || '') : ''),
-        canWrite ? h('button', { class: 'linkbtn', type: 'button', onclick: function () { openEntry(e); } }, 'Modifier') : null)
+        h('div', { class: 'dt' }, parts[2] ? pad(+parts[2]) + ' ' + (MONTHS[+parts[1] - 1] || '') : ''))
     );
+    var det = null;
+    function setOpen(on) {
+      if (on) {
+        if (!det) { det = h('div', { class: 'rdet' }, detailNodes(e, cons), actionsEl(e)); row.append(det); }
+        det.hidden = false; openRows.add(e.id);
+      } else { if (det) det.hidden = true; openRows.delete(e.id); }
+      row.classList.toggle('open', on); row.setAttribute('aria-expanded', String(on));
+    }
+    row.addEventListener('click', function (ev) { if (ev.target.closest('button, a, .rdet')) return; setOpen(!openRows.has(e.id)); });
+    row.addEventListener('keydown', function (ev) { if (ev.target === row && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); setOpen(!openRows.has(e.id)); } });
+    if (openRows.has(e.id)) setOpen(true);
+    return row;
+  }
+  /* --- détail d'une ligne (dépliée ou visualisée) --- */
+  var openRows = new Set();
+  function kv(k, v, cls) { return h('div', { class: 'kv' + (cls ? ' ' + cls : '') }, h('span', { class: 'k' }, k), h('span', { class: 'v' }, v)); }
+  function meaningfulNotes(e) {
+    var n = String(e.notes || '').trim();
+    return n && !(e.kind === 'carburant' && /^plein partiel\.?$/i.test(n)) ? n : '';
+  }
+  function detailNodes(e, cons) {
+    var kind = KINDS[e.kind] ? e.kind : 'autre', out = [], notes = meaningfulNotes(e);
+    if (kind === 'carburant') {
+      var fo = fuelOf(e), price = typeof e.cost === 'number' && typeof e.liters === 'number' && e.liters > 0 ? e.cost / e.liters : null;
+      out.push(h('div', { class: 'stt' }, 'Carburant'));
+      out.push(kv(fo.type, typeof e.cost === 'number' ? eur.format(e.cost) : '', 'main'));
+      if (typeof e.liters === 'number') out.push(h('div', { class: 'kv' }, h('span', { class: 'k', style: 'color:var(--muted)' }, nf3.format(e.liters) + ' L' + (price != null ? ' · ' + nf3.format(price) + ' €/L' : '')), h('span', null)));
+      out.push(kv('Consommation', cons && cons.has(e.id) ? nf3.format(cons.get(e.id)) + ' L/100km' : '—'));
+      out.push(kv('Réservoir rempli', fo.full ? 'Oui' : 'Non'));
+      out.push(kv('Station service', fo.station ? fo.station.toUpperCase() : '—'));
+      if (e.missed) out.push(kv('Plein précédent', 'non enregistré'));
+    } else if (kind === 'recharge') {
+      out.push(h('div', { class: 'stt' }, 'Recharge'));
+      if (typeof e.batStart === 'number' && typeof e.batEnd === 'number') {
+        out.push(kv('Batterie au départ', e.batStart + ' %')); out.push(kv('Batterie à la fin', e.batEnd + ' %')); out.push(kv('Charge ajoutée', '+' + (e.batEnd - e.batStart) + ' %'));
+      }
+      if (typeof e.km === 'number') out.push(kv('Kilométrage du vélo', nf.format(e.km) + ' km'));
+    } else {
+      out.push(h('div', { class: 'stt' }, KINDS[kind]));
+      if (e.doneBy) out.push(kv('Réalisé par', e.doneBy));
+    }
+    if (kind === 'carburant' || kind === 'recharge') {
+      if (notes) { out.push(h('div', { class: 'stt sp' }, 'Notes')); out.push(h('div', { class: 'nbody' }, notes)); }
+    } else {
+      out.push(h('div', { class: 'stt sp' }, 'Notes'));
+      out.push(notes ? h('div', { class: 'nbody' }, notes) : h('div', { class: 'muted', style: 'padding:2px 0' }, 'Aucune note.'));
+    }
+    return out;
+  }
+  function actionsEl(e) {
+    var box = h('div', { class: 'ract' });
+    box.addEventListener('click', function (ev) { ev.stopPropagation(); });
+    if (canWrite) {
+      var del = h('button', { class: 'ibtn', type: 'button', 'aria-label': 'Supprimer la ligne', title: 'Supprimer' }, svgIcon('trash', 24));
+      var armed = false, timer = null;
+      del.addEventListener('click', function () {
+        if (!armed) {
+          armed = true; del.classList.add('armed'); del.replaceChildren(svgIcon('trash', 22), 'Confirmer');
+          timer = setTimeout(function () { armed = false; del.classList.remove('armed'); del.replaceChildren(svgIcon('trash', 24)); }, 4000);
+          return;
+        }
+        clearTimeout(timer); deleteLine(e);
+      });
+      box.append(del, h('button', { class: 'ibtn', type: 'button', 'aria-label': 'Modifier la ligne', title: 'Modifier', onclick: function () { openEntry(e); } }, svgIcon('pen', 24)));
+    }
+    box.append(h('button', { class: 'ibtn', type: 'button', 'aria-label': 'Voir la ligne', title: 'Voir', onclick: function () { openLine(e); } }, svgIcon('eye', 24)));
+    return box;
+  }
+  async function deleteLine(e) {
+    if (busy || !db) return;
+    busy = true;
+    try {
+      var fl = (e.files || []).map(function (f) { return f.id; });
+      for (var i = 0; i < fl.length; i++) { try { if (assets) await assets.delete(fl[i]); } catch (x) {} }
+      await db.collection('entries').doc(e.id).delete();
+      openRows.delete(e.id); toast('Ligne supprimée');
+    } catch (er) { toast(errText(er)); }
+    finally { busy = false; }
+  }
+  var lineUrls = [], lineFor = null;
+  function closeLine() { closeSheet('#lineSheet'); lineUrls.forEach(function (u) { URL.revokeObjectURL(u); }); lineUrls = []; $('#lineBody').replaceChildren(); lineFor = null; }
+  async function openLine(e) {
+    lineFor = e; var vm = vmap(), v = vm.get(e.vehicleId), kind = KINDS[e.kind] ? e.kind : 'autre', st = splitTitle(e.title);
+    $('#lineTitle').textContent = kind === 'recharge' && typeof e.batStart === 'number' ? 'Recharge ' + e.batStart + ' % → ' + e.batEnd + ' %' : (st.main || KINDS[kind]);
+    $('#lineErr').textContent = ''; $('#btnLineEdit').hidden = !canWrite;
+    var head = [];
+    if (v) head.push(kv('Véhicule', v.name));
+    if (e.date) head.push(kv('Date', fmtDate(e.date)));
+    if (typeof e.km === 'number' && kind !== 'recharge') head.push(kv('Kilométrage', nf.format(e.km) + ' km'));
+    if (typeof e.cost === 'number' && kind !== 'carburant') head.push(kv('Montant', eur.format(e.cost)));
+    var body = $('#lineBody');
+    body.replaceChildren.apply(body, head.concat(detailNodes(e, consMapAll())));
+    var files = e.files || [];
+    if (files.length) {
+      body.append(h('div', { class: 'stt sp' }, plural(files.length, 'Facture', 'Factures')));
+      var slots = files.map(function (f) { var d = h('div', null, h('p', { class: 'muted' }, 'Chargement de ' + (f.name || 'la facture') + '…')); body.append(d); return d; });
+      for (var i = 0; i < files.length; i++) {
+        var f = files[i], slot = slots[i];
+        try {
+          var blob = await Drive.fetchBlob(f.id);
+          if (lineFor !== e) return;
+          var pdf = blob.type === 'application/pdf' || f.type === 'application/pdf';
+          if (pdf) {
+            slot.replaceChildren(h('div', { class: 'lfile' }, h('button', { class: 'doc', type: 'button', onclick: (function (ff) { return function () { openInvoice(ff); }; })(f) }, h('b', null, 'PDF'), h('span', null, f.name || 'Facture'))));
+          } else {
+            var u = URL.createObjectURL(blob); lineUrls.push(u);
+            slot.replaceChildren(h('img', { class: 'lineimg', src: u, alt: f.name || 'Facture' }));
+          }
+        } catch (x) { slot.replaceChildren(h('p', { class: 'err' }, (f.name || 'Facture') + ' : fichier indisponible.')); }
+      }
+    }
+    openSheet('#lineSheet');
   }
   function renderList() {
     var box = $('#list');
@@ -2042,6 +2182,9 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     });
     $('#btnCancelEntry').addEventListener('click', function () { closeSheet('#entrySheet'); ed = null; });
     $('#btnCancelVeh').addEventListener('click', function () { closeSheet('#vehSheet'); });
+    $('#btnLineClose').addEventListener('click', closeLine);
+    $('#btnLineEdit').addEventListener('click', function () { var e = lineFor; closeLine(); if (e) openEntry(e); });
+    $('#lineSheet').addEventListener('click', function (ev) { if (ev.target === ev.currentTarget) closeLine(); });
     $('#btnLogo').addEventListener('click', function () { $('#vLogoFile').click(); });
     $('#btnLogoDel').addEventListener('click', function () { vehLogo = null; renderLogoPrev(); });
     $('#vType').addEventListener('change', renderLogoPrev);
@@ -2169,7 +2312,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     });
     $('#btnCloseView').addEventListener('click', closeView);
     $('#viewSheet').addEventListener('click', function (ev) { if (ev.target === ev.currentTarget) closeView(); });
-    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { closeSheet('#syncSheet'); closeView(); } });
+    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { closeSheet('#syncSheet'); closeView(); closeLine(); } });
     var deferred = null;
     window.addEventListener('beforeinstallprompt', function (ev) { ev.preventDefault(); deferred = ev; $('#btnInstall').hidden = false; });
     window.addEventListener('appinstalled', function () { $('#btnInstall').hidden = true; deferred = null; });
