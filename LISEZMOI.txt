@@ -1,11 +1,13 @@
-CARNET D'ENTRETIEN - version 4.4
+CARNETS D'ENTRETIENS - version 4.5
 
-NOUVEAUTES
-- Paramètres : nouvelle rubrique « Synchroniser les données » (en tête). Elle affiche la date et l'heure de la dernière synchronisation et permet de synchroniser d'un touché.
-- Paramètres : icônes en gris.
-- (4.3.1) Consommation d'un plein : si elle ne peut pas être calculée, la raison est indiquée.
+NOUVEAUTES (écran du garage)
+- Menu en trois traits à la place de l'engrenage.
+- Importer et Exporter sont rangés dans ce menu (Paramètres).
+- Synchro : une icône nuage avec un point vert (connecté) ou orange (déconnecté). Touchez-la pour ouvrir la synchronisation.
+- Titre « Carnets d'entretiens ».
+- Tuile « Tous les véhicules » retirée.
 
 MISE A JOUR (vos données sont conservées)
-1. Faites d'abord un export JSON complet (bouton Exporter) par sécurité.
+1. Faites d'abord un export JSON complet (menu > Exporter) par sécurité.
 2. Sur GitHub (repo carnet-entretien) : remplacez tous les fichiers par ceux de ce dossier.
 3. Ouvrez l'application, puis rechargez-la une deuxième fois pour activer la nouvelle version.

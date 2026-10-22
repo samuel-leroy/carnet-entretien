@@ -1,5 +1,5 @@
 <!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#13202C"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Carnet"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
-<title>Carnet d'entretien</title>
+<title>Carnets d'entretiens</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
 /* Mise en page : une colonne étroite comme un carnet posé sur l'établi. Onglets de véhicules en haut, journal daté par année en dessous, barre d'ajout fixe en bas. */
@@ -41,6 +41,14 @@ p{margin:0}
 h1{font-size:36px;line-height:1;text-transform:uppercase;letter-spacing:.02em;font-weight:700}
 .sub{margin-top:6px;color:var(--muted);font-size:14px}
 .actions{display:flex;gap:8px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.btn.cloudbtn{position:relative;width:46px;height:46px;min-height:46px;padding:0;display:inline-grid;place-items:center;border-radius:50%;color:var(--muted)}
+.cloudbtn .cloudico{display:grid;place-items:center}
+.cloudbtn .cloudico svg path:last-child{fill:var(--surface)}
+.btn.cloudbtn .dot{position:absolute;top:8px;right:8px;margin:0;width:11px;height:11px;border:2px solid var(--surface);background:#E8890C}
+.btn.cloudbtn[data-s="idle"] .dot,.btn.cloudbtn[data-s="syncing"] .dot{background:#2E9E5B}
+.btn.cloudbtn[data-s="syncing"] .dot{animation:pulse 1s infinite}
+.btn.cloudbtn[data-s="error"] .dot,.btn.cloudbtn[data-s="pending"] .dot,.btn.cloudbtn[data-s="offline"] .dot,.btn.cloudbtn[data-s="off"] .dot,.btn.cloudbtn[data-s="disconnected"] .dot{background:#E8890C}
 
 .btn{font:600 14px var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 14px;border-radius:8px;cursor:pointer;min-height:40px}
 .btn:hover{border-color:var(--accent)}
@@ -295,16 +303,14 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
 
 <div class="wrap">
   <header class="top">
-    <button class="gear" id="btnGear" type="button" aria-label="Paramètres" hidden></button>
+    <button class="gear" id="btnGear" type="button" aria-label="Menu et paramètres" hidden></button>
     <div>
-      <h1>Carnet d'entretien</h1>
+      <h1>Carnets d'entretiens</h1>
       <p class="sub" id="sub">Voitures et moto</p>
     </div>
     <div class="actions">
       <button class="btn" id="btnInstall" type="button" hidden>Installer</button>
-      <button class="btn" id="btnSync" type="button" data-s="off"><span class="dot"></span><span id="syncLbl">Synchro</span></button>
-      <button class="btn" id="btnImport" type="button" hidden>Importer</button>
-      <button class="btn" id="btnExport" type="button">Exporter</button>
+      <button class="btn cloudbtn" id="btnSync" type="button" data-s="off" aria-label="Synchronisation Google Drive"><span class="cloudico" id="cloudIco"></span><span class="dot"></span><span id="syncLbl" class="sr">Synchro</span></button>
     </div>
   </header>
   <p class="banner" id="banner" role="alert" hidden></p>
@@ -696,6 +702,9 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     trash: 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z',
     pen: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
     eye: 'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z',
+    menu: 'M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z',
+    dwn: 'M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z',
+    upl: 'M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z',
     gear: 'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z',
     bolt: 'M13 2L4.5 13.5H10L9 22l8.5-11.5H12z',
     chart: 'M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z'
@@ -1103,7 +1112,6 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     else if (status === 'error') { b.textContent = 'La connexion à vos données a été interrompue. Rechargez la page.'; b.hidden = false; }
     else if (ready() && !canWrite) { b.textContent = 'Vous consultez ce carnet en lecture seule.'; b.hidden = false; }
     else b.hidden = true;
-    $('#btnImport').hidden = !(canWrite && ready());
   }
   var screen = 'garage';
   function enterVehicle(id) {
@@ -1151,11 +1159,6 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
           side.length ? h('div', { class: 'gmeta' }, side) : null),
         h('span', { class: 'gchev', 'aria-hidden': 'true' }, '›')));
     });
-    var docs = 0; entries.forEach(function (e) { docs += (e.files || []).length; });
-    out.push(h('button', { class: 'gcard gall', type: 'button', id: 'gAll', onclick: function () { enterVehicle('all'); } },
-      h('div', { class: 'gbody' }, h('div', { class: 'gname', style: 'font-size:17px' }, 'Tous les véhicules'),
-        h('div', { class: 'gmeta' }, plural(entries.length, 'ligne', 'lignes') + ' · ' + plural(docs, 'facture', 'factures'))),
-      h('span', { class: 'gchev', 'aria-hidden': 'true' }, '›')));
     box.replaceChildren.apply(box, out);
   }
   /* ---------- paramètres : stations et carburants ---------- */
@@ -1244,12 +1247,19 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       rows.push(h('button', { class: 'srow', type: 'button', id: 'row_sync', onclick: function () { openSettingsPage('sync'); } },
         h('span', { class: 'sico' }, svgIcon('cloudsync', 26)), h('div', { style: 'flex:1;min-width:0' }, h('div', { class: 'sname' }, 'Synchroniser les données'), h('div', { class: 'smeta' }, lastSyncText())),
         h('span', { class: 'gchev', 'aria-hidden': 'true' }, '›')));
+      var dataRow = function (id, icon, name, meta, fn) {
+        return h('button', { class: 'srow', type: 'button', id: id, onclick: fn },
+          h('span', { class: 'sico' }, svgIcon(icon, 24)), h('div', { style: 'flex:1;min-width:0' }, h('div', { class: 'sname' }, name), h('div', { class: 'smeta' }, meta)),
+          h('span', { class: 'gchev', 'aria-hidden': 'true' }, '›'));
+      };
       ['fuels', 'stations', 'doers'].forEach(function (k) {
         var L = SET_LABELS[k];
         rows.push(h('button', { class: 'srow', type: 'button', id: 'row_' + k, onclick: function () { openSettingsPage(k); } },
           h('span', { class: 'sico' }, svgIcon(L.icon, 24)), h('div', { style: 'flex:1;min-width:0' }, h('div', { class: 'sname' }, L.title), h('div', { class: 'smeta' }, plural(listFor(k).length, L.one, L.many))),
           h('span', { class: 'gchev', 'aria-hidden': 'true' }, '›')));
       });
+      if (canWrite) rows.push(dataRow('row_import', 'dwn', 'Importer', 'Depuis un fichier CSV ou JSON', openImport));
+      rows.push(dataRow('row_export', 'upl', 'Exporter', 'Sauvegarde JSON ou tableur CSV', openExport));
       box.replaceChildren.apply(box, rows);
       return;
     }
@@ -2247,7 +2257,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       else { screen = st.s === 'v' ? 'vehicle' : 'garage'; settingsPage = null; if (screen === 'garage') filter = 'all'; }
       render();
     });
-    $('#btnGear').innerHTML = ''; $('#btnGear').append(svgIcon('gear', 24)); $('#btnGear').addEventListener('click', openSettings);
+    $('#btnGear').innerHTML = ''; $('#btnGear').append(svgIcon('menu', 26)); $('#btnGear').addEventListener('click', openSettings);
     $('#itemForm').addEventListener('submit', saveItem);
     $('#btnCancelItem').addEventListener('click', function () { closeSheet('#itemSheet'); });
     $('#btnCancelImp').addEventListener('click', function () { closeSheet('#impSheet'); });
@@ -2265,8 +2275,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     $('#btnCancelDone').addEventListener('click', function () { closeSheet('#doneSheet'); doneFor = null; });
     $('#btnCancelKm').addEventListener('click', function () { closeSheet('#kmSheet'); kmFor = null; });
     $('#quickFile').addEventListener('change', quickUpload);
-    $('#btnImport').addEventListener('click', openImport);
-    $('#btnExport').addEventListener('click', openExport);
+    $('#cloudIco').append(svgIcon('cloudsync', 22));
     $('#btnExpCsv').addEventListener('click', exportCsv);
     $('#btnExpJson').addEventListener('click', exportJson);
     $('#btnRunImp').addEventListener('click', runImport);
