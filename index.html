@@ -277,6 +277,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
 .srow{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;cursor:pointer;font:inherit;min-height:68px}
 .srow .sico{flex:none;width:42px;height:42px;background:transparent;color:var(--muted);display:grid;place-items:center}
 .srow .sname{font:700 18px var(--display);letter-spacing:.02em;text-transform:uppercase}
+.srow .sname,.srow .smeta{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .srow .smeta{color:var(--muted);font-size:14px;margin-top:2px}
 .irow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 4px;border-bottom:1px solid var(--line)}
 .irow .in{font:600 16px var(--body);text-transform:uppercase;letter-spacing:.02em;overflow-wrap:anywhere}
@@ -703,6 +704,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     trash: 'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z',
     pen: 'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
     eye: 'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z',
+    info: 'M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z',
     menu: 'M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z',
     dwn: 'M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z',
     upl: 'M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z',
@@ -722,7 +724,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     }
     var sv = document.createElementNS(NS, 'svg'), p = document.createElementNS(NS, 'path');
     sv.setAttribute('viewBox', '0 0 24 24'); sv.setAttribute('width', size || 24); sv.setAttribute('height', size || 24); sv.setAttribute('aria-hidden', 'true');
-    p.setAttribute('d', ICONS[name]); p.setAttribute('fill', 'currentColor'); if (name === 'can' || name === 'pumppin' || name === 'place') p.setAttribute('fill-rule', 'evenodd'); sv.appendChild(p);
+    p.setAttribute('d', ICONS[name]); p.setAttribute('fill', 'currentColor'); if (name === 'can' || name === 'pumppin' || name === 'place' || name === 'info') p.setAttribute('fill-rule', 'evenodd'); sv.appendChild(p);
     return sv;
   }
   function typeGlyph(type, size) {
@@ -1221,6 +1223,17 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     if (!Drive.clientId() || !Drive.connected()) return Drive.clientId() ? 'Non connecté à Google Drive' : 'Non configuré';
     return st.last ? 'Dernière synchronisation : ' + fmtStamp(st.last) : 'Pas encore synchronisé';
   }
+  function lastSyncShort() {
+    var st = Drive.state();
+    if (!Drive.clientId() || !Drive.connected()) return Drive.clientId() ? 'Non connecté' : 'Non configuré';
+    return st.last ? fmtStamp(st.last) : 'Pas encore synchronisé';
+  }
+  var APP_VERSION = '4.6', APP_DATE = '2026-10-22';
+  function renderAboutPage(box) {
+    var d = new Date(APP_DATE + 'T12:00:00');
+    box.replaceChildren(h('div', { class: 'gtitle' }, 'À propos'),
+      h('div', { style: 'margin-top:10px' }, kv('Version', APP_VERSION), kv('Date de sortie', d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }))));
+  }
   function renderSyncPage(box) {
     var st = Drive.state(), conn = Drive.connected(), busyS = st.status === 'syncing';
     var info = {
@@ -1246,7 +1259,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     if (!settingsPage) {
       var rows = [h('div', { class: 'gtitle' }, 'Paramètres')];
       rows.push(h('button', { class: 'srow', type: 'button', id: 'row_sync', onclick: function () { openSettingsPage('sync'); } },
-        h('span', { class: 'sico' }, svgIcon('cloudsync', 26)), h('div', { style: 'flex:1;min-width:0' }, h('div', { class: 'sname' }, 'Synchroniser les données'), h('div', { class: 'smeta' }, lastSyncText())),
+        h('span', { class: 'sico' }, svgIcon('cloudsync', 26)), h('div', { style: 'flex:1;min-width:0' }, h('div', { class: 'sname' }, 'Synchroniser les données'), h('div', { class: 'smeta' }, lastSyncShort())),
         h('span', { class: 'gchev', 'aria-hidden': 'true' }, '›')));
       var dataRow = function (id, icon, name, meta, fn) {
         return h('button', { class: 'srow', type: 'button', id: id, onclick: fn },
@@ -1261,10 +1274,12 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       });
       if (canWrite) rows.push(dataRow('row_import', 'dwn', 'Importer', 'Depuis un fichier CSV ou JSON', openImport));
       rows.push(dataRow('row_export', 'upl', 'Exporter', 'Sauvegarde JSON ou tableur CSV', openExport));
+      rows.push(dataRow('row_about', 'info', 'À propos', 'Version ' + APP_VERSION, function () { openSettingsPage('about'); }));
       box.replaceChildren.apply(box, rows);
       return;
     }
     if (settingsPage === 'sync') { renderSyncPage(box); return; }
+    if (settingsPage === 'about') { renderAboutPage(box); return; }
     var key = settingsPage, L = SET_LABELS[key];
     var items = listFor(key); if (key !== 'fuels') items = items.sort(function (a, b) { return a.localeCompare(b, 'fr', { sensitivity: 'base' }); });
     var out = [h('div', { class: 'gtitle' }, L.title)];
@@ -1543,7 +1558,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     bar.hidden = false;
     var b2 = $('#btnAdd2'); b2.hidden = true;
     if (screen === 'settings') {
-      if (!settingsPage || settingsPage === 'sync') { bar.hidden = true; return; }
+      if (!settingsPage || settingsPage === 'sync' || settingsPage === 'about') { bar.hidden = true; return; }
       btn.textContent = SET_LABELS[settingsPage].add; btn.onclick = openItem; return;
     }
     if (screen === 'garage') { btn.textContent = 'Ajouter un véhicule'; btn.onclick = function () { openVeh(null); }; return; }
