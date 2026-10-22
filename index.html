@@ -266,7 +266,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
 .gear{position:absolute;top:calc(env(safe-area-inset-top,0px) + 2px);right:0;width:46px;height:46px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;cursor:pointer}
 .gear[hidden]{display:none}
 .srow{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:10px;cursor:pointer;font:inherit;min-height:68px}
-.srow .sico{flex:none;width:42px;height:42px;border-radius:12px;background:var(--dot-fuel);color:#fff;display:grid;place-items:center}
+.srow .sico{flex:none;width:42px;height:42px;background:transparent;color:var(--muted);display:grid;place-items:center}
 .srow .sname{font:700 18px var(--display);letter-spacing:.02em;text-transform:uppercase}
 .srow .smeta{color:var(--muted);font-size:14px;margin-top:2px}
 .irow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 4px;border-bottom:1px solid var(--line)}
@@ -702,6 +702,14 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   };
   function svgIcon(name, size) {
     var NS = 'http://www.w3.org/2000/svg';
+    if (name === 'cloudsync') {
+      var cs = document.createElementNS(NS, 'svg'), c1 = document.createElementNS(NS, 'path'), c2 = document.createElementNS(NS, 'path');
+      cs.setAttribute('viewBox', '0 0 24 24'); cs.setAttribute('width', size || 24); cs.setAttribute('height', size || 24); cs.setAttribute('aria-hidden', 'true');
+      c1.setAttribute('d', 'M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z'); c1.setAttribute('fill', 'currentColor');
+      c2.setAttribute('d', 'M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z');
+      c2.setAttribute('transform', 'translate(5.6 6.4) scale(.5)'); c2.setAttribute('fill', 'var(--surface)'); cs.append(c1, c2);
+      return cs;
+    }
     var sv = document.createElementNS(NS, 'svg'), p = document.createElementNS(NS, 'path');
     sv.setAttribute('viewBox', '0 0 24 24'); sv.setAttribute('width', size || 24); sv.setAttribute('height', size || 24); sv.setAttribute('aria-hidden', 'true');
     p.setAttribute('d', ICONS[name]); p.setAttribute('fill', 'currentColor'); if (name === 'can' || name === 'pumppin' || name === 'place') p.setAttribute('fill-rule', 'evenodd'); sv.appendChild(p);
@@ -1203,11 +1211,39 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     });
     return c;
   }
+  function fmtStamp(t) { return new Date(t).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
+  function lastSyncText() {
+    var st = Drive.state();
+    if (!Drive.clientId() || !Drive.connected()) return Drive.clientId() ? 'Non connecté à Google Drive' : 'Non configuré';
+    return st.last ? 'Dernière synchronisation : ' + fmtStamp(st.last) : 'Pas encore synchronisé';
+  }
+  function renderSyncPage(box) {
+    var st = Drive.state(), conn = Drive.connected(), busyS = st.status === 'syncing';
+    var info = {
+      pending: 'La session Google a expiré : touchez « Synchroniser » pour la renouveler.',
+      syncing: 'Synchronisation en cours…',
+      offline: 'Hors ligne : vos modifications partiront au retour du réseau.',
+      error: st.error || 'La synchronisation a échoué.'
+    }[st.status] || '';
+    var btn = h('button', { class: 'btn primary', type: 'button', id: 'btnSyncPage', style: 'width:100%;min-height:50px;font-size:16px;margin-top:18px' }, busyS ? 'Synchronisation…' : conn ? 'Synchroniser' : 'Configurer la synchronisation');
+    btn.disabled = busyS;
+    btn.addEventListener('click', function () {
+      if (conn) { Drive.syncNow().then(function () { var s2 = Drive.state(); if (s2.status === 'idle') toast('Synchronisation terminée'); }); }
+      else { $('#syncErr').textContent = ''; $('#cidInput').value = Drive.clientId(); renderSync(); openSheet('#syncSheet'); }
+    });
+    var kids = [h('div', { class: 'gtitle' }, 'Synchroniser les données'), h('p', { style: 'font-size:17px;margin:14px 0 4px' }, lastSyncText())];
+    if (info) kids.push(h('p', { class: st.status === 'error' ? 'err' : 'muted', style: 'margin:6px 0' }, info));
+    kids.push(h('p', { class: 'fnote' }, 'Vos données et vos factures sont enregistrées dans le dossier « Carnet entretien véhicules » de votre Google Drive.'), btn);
+    box.replaceChildren.apply(box, kids);
+  }
   function renderSettings() {
     var box = $('#list'); box.className = 'settings';
     if (!ready()) { box.replaceChildren(h('p', { class: 'muted center' }, 'Chargement…')); return; }
     if (!settingsPage) {
       var rows = [h('div', { class: 'gtitle' }, 'Paramètres')];
+      rows.push(h('button', { class: 'srow', type: 'button', id: 'row_sync', onclick: function () { openSettingsPage('sync'); } },
+        h('span', { class: 'sico' }, svgIcon('cloudsync', 26)), h('div', { style: 'flex:1;min-width:0' }, h('div', { class: 'sname' }, 'Synchroniser les données'), h('div', { class: 'smeta' }, lastSyncText())),
+        h('span', { class: 'gchev', 'aria-hidden': 'true' }, '›')));
       ['fuels', 'stations', 'doers'].forEach(function (k) {
         var L = SET_LABELS[k];
         rows.push(h('button', { class: 'srow', type: 'button', id: 'row_' + k, onclick: function () { openSettingsPage(k); } },
@@ -1217,6 +1253,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       box.replaceChildren.apply(box, rows);
       return;
     }
+    if (settingsPage === 'sync') { renderSyncPage(box); return; }
     var key = settingsPage, L = SET_LABELS[key];
     var items = listFor(key); if (key !== 'fuels') items = items.sort(function (a, b) { return a.localeCompare(b, 'fr', { sensitivity: 'base' }); });
     var out = [h('div', { class: 'gtitle' }, L.title)];
@@ -1495,7 +1532,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     bar.hidden = false;
     var b2 = $('#btnAdd2'); b2.hidden = true;
     if (screen === 'settings') {
-      if (!settingsPage) { bar.hidden = true; return; }
+      if (!settingsPage || settingsPage === 'sync') { bar.hidden = true; return; }
       btn.textContent = SET_LABELS[settingsPage].add; btn.onclick = openItem; return;
     }
     if (screen === 'garage') { btn.textContent = 'Ajouter un véhicule'; btn.onclick = function () { openVeh(null); }; return; }
@@ -2297,6 +2334,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     $('#btnConnect').hidden = conn; $('#btnSyncNow').hidden = !conn; $('#btnDisc').hidden = !conn;
     $('#syncSetup').hidden = conn; $('#btnConnect').disabled = st.status === 'syncing' || !cid;
     $('#btnSyncNow').disabled = st.status === 'syncing';
+    if (screen === 'settings' && ready()) render();
   }
   function wireSync() {
     Drive.onState(renderSync);

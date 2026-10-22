@@ -1,10 +1,9 @@
-CARNET D'ENTRETIEN - version 4.3.1
+CARNET D'ENTRETIEN - version 4.4
 
-NOUVEAUTE : lignes du journal dépliables
-- Touchez n'importe où sur une ligne pour la déplier / replier.
-- Ravitaillement : carburant, litres · €/L, consommation, réservoir rempli, station.
-- Entretien : réalisé par + contenu des notes.
-- Icônes : poubelle (2 touches pour confirmer), crayon (modifier), oeil (vue complète avec la facture jointe).
+NOUVEAUTES
+- Paramètres : nouvelle rubrique « Synchroniser les données » (en tête). Elle affiche la date et l'heure de la dernière synchronisation et permet de synchroniser d'un touché.
+- Paramètres : icônes en gris.
+- (4.3.1) Consommation d'un plein : si elle ne peut pas être calculée, la raison est indiquée.
 
 MISE A JOUR (vos données sont conservées)
 1. Faites d'abord un export JSON complet (bouton Exporter) par sécurité.
