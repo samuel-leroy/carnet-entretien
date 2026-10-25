@@ -240,9 +240,19 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
 .dotk[data-k="recharge"]{background:var(--dot-bolt);color:#3a2d00}
 .fico.bolt{background:var(--dot-bolt);color:#3a2d00}
 .fbar.bolt i{background:var(--dot-bolt)}
-:root{--b1:#C28F00}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--b1:#F5C400}}
-:root[data-theme="dark"]{--b1:#F5C400}
+:root{--b1:#C28F00;--km:#8793A0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--b1:#F5C400;--km:#B9C3CD}}
+:root[data-theme="dark"]{--b1:#F5C400;--km:#B9C3CD}
+.fico.km{background:var(--km);color:#13202C}
+.kmc .ftitle,.kmc .fhead{color:var(--km)}
+.fbar.km i{background:var(--km)}
+.stabs{margin-top:16px}
+.yrow{display:grid;grid-template-columns:54px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line);font-variant-numeric:tabular-nums}
+.yrow .y{font:700 17px var(--display);letter-spacing:.04em}
+.yrow .b{height:10px;border-radius:99px;background:var(--line);overflow:hidden}
+.yrow .b i{display:block;height:100%;background:var(--km);border-radius:99px}
+.yrow .v{font:600 15px var(--body);text-align:right}
+.yrow .v small{display:block;font:500 12px var(--body);color:var(--muted)}
 .btn.rechbtn{flex:0 0 auto;background:var(--dot-bolt);color:#3a2d00;border-color:transparent;font-weight:700}
 
 /* v3 */
@@ -708,6 +718,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     menu: 'M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z',
     dwn: 'M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z',
     upl: 'M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z',
+    speed: 'M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44zm-9.79 6.84a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z',
     gear: 'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z',
     bolt: 'M13 2L4.5 13.5H10L9 22l8.5-11.5H12z',
     chart: 'M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z'
@@ -873,7 +884,8 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       h('div', { class: 'flab' }, bigLab), h('div', { class: 'fbig' }, big),
       h('div', { class: 'frow2' }, rows.map(function (x, i) { return h('div', { class: i ? 'r' : '' }, h('div', { class: 'flab' }, x[0]), h('div', { class: 'fval' }, x[1])); })));
   }
-  function chartBox(title, sub, series, kind, fmt, avg) {
+  function chartBox(title, sub, series, kind, fmt, avg, xlab) {
+    var mLab0 = xlab || mLab;
     // series: [{name, color, dash, pts:[{t, v}]}]  (t = indice de mois)
     var W = Math.max(280, Math.min(720, ($('#fstats').clientWidth || 340) - 28)), H = 230, ml = 40, mr = 10, mt = 10, mb = 24;
     var pw = W - ml - mr, ph = H - mt - mb;
@@ -891,13 +903,13 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       svg.append(sv('line', { x1: ml, x2: W - mr, y1: Y(v), y2: Y(v), style: { stroke: 'var(--line)', strokeWidth: '1', strokeDasharray: v === ymin ? '' : '3 4' } }),
         sv('text', { x: ml - 6, y: Y(v) + 4, 'text-anchor': 'end' }, fmt(v, true)));
     });
-    var step = Math.max(1, Math.ceil(nM / 5));
-    for (var t = t0; t <= t1; t += step) svg.append(sv('text', { x: X(t), y: H - 6, 'text-anchor': 'middle' }, mLab(t)));
+    var step = xlab ? 1 : Math.max(1, Math.ceil(nM / 5));
+    for (var t = t0; t <= t1; t += step) svg.append(sv('text', { x: X(t), y: H - 6, 'text-anchor': 'middle' }, xlab ? xlab(t, true) : mLab(t)));
     if (kind === 'bar') {
       var bw = Math.max(2, Math.min(18, pw / nM * 0.72));
       series[0].pts.forEach(function (p) {
         var y = Y(p.v), x = X(p.t) - bw / 2, hgt = Math.max(0, Y(0) - y), r = Math.min(3, bw / 2, hgt);
-        svg.append(sv('path', { d: 'M' + x + ',' + (y + hgt) + 'V' + (y + r) + 'Q' + x + ',' + y + ' ' + (x + r) + ',' + y + 'H' + (x + bw - r) + 'Q' + (x + bw) + ',' + y + ' ' + (x + bw) + ',' + (y + r) + 'V' + (y + hgt) + 'Z', style: { fill: series[0].color } }));
+        svg.append(sv('path', { d: 'M' + x + ',' + (y + hgt) + 'V' + (y + r) + 'Q' + x + ',' + y + ' ' + (x + r) + ',' + y + 'H' + (x + bw - r) + 'Q' + (x + bw) + ',' + y + ' ' + (x + bw) + ',' + (y + r) + 'V' + (y + hgt) + 'Z', style: { fill: series[0].color, opacity: p.partial ? '.45' : '1' } }));
       });
     } else {
       if (avg != null) {
@@ -924,7 +936,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       series.forEach(function (s) { s.pts.forEach(function (p) { if (p.t === best) rows.push({ s: s, v: p.v }); }); });
       cross.style.display = kind === 'bar' ? 'none' : ''; cross.setAttribute('x1', X(best)); cross.setAttribute('x2', X(best));
       dots.replaceChildren.apply(dots, kind === 'bar' ? [] : rows.map(function (o) { return sv('circle', { cx: X(best), cy: Y(o.v), r: 5, style: { fill: o.s.color, stroke: 'var(--surface)', strokeWidth: '2' } }); }));
-      tip.replaceChildren(h('div', null, mLab(best)), rows.map(function (o) { return h('div', null, (series.length > 1 ? o.s.name + ' : ' : '') + fmt(o.v)); }));
+      tip.replaceChildren(h('div', null, mLab0(best)), rows.map(function (o) { return h('div', null, (series.length > 1 ? o.s.name + ' : ' : '') + fmt(o.v)); }));
       tip.hidden = false;
       var tx = X(best) / k + 10; if (tx + 140 > rc.width) tx = X(best) / k - 10 - tip.offsetWidth;
       tip.style.left = Math.max(0, tx) + 'px'; tip.style.top = '4px';
@@ -936,7 +948,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     var keys = Object.keys(months).map(Number).sort(function (a, b) { return b - a; });
     var table = h('details', { class: 'tbl' }, h('summary', null, 'Voir les valeurs'),
       h('table', null, h('thead', null, h('tr', null, h('th', null, 'Mois'), series.map(function (s) { return h('th', null, s.name); }))),
-        h('tbody', null, keys.map(function (k) { return h('tr', null, h('td', null, mLab(k)), series.map(function (s) { return h('td', null, months[k][s.name] != null ? fmt(months[k][s.name]) : '—'); })); }))));
+        h('tbody', null, keys.map(function (k) { return h('tr', null, h('td', null, mLab0(k)), series.map(function (s) { return h('td', null, months[k][s.name] != null ? fmt(months[k][s.name]) : '—'); })); }))));
     return h('div', { class: 'fcard chartc wide' }, h('h3', null, title), h('div', { class: 'per' }, sub), wrap,
       series.length > 1 ? h('div', { class: 'legend' }, series.map(function (s) { return h('span', null, h('i', { style: 'background:' + s.color }), s.name); })) : null, table);
   }
@@ -1010,6 +1022,101 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     [c1, c2, c3].forEach(function (c) { if (c) out.push(c); });
     box.replaceChildren.apply(box, out);
   }
+  var statsTab = 'fuel';
+  function statsTabs() {
+    var mk = function (id, lbl) { return h('button', { type: 'button', role: 'tab', id: 'stab_' + id, 'aria-selected': String(statsTab === id), onclick: function () { statsTab = id; render(); } }, lbl); };
+    return h('div', { class: 'seg stabs', role: 'tablist' }, mk('fuel', 'Carburant'), mk('km', 'Kilomètres'));
+  }
+  /* ---------- statistiques kilomètres ---------- */
+  var MONTHS_C = ['Janv.', 'Févr.', 'Mars', 'Avril', 'Mai', 'Juin', 'Juil.', 'Août', 'Sept.', 'Oct.', 'Nov.', 'Déc.'];
+  function utc(d) { return Date.UTC(+d.slice(0, 4), +d.slice(5, 7) - 1, +d.slice(8, 10)); }
+  function computeKm(vid) {
+    var raw = entries.filter(function (e) { return e.vehicleId === vid && typeof e.km === 'number' && e.km > 0 && e.date; });
+    var byDate = {};
+    raw.forEach(function (e) { if (!byDate[e.date] || e.km > byDate[e.date]) byDate[e.date] = e.km; });
+    var rd = Object.keys(byDate).sort().map(function (d) { return { date: d, km: byDate[d] }; });
+    var good = [], skipped = 0;
+    rd.forEach(function (x) {
+      var last = good[good.length - 1];
+      if (!last) { good.push(x); return; }
+      var days = Math.max(1, (utc(x.date) - utc(last.date)) / 864e5);
+      if (x.km < last.km || (x.km - last.km) / days > 1500) { skipped++; return; }
+      good.push(x);
+    });
+    var r = { readings: good.length, skipped: skipped };
+    if (good.length < 2) return r;
+    var M = {}, Y = {};
+    for (var i = 1; i < good.length; i++) {
+      var a = good[i - 1], b = good[i], t0 = utc(a.date), t1 = utc(b.date), days = Math.max(1, (t1 - t0) / 864e5), rate = (b.km - a.km) / days;
+      for (var t = t0 + 864e5; t <= t1; t += 864e5) {
+        var dt = new Date(t), y = dt.getUTCFullYear(), k = y * 12 + dt.getUTCMonth();
+        var m = M[k] || (M[k] = { km: 0, d: 0, dim: new Date(Date.UTC(y, dt.getUTCMonth() + 1, 0)).getUTCDate() });
+        m.km += rate; m.d++;
+        var yy = Y[y] || (Y[y] = { km: 0, d: 0, dim: ((y % 4 === 0 && y % 100 !== 0) || y % 400 === 0) ? 366 : 365 });
+        yy.km += rate; yy.d++;
+      }
+    }
+    r.first = good[0]; r.last = good[good.length - 1]; r.M = M; r.Y = Y;
+    return r;
+  }
+  function renderKmStats(v) {
+    var box = $('#fstats'), r = computeKm(v.id);
+    var out = [statsTabs()];
+    if (!r.M) {
+      out.push(emptyCard('Pas assez de relevés', 'Il faut au moins deux relevés de kilométrage à des dates différentes (pleins, entretiens…) pour calculer les kilomètres parcourus.', canWrite ? [h('button', { class: 'btn primary', type: 'button', onclick: function () { openEntry(null); } }, 'Ajouter une ligne')] : []));
+      box.replaceChildren.apply(box, out); return;
+    }
+    var cutIdx = -Infinity;
+    if (fsPeriod !== 'all') { var d0 = new Date(); d0.setMonth(d0.getMonth() - (fsPeriod === '12' ? 12 : 6)); cutIdx = d0.getFullYear() * 12 + d0.getMonth(); }
+    var keys = Object.keys(r.M).map(Number).filter(function (k) { return k >= cutIdx; }).sort(function (a, b) { return a - b; });
+    var pchips = [['all', 'Tout'], ['12', '12 mois'], ['6', '6 mois']].map(function (p) {
+      return h('button', { class: 'fchip', type: 'button', 'aria-pressed': String(fsPeriod === p[0]), onclick: function () { fsPeriod = p[0]; render(); } }, p[1]);
+    });
+    out.push(h('div', { class: 'fs-filters' }, pchips));
+    if (!keys.length) { out.push(emptyCard('Aucun relevé sur cette période', 'Choisissez une période plus large.', [])); box.replaceChildren.apply(box, out); return; }
+    var per = fsPeriod === 'all' ? 'Depuis le début' : 'Sur ' + fsPeriod + ' derniers mois';
+    var sumKm = 0, sumD = 0;
+    keys.forEach(function (k) { sumKm += r.M[k].km; sumD += r.M[k].d; });
+    var perDay = sumKm / sumD, perMonth = perDay * 30.44, perYear = perDay * 365.25;
+    var full = keys.filter(function (k) { return r.M[k].d >= r.M[k].dim; }), pool = full.length >= 2 ? full : keys;
+    var best = pool.reduce(function (a, k) { return r.M[k].km > r.M[a].km ? k : a; }, pool[0]);
+    var low = pool.reduce(function (a, k) { return r.M[k].km < r.M[a].km ? k : a; }, pool[0]);
+    var nowY = new Date().getFullYear();
+    var yNow = r.Y[nowY], yPrev = r.Y[nowY - 1];
+    var R = function (x) { return nf.format(Math.round(x)); };
+    var kcard = function (icon, title, big, lab, rows) { var el = fcard(icon, title, big, lab, rows); el.querySelector('.fico').classList.add('km'); el.classList.add('kmc'); return el; };
+    out.push(h('div', { class: 'fs-grid' },
+      kcard('speed', 'Compteur', bigV(R(r.last.km), 'km'), 'Dernier relevé', [['Départ', R(r.first.km)], ['Parcourus', R(r.last.km - r.first.km)]]),
+      kcard('chart', 'Par mois', bigV(R(perMonth), 'km'), 'Moyenne', [['Meilleur', R(r.M[best].km) + ' km'], ['Plus faible', R(r.M[low].km) + ' km']]),
+      kcard('chart', 'Par an', bigV(R(perYear), 'km'), 'Moyenne', [[String(nowY), yNow ? R(yNow.km) + ' km' : '—'], [String(nowY - 1), yPrev ? R(yPrev.km) + ' km' : '—']]),
+      kcard('down', 'Par jour', bigV(nf1.format(perDay), 'km'), 'Moyenne', [['Sur la période', R(sumKm) + ' km'], ['Relevés', String(r.readings)]])));
+    // par année
+    var yrs = Object.keys(r.Y).map(Number).sort(function (a, b) { return b - a; }), ymax = Math.max.apply(null, yrs.map(function (y) { return r.Y[y].km; }));
+    out.push(h('div', { class: 'fcard wide kmc', style: 'margin-top:12px' },
+      h('div', { class: 'fhead' }, h('span', { class: 'fico km' }, svgIcon('speed', 22)), 'Kilomètres par an'),
+      yrs.map(function (y) {
+        var o = r.Y[y], part = o.d < o.dim;
+        return h('div', { class: 'yrow' }, h('span', { class: 'y' }, String(y)), h('span', { class: 'b' }, h('i', { style: 'width:' + Math.max(2, o.km / ymax * 100) + '%' })),
+          h('span', { class: 'v' }, R(o.km) + ' km', part ? h('small', null, y === nowY ? 'en cours' : 'partiel') : null));
+      }),
+      h('p', { class: 'fnote' }, 'Les kilomètres sont répartis jour par jour entre deux relevés consécutifs (pleins, entretiens, contrôles…). Plus il y a de relevés, plus les chiffres sont précis. Le premier et le dernier mois sont partiels' + (r.skipped ? ' ; ' + plural(r.skipped, 'relevé incohérent ignoré', 'relevés incohérents ignorés') : '') + '.')));
+    // graphiques
+    var kfmt = function (x, axis) { return axis ? nf.format(Math.round(x)) : nf.format(Math.round(x)) + ' km'; };
+    var mpts = keys.map(function (k) { return { t: k, v: r.M[k].km, partial: r.M[k].d < r.M[k].dim }; });
+    var base = r.first.km, cum = {}, acc = 0;
+    Object.keys(r.M).map(Number).sort(function (a, b) { return a - b; }).forEach(function (k) { acc += r.M[k].km; cum[k] = base + acc; });
+    var opts = keys.map(function (k) { return { t: k, v: cum[k] }; });
+    var c1 = chartBox('Kilomètres par mois', per, [{ name: 'Distance', color: 'var(--km)', pts: mpts }], 'bar', kfmt, null);
+    var c2 = chartBox('Évolution du compteur', per, [{ name: 'Compteur', color: 'var(--km)', pts: opts }], 'line', kfmt, null);
+    // saisonnalité : moyenne par mois calendaire
+    var cm = {}, cd = {};
+    Object.keys(r.M).map(Number).filter(function (k) { return k >= cutIdx; }).forEach(function (k) { var c = k % 12; cm[c] = (cm[c] || 0) + r.M[k].km; cd[c] = (cd[c] || 0) + r.M[k].d; });
+    var spts = Object.keys(cm).filter(function (c) { return cd[c] >= 10; }).map(function (c) { return { t: +c, v: cm[c] / cd[c] * 30.44 }; });
+    var LET = 'JFMAMJJASOND';
+    var c3 = spts.length >= 3 ? chartBox('Mois où je roule le plus', 'Moyenne par mois de l\'année · ' + per.toLowerCase(), [{ name: 'Moyenne', color: 'var(--km)', pts: spts }], 'bar', kfmt, null, function (t, axis) { return axis ? LET[t] : MONTHS_C[t]; }) : null;
+    [c1, c2, c3].forEach(function (c) { if (c) out.push(c); });
+    box.replaceChildren.apply(box, out);
+  }
   function renderFuelStats() {
     var box = $('#fstats');
     box.hidden = false;
@@ -1020,9 +1127,10 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       box.replaceChildren(emptyCard('Choisissez un véhicule', 'Les statistiques se calculent véhicule par véhicule.', btns));
       return;
     }
+    if (statsTab === 'km') { renderKmStats(v); return; }
     var r = computeFuel(v.id);
     if (!r.types.length) {
-      box.replaceChildren(emptyCard('Aucun plein enregistré', 'Ajoutez des lignes de type Carburant (avec les litres) pour voir les statistiques.',
+      box.replaceChildren(statsTabs(), emptyCard('Aucun plein enregistré', 'Ajoutez des lignes de type Carburant (avec les litres) pour voir les statistiques.',
         canWrite ? [h('button', { class: 'btn primary', type: 'button', onclick: function () { openEntry(null); } }, 'Ajouter une ligne')] : []));
       return;
     }
@@ -1034,7 +1142,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     [['all', 'Tout'], ['12', '12 mois'], ['6', '6 mois']].forEach(function (p) {
       pchips.push(h('button', { class: 'fchip', type: 'button', 'aria-pressed': String(fsPeriod === p[0]), onclick: function () { fsPeriod = p[0]; render(); } }, p[1]));
     });
-    var out = [chips.length ? h('div', { class: 'fs-filters' }, chips) : null, h('div', { class: 'fs-filters', style: chips.length ? 'margin-top:8px' : '' }, pchips)];
+    var out = [statsTabs(), chips.length ? h('div', { class: 'fs-filters' }, chips) : null, h('div', { class: 'fs-filters', style: chips.length ? 'margin-top:8px' : '' }, pchips)].filter(Boolean);
     if (!r.n) { out.push(emptyCard('Aucun plein sur cette période', 'Choisissez une période plus large.', [])); box.replaceChildren.apply(box, out); return; }
     var per = fsPeriod === 'all' ? 'Depuis le début' : 'Sur ' + fsPeriod + ' derniers mois';
     var perDay = r.span ? r.cost / r.span : null, perKm = r.kmSpan ? r.cost / r.kmSpan : null;
@@ -1228,7 +1336,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     if (!Drive.clientId() || !Drive.connected()) return Drive.clientId() ? 'Non connecté' : 'Non configuré';
     return st.last ? fmtStamp(st.last) : 'Pas encore synchronisé';
   }
-  var APP_VERSION = '4.6', APP_DATE = '2026-10-22';
+  var APP_VERSION = '4.7', APP_DATE = '2026-10-25';
   function renderAboutPage(box) {
     var d = new Date(APP_DATE + 'T12:00:00');
     box.replaceChildren(h('div', { class: 'gtitle' }, 'À propos'),

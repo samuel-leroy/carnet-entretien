@@ -1,8 +1,9 @@
-CARNETS D'ENTRETIENS - version 4.6 (22 octobre 2026)
+CARNETS D'ENTRETIENS - version 4.7 (25 octobre 2026)
 
-NOUVEAUTES
-- Paramètres : la rubrique « Synchroniser les données » tient sur une ligne (date de dernière synchro seule) et a la même taille que les autres.
-- Paramètres : nouvelle rubrique « À propos » (numéro de version et date de sortie).
+NOUVEAUTE : statistiques des kilomètres
+- Stats d'un véhicule : deux onglets, « Carburant » et « Kilomètres ».
+- Kilomètres : compteur, moyenne par mois / par an / par jour, kilomètres par année, graphique des kilomètres par mois, évolution du compteur, et « Mois où je roule le plus » (moyenne par mois de l'année). Couleur gris clair.
+- Les kilomètres sont répartis jour par jour entre deux relevés consécutifs (pleins, entretiens...).
 
 MISE A JOUR (vos données sont conservées)
 1. Faites d'abord un export JSON complet (menu > Exporter) par sécurité.
