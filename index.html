@@ -1336,7 +1336,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     if (!Drive.clientId() || !Drive.connected()) return Drive.clientId() ? 'Non connecté' : 'Non configuré';
     return st.last ? fmtStamp(st.last) : 'Pas encore synchronisé';
   }
-  var APP_VERSION = '4.7', APP_DATE = '2026-10-25';
+  var APP_VERSION = '4.8', APP_DATE = '2026-10-29';
   function renderAboutPage(box) {
     var d = new Date(APP_DATE + 'T12:00:00');
     box.replaceChildren(h('div', { class: 'gtitle' }, 'À propos'),
@@ -1523,6 +1523,14 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     var n = String(e.notes || '').trim();
     return n && !(e.kind === 'carburant' && /^plein partiel\.?$/i.test(n)) ? n : '';
   }
+  function bikeInterval(e) {
+    var all = entries.filter(function (x) { return x.vehicleId === e.vehicleId && x.kind === 'recharge' && typeof x.km === 'number' && typeof x.batStart === 'number' && typeof x.batEnd === 'number'; })
+      .sort(function (a, b) { return a.km - b.km || String(a.date).localeCompare(String(b.date)); });
+    var i = all.findIndex(function (x) { return x.id === e.id; });
+    if (i < 1 || typeof e.batStart !== 'number') return { prev: null };
+    var pr = all[i - 1], dk = e.km - pr.km, used = pr.batEnd - e.batStart;
+    return { prev: pr, dk: dk, used: used, ok: dk > 0 && used >= 5 };
+  }
   function detailNodes(e, cons) {
     var kind = KINDS[e.kind] ? e.kind : 'autre', out = [], notes = meaningfulNotes(e);
     if (kind === 'carburant') {
@@ -1536,11 +1544,22 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       out.push(kv('Station service', fo.station ? fo.station.toUpperCase() : '—'));
       if (e.missed) out.push(kv('Plein précédent', 'non enregistré'));
     } else if (kind === 'recharge') {
-      out.push(h('div', { class: 'stt' }, 'Recharge'));
-      if (typeof e.batStart === 'number' && typeof e.batEnd === 'number') {
-        out.push(kv('Batterie au départ', e.batStart + ' %')); out.push(kv('Batterie à la fin', e.batEnd + ' %')); out.push(kv('Charge ajoutée', '+' + (e.batEnd - e.batStart) + ' %'));
+      out.push(h('div', { class: 'stt' }, 'Depuis la dernière recharge'));
+      var iv = bikeInterval(e);
+      if (!iv.prev) {
+        out.push(kv('Kilomètres parcourus', '—')); out.push(kv('Batterie consommée', '—')); out.push(kv('Consommation', '—')); out.push(kv('Autonomie estimée', '—'));
+        out.push(h('div', { class: 'muted', style: 'font-size:14px;padding:0 0 4px' }, 'Première recharge enregistrée : pas de recharge précédente à comparer.'));
+      } else {
+        out.push(kv('Kilomètres parcourus', iv.dk > 0 ? nf1.format(iv.dk) + ' km' : '—'));
+        out.push(kv('Batterie consommée', iv.used > 0 ? nf.format(iv.used) + ' %' : '—'));
+        if (iv.ok) {
+          out.push(kv('Consommation', nf3.format(iv.used / iv.dk) + ' % / km'));
+          out.push(kv('Autonomie estimée', nf.format(Math.round(iv.dk / iv.used * 100)) + ' km pour 100 %'));
+        } else {
+          out.push(kv('Consommation', '—')); out.push(kv('Autonomie estimée', '—'));
+          out.push(h('div', { class: 'muted', style: 'font-size:14px;padding:0 0 4px' }, (iv.dk <= 0 ? 'Aucun kilomètre parcouru depuis la recharge précédente (kilométrage à vérifier).' : iv.used < 5 ? 'Moins de 5 % de batterie consommés : calcul non significatif.' : 'Calcul impossible (données à vérifier).')));
+        }
       }
-      if (typeof e.km === 'number') out.push(kv('Kilométrage du vélo', nf.format(e.km) + ' km'));
     } else {
       out.push(h('div', { class: 'stt' }, KINDS[kind]));
       if (e.doneBy) out.push(kv('Réalisé par', e.doneBy));
@@ -1592,7 +1611,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     var head = [];
     if (v) head.push(kv('Véhicule', v.name));
     if (e.date) head.push(kv('Date', fmtDate(e.date)));
-    if (typeof e.km === 'number' && kind !== 'recharge') head.push(kv('Kilométrage', nf.format(e.km) + ' km'));
+    if (typeof e.km === 'number') head.push(kv(kind === 'recharge' ? 'Kilométrage du vélo' : 'Kilométrage', nf.format(e.km) + ' km'));
     if (typeof e.cost === 'number' && kind !== 'carburant') head.push(kv('Montant', eur.format(e.cost)));
     var body = $('#lineBody');
     body.replaceChildren.apply(body, head.concat(detailNodes(e, consMapAll())));

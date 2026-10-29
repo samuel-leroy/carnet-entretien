@@ -1,9 +1,8 @@
-CARNETS D'ENTRETIENS - version 4.7 (25 octobre 2026)
+CARNETS D'ENTRETIENS - version 4.8 (29 octobre 2026)
 
-NOUVEAUTE : statistiques des kilomètres
-- Stats d'un véhicule : deux onglets, « Carburant » et « Kilomètres ».
-- Kilomètres : compteur, moyenne par mois / par an / par jour, kilomètres par année, graphique des kilomètres par mois, évolution du compteur, et « Mois où je roule le plus » (moyenne par mois de l'année). Couleur gris clair.
-- Les kilomètres sont répartis jour par jour entre deux relevés consécutifs (pleins, entretiens...).
+NOUVEAUTE : recharges de vélo électrique
+- Quand on déplie une recharge, on voit maintenant : kilomètres parcourus depuis la dernière recharge, batterie consommée (%), consommation en % par km, autonomie estimée (km pour 100 %).
+- Les anciennes infos (batterie au départ / à la fin, charge ajoutée) restent dans le titre de la ligne.
 
 MISE A JOUR (vos données sont conservées)
 1. Faites d'abord un export JSON complet (menu > Exporter) par sécurité.
