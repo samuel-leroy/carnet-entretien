@@ -1,4 +1,4 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#13202C"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Carnet"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#F7F2EA"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Carnet"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" type="image/png" href="icon-192.png"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>Carnets d'entretiens</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <style>
@@ -126,7 +126,7 @@ textarea{min-height:76px;resize:vertical}
 .file button{flex:none}
 .opt{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:40;max-width:calc(100% - 32px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:14px}
-.seg{display:flex;gap:4px;margin-top:14px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.seg{display:flex;gap:2px;margin-top:14px;padding:4px;background:var(--surface);border:1px solid var(--line);border-radius:10px}
 .seg button{flex:1;font:600 14px var(--body);min-height:40px;border:0;border-radius:7px;background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
 .seg button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
 .badge{font:600 11px var(--mono);min-width:20px;padding:1px 6px;border-radius:99px;background:var(--st-late);color:var(--bg);text-align:center}
@@ -310,6 +310,90 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
 .ibtn.armed{background:var(--bad,#B3261E);color:#fff}
 .lineimg{display:block;width:100%;border-radius:10px;border:1px solid var(--line);margin:8px 0}
 .lfile{display:flex;align-items:center;gap:10px;margin:8px 0}
+:root:root:root{--fuel:#C26A00;--f1:#D68A00;--f2:#12946A;--f3:#2A78D6;--f4:#7C8791;--k-entretien:#0E9F8E;--k-reparation:#F2683C;--k-carburant:#8B5CF6;--k-assurance:#3B82F6;--k-controle:#E5484D;--k-autre:#6B7686;--st-ok:#0E9F8E;--st-soon:#B97800;--st-late:#E5484D}
+@media (prefers-color-scheme:dark){:root:root:root:not([data-theme="light"]){--fuel:#C26A00;--f1:#D68A00;--f2:#12946A;--f3:#2A78D6;--f4:#7C8791;--good:#0E9F8E;--bad:#E5484D;--b1:#E8A800;--km:#7C8DA0;--bg:#F7F2EA;--surface:#FFFFFF;--ink:#1E2A3A;--muted:#6B7686;--line:#E8DFD2;--accent:#0E9F8E;--accent-ink:#fff;--danger:#E5484D;--k-entretien:#0E9F8E;--k-reparation:#F2683C;--k-carburant:#8B5CF6;--k-assurance:#3B82F6;--k-controle:#E5484D;--k-autre:#6B7686;--st-ok:#0E9F8E;--st-soon:#B97800;--st-late:#E5484D;color-scheme:light}}
+:root[data-theme="dark"]:root:root{--bg:#F7F2EA;--surface:#fff;--ink:#1E2A3A;--muted:#6B7686;--line:#E8DFD2;--accent:#0E9F8E;--accent-ink:#fff;--b1:#E8A800;--km:#7C8DA0;color-scheme:light}
+/* Option A — « Lumineux » : clair, chaleureux, couleurs par catégorie */
+:root:root:root{--bg:#F7F2EA;--surface:#FFFFFF;--ink:#1E2A3A;--muted:#6B7686;--line:#E8DFD2;--accent:#0E9F8E;--accent-ink:#fff;--danger:#E5484D;--bad:#E5484D;--good:#0E9F8E;--b1:#E8A800;--km:#7C8DA0;color-scheme:light}
+body{background:radial-gradient(1200px 400px at 50% -120px,#FFE3C4 0%,rgba(247,242,234,0) 70%),#F7F2EA}
+h1{background:linear-gradient(90deg,#0B7F73,#E8663D);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:#6B7686}
+.gear,.btn.cloudbtn{background:#fff;border-color:#E8DFD2;color:#0B7F73;box-shadow:0 2px 8px rgba(30,42,58,.08)}
+.btn.cloudbtn .dot{border-color:#fff}
+.gcard:not(.gall){border:0;border-radius:18px;box-shadow:0 4px 14px rgba(30,42,58,.09)}
+.gtitle,.gsub{color:#6B7686}
+.seg{background:#fff;border-color:#E8DFD2;border-radius:14px}
+.seg button[aria-selected="true"]{background:linear-gradient(135deg,#0E9F8E,#12B5A2);color:#fff}
+.fchip{background:#fff;border-color:#E8DFD2}
+.fchip[aria-pressed="true"]{background:#0E9F8E;border-color:#0E9F8E;color:#fff}
+.vcard,.fcard,.srow{border:0;border-radius:18px;box-shadow:0 3px 12px rgba(30,42,58,.07)}
+.stat:nth-child(1){border-top-color:#0E9F8E}.stat:nth-child(2){border-top-color:#E8663D}.stat:nth-child(3){border-top-color:#6C5CE7}
+.stat{border-top-width:3px;border-radius:2px}
+.dotk{background:linear-gradient(145deg,#8B7CF6,#6C5CE7);box-shadow:0 0 0 4px #F7F2EA,0 4px 10px rgba(30,42,58,.15)}
+.dotk[data-k="entretien"]{background:linear-gradient(145deg,#2DD4A8,#0E9F8E)}
+.dotk[data-k="reparation"]{background:linear-gradient(145deg,#FF9A62,#F2683C)}
+.dotk[data-k="controle"]{background:linear-gradient(145deg,#FF7A7F,#E5484D)}
+.dotk[data-k="assurance"]{background:linear-gradient(145deg,#60A5FA,#3B82F6)}
+.dotk[data-k="carburant"]{background:linear-gradient(145deg,#FFC24B,#F59E0B)}
+.dotk[data-k="recharge"]{background:linear-gradient(145deg,#FFE066,#F5C400)}
+.tl .year{background:#fff;border:0;box-shadow:0 2px 8px rgba(30,42,58,.07)}
+.row .amt{color:#0B7F73}
+.btn.primary,.bar .btn.primary{background:linear-gradient(135deg,#0E9F8E,#10B5A2);border-color:transparent;color:#fff;box-shadow:0 6px 16px rgba(14,159,142,.35)}
+.bar{background:linear-gradient(180deg,rgba(247,242,234,0),#F7F2EA 40%)}
+.srow .sico{color:#0E9F8E}
+.srow:nth-of-type(3) .sico{color:#F59E0B}.srow:nth-of-type(4) .sico{color:#3B82F6}.srow:nth-of-type(5) .sico{color:#E8663D}
+.fico{background:linear-gradient(145deg,#FFC24B,#F59E0B)}
+.fico.km{background:linear-gradient(145deg,#A9B6C5,#7C8DA0)}
+.fhead{color:#C47A00}.kmc .fhead,.kmc .ftitle{color:#5E6E81}
+.badge{background:#E5484D;color:#fff}
+
+/* ---- v5 : 5 onglets, Documents et Photos ---- */
+#viewSheet{z-index:60}
+.seg button{position:relative;flex-direction:column;gap:1px;min-height:52px;padding:6px 0 5px;font-size:11px;min-width:0}
+.seg button .ti{display:block;line-height:0}
+.seg button .badge{position:absolute;top:3px;left:calc(50% + 6px);min-width:16px;padding:0 4px;font-size:10px;line-height:15px}
+.lgroup{display:flex;justify-content:space-between;align-items:baseline;margin:20px 4px 6px;font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lrow{display:flex;align-items:center;gap:12px;width:100%;margin:8px 0;padding:12px;border:0;border-radius:16px;background:#fff;box-shadow:0 3px 12px rgba(30,42,58,.07);text-align:left;font:inherit;color:var(--ink);cursor:pointer}
+.lrow .lic{flex:none;width:42px;height:42px;border-radius:13px;display:grid;place-items:center;color:#fff}
+.lrow .lbody{flex:1;min-width:0}
+.lrow .lt{font:700 15px var(--body);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrow .ls{margin-top:2px;font-size:12.5px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrow .lside{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.lrow .linkbtn{font-size:13px}
+.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.pth{position:relative;aspect-ratio:1;padding:0;border:0;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,#E8DFD2,#F7F2EA);cursor:pointer;color:var(--muted);display:grid;place-items:center}
+.pth img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pth .pcap{position:absolute;left:0;right:0;bottom:0;padding:14px 6px 4px;font:600 11px var(--body);color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.55));text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lib{padding-bottom:90px}
+/* ---- v4.9 : garage « pop », plaque en pastille ---- */
+.plate .eu{display:none}
+.plate{border:1.5px solid #D9CFBF;border-radius:8px;background:#FBF8F3;color:#1E2A3A;letter-spacing:.12em;font-weight:600}
+.plate .no{padding:3px 10px}
+.ghero{margin:2px 0 12px;padding-right:58px}
+.ghi{font:800 22px/1.02 var(--display);text-transform:uppercase;letter-spacing:.01em;color:#1E2A3A;white-space:nowrap}
+.ghs{margin-top:3px;font-size:13px;color:#6B7686}
+.gbento{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;gap:12px}
+.gcard.gt3:not(.gall){align-items:stretch;gap:0;padding:12px;color:var(--tx);background:linear-gradient(150deg,var(--tc2),var(--tc) 70%);box-shadow:0 10px 22px -6px var(--tc);margin-bottom:0}
+.gt3{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;text-align:center;min-height:158px;border:0;border-radius:22px;cursor:pointer;font:inherit;margin:0}
+.gt3::before{content:'';position:absolute;right:-46px;top:-46px;width:150px;height:150px;border-radius:50%;background:rgba(255,255,255,.16)}
+.gt3::after{content:'';position:absolute;left:-30px;bottom:-60px;width:130px;height:130px;border-radius:50%;background:rgba(0,0,0,.07)}
+.gt3 .gwm{position:absolute;right:-22px;bottom:0;width:104px;height:104px;color:var(--tx);opacity:.15;stroke:currentColor;z-index:0}
+.gt3 > div{position:relative;z-index:1}
+.g3top{display:flex;justify-content:space-between;align-items:center}
+.g4st{position:relative;display:inline-block}
+.gcard.gt3 .glogo.sticker{width:46px;height:46px;border-radius:14px;background:#fff;border:0;padding:6px;transform:rotate(-6deg);box-shadow:0 6px 14px rgba(0,0,0,.22);color:#6B7686}
+.g4n{position:absolute;top:-8px;right:-10px;min-width:24px;height:24px;border-radius:12px;padding:0 6px;display:grid;place-items:center;background:#FF3B47;color:#fff;font:800 13px/1 var(--body);border:2.5px solid #fff;box-shadow:0 3px 8px rgba(0,0,0,.3);z-index:2}
+.g4n.soon{background:#FFB400;color:#2A1E00}
+.g4km{font:800 13px var(--body);background:rgba(0,0,0,.18);padding:3px 9px;border-radius:99px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.gcard.gt3 .gname{overflow-wrap:normal;word-break:normal;font:800 23px/.98 var(--display);text-transform:uppercase;letter-spacing:.01em;color:var(--tx);text-shadow:0 1px 0 rgba(0,0,0,.08)}
+.g4plate{display:inline-block;margin-top:6px;font:600 12px var(--mono);letter-spacing:.14em;color:var(--tx);background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.55);padding:3px 9px;border-radius:8px}
+.gt3.dark .g4plate{background:rgba(255,255,255,.35);border-color:rgba(42,30,0,.35)}
+.gadd3{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:158px;border:2.5px dashed #D9CFBF;border-radius:22px;background:transparent;color:#6B7686;font:600 16px var(--body);cursor:pointer}
+.gadd3 .plus{width:42px;height:42px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:28px;color:#0E9F8E;box-shadow:0 4px 12px rgba(30,42,58,.12)}
+.top{min-height:calc(env(safe-area-inset-top,0px) + 70px)!important}
+.wrap.nobar{padding-block:14px 24px}
+.gear{width:42px;height:42px}
+.btn.cloudbtn{width:42px;height:42px;min-height:42px;top:calc(env(safe-area-inset-top,0px) + 52px)}
 </style>
 </head><body>
 
@@ -328,9 +412,11 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   <p class="banner" id="banner" role="alert" hidden></p>
   <nav class="chips" id="chips" aria-label="Navigation"></nav>
   <div class="seg" id="seg" role="tablist" hidden>
-    <button type="button" role="tab" id="tabJ" aria-selected="true">Journal</button>
-    <button type="button" role="tab" id="tabR" aria-selected="false">Rappels <span class="badge" id="remBadge" hidden></span></button>
-    <button type="button" role="tab" id="tabS" aria-selected="false">Stats</button>
+    <button type="button" role="tab" id="tabJ" aria-selected="true"><span class="ti" data-i="list"></span><span>Journal</span></button>
+    <button type="button" role="tab" id="tabR" aria-selected="false"><span class="ti" data-i="bell"></span><span>Rappels</span><span class="badge" id="remBadge" hidden></span></button>
+    <button type="button" role="tab" id="tabS" aria-selected="false"><span class="ti" data-i="chart"></span><span>Stats</span></button>
+    <button type="button" role="tab" id="tabD" aria-selected="false"><span class="ti" data-i="doc"></span><span>Docs</span></button>
+    <button type="button" role="tab" id="tabP" aria-selected="false"><span class="ti" data-i="photo"></span><span>Photos</span></button>
   </div>
   <section class="vcard" id="vcard" hidden></section>
   <div class="kinds" id="kinds" role="group" aria-label="Filtrer par type" hidden></div>
@@ -570,9 +656,40 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     <h2 id="viewTitle">Facture</h2>
     <div id="viewBody"></div>
     <p class="err" id="viewErr" role="alert"></p>
-    <div class="foot"><a class="btn primary" id="viewSave" hidden>Enregistrer</a><a class="btn" id="viewOpen" target="_blank" rel="noopener" hidden>Ouvrir</a><span class="spacer"></span><button type="button" class="btn" id="btnCloseView">Fermer</button></div>
+    <div class="foot"><button type="button" class="btn" id="viewEdit" hidden>Modifier</button><a class="btn primary" id="viewSave" hidden>Enregistrer</a><a class="btn" id="viewOpen" target="_blank" rel="noopener" hidden>Ouvrir</a><span class="spacer"></span><button type="button" class="btn" id="btnCloseView">Fermer</button></div>
   </div>
 </div>
+
+<div class="overlay" id="libSheet" hidden role="dialog" aria-modal="true" aria-labelledby="libTitle">
+  <form class="sheet" id="libForm" novalidate>
+    <h2 id="libTitle">Nouveau document</h2>
+    <div class="grid2">
+      <div class="field"><label for="lVehicle">Véhicule</label><select id="lVehicle"></select></div>
+      <div class="field"><label for="lCat">Catégorie</label><select id="lCat"></select></div>
+    </div>
+    <div class="field" id="lTitleField"><label for="lTitle" id="lTitleLbl">Titre</label><input id="lTitle" type="text" autocomplete="off" placeholder="Attestation 2026"></div>
+    <div class="grid2">
+      <div class="field"><label for="lDate">Date</label><input id="lDate" type="date"></div>
+      <div class="field" id="lExpField"><label for="lExp">Valable jusqu'au</label><input id="lExp" type="date"></div>
+    </div>
+    <div class="field"><label for="lNotes">Notes</label><textarea id="lNotes" placeholder="N° de contrat, remarques…"></textarea></div>
+    <div class="field">
+      <span class="lbl" id="lFilesLbl">Fichiers</span>
+      <div class="files" id="lFileList"></div>
+      <button type="button" class="btn" id="btnLibPick">Joindre un PDF ou une photo</button>
+      <p class="hint" id="lHint">PDF, JPEG, PNG ou WebP, 20 Mo maximum par fichier.</p>
+    </div>
+    <p class="err" id="libErr" role="alert"></p>
+    <div class="foot">
+      <button type="button" class="btn danger" id="btnDelLib">Supprimer</button>
+      <span class="spacer"></span>
+      <button type="button" class="btn" id="btnCancelLib">Annuler</button>
+      <button type="submit" class="btn primary" id="btnSaveLib">Enregistrer</button>
+    </div>
+  </form>
+</div>
+<input id="libFile" type="file" multiple hidden>
+<input id="libPick" type="file" multiple accept="image/jpeg,image/png,image/webp" hidden>
 
 <script src="store.js"></script>
 <script src="drive.js"></script>
@@ -596,7 +713,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   var canWrite = false;
   var status = 'loading'; // loading | ready | nodb | error
   var vehicles = [], entries = [];
-  var loaded = { v: false, e: false, r: false };
+  var loaded = { v: false, e: false, r: false, l: false };
   var reminders = [], view = 'journal', remEd = null, doneFor = null, kmFor = null, quickFor = null;
   var kindFilter = 'all';
   try { var kf = localStorage.getItem('carnet.kind'); if (kf === 'maintenance' || kf === 'carburant' || kf === 'autres') kindFilter = kf; } catch (x) {}
@@ -721,7 +838,11 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     speed: 'M20.38 8.57l-1.23 1.85a8 8 0 0 1-.22 7.58H5.07A8 8 0 0 1 15.58 6.85l1.85-1.23A10 10 0 0 0 3.35 19a2 2 0 0 0 1.72 1h13.85a2 2 0 0 0 1.74-1 10 10 0 0 0-.27-10.44zm-9.79 6.84a2 2 0 0 0 2.83 0l5.66-8.49-8.49 5.66a2 2 0 0 0 0 2.83z',
     gear: 'M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z',
     bolt: 'M13 2L4.5 13.5H10L9 22l8.5-11.5H12z',
-    chart: 'M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z'
+    chart: 'M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z',
+    list: 'M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z',
+    bell: 'M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z',
+    doc: 'M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z',
+    photo: 'M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4zM9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z'
   };
   function svgIcon(name, size) {
     var NS = 'http://www.w3.org/2000/svg';
@@ -1255,25 +1376,30 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
         ] : []));
       return;
     }
-    var out = [h('div', { class: 'gtitle' }, 'Choisissez un véhicule')];
-    vehicles.forEach(function (v) {
-      var lc = loaded.r ? lateCounts(v.id) : { late: 0, soon: 0 };
-      var date = v.firstDate ? v.firstDate.slice(5, 7) + '/' + v.firstDate.slice(0, 4) : (v.year ? String(v.year) : '');
-      var side = [];
-      if (lc.late) side.push(h('span', { class: 'pill late' }, plural(lc.late, 'rappel en retard', 'rappels en retard')));
-      else if (lc.soon) side.push(h('span', { class: 'pill', style: '--k:var(--st-soon)' }, plural(lc.soon, 'rappel bientôt', 'rappels bientôt')));
-      out.push(h('button', { class: 'gcard', type: 'button', 'data-vid': v.id, onclick: function () { enterVehicle(v.id); } },
-        logoEl(v, 'glogo', 34),
-        h('div', { class: 'gbody' },
-          h('div', { class: 'gname' }, v.name),
-          h('div', { class: 'gmeta' }, v.plate ? (v.type === 'velo' ? h('span', { class: 'serial' }, v.plate) : plateEl(v.plate)) : null, date ? h('span', null, date) : null),
-          side.length ? h('div', { class: 'gmeta' }, side) : null),
-        h('span', { class: 'gchev', 'aria-hidden': 'true' }, '›')));
+    var PAL = [['#0E9F8E', '#16C4AE', '#fff'], ['#F2683C', '#FF9560', '#fff'], ['#6C5CE7', '#9A8CFF', '#fff'], ['#F5A300', '#FFCC4D', '#2A1E00'], ['#3B82F6', '#6FB0FF', '#fff'], ['#E5484D', '#FF7A7F', '#fff']];
+    var lateAll = 0; vehicles.forEach(function (v) { if (loaded.r) lateAll += lateCounts(v.id).late; });
+    var out = [h('div', { class: 'ghero' }, h('div', { class: 'ghi' }, 'Clé en main, on chouchoute qui ?'))];
+    var grid = h('div', { class: 'gbento' });
+    vehicles.forEach(function (v, idx) {
+      var lc = loaded.r ? lateCounts(v.id) : { late: 0, soon: 0 }, pal = PAL[idx % PAL.length];
+      var odo = 0; entries.forEach(function (e) { if (e.vehicleId === v.id && typeof e.km === 'number' && e.km > odo) odo = e.km; });
+      var n = lc.late || lc.soon;
+      var badge = n ? h('span', { class: 'g4n' + (lc.late ? '' : ' soon'), 'aria-hidden': 'true' }, String(n)) : null;
+      var wm = typeGlyph(v.type, 150); wm.setAttribute('class', 'gwm');
+      var plate = v.plate ? (v.type === 'velo' ? v.plate : String(v.plate).replace(/^([A-Za-z]{2})-?(\d{3})-?([A-Za-z]{2})$/, '$1-$2-$3').toUpperCase()) : '';
+      var label = v.name + (n ? ', ' + plural(n, 'rappel', 'rappels') + (lc.late ? ' en retard' : ' bientôt') : '');
+      grid.append(h('button', { class: 'gcard gt3' + (pal[2] !== '#fff' ? ' dark' : ''), type: 'button', 'data-vid': v.id, 'aria-label': label, style: '--tc:' + pal[0] + ';--tc2:' + pal[1] + ';--tx:' + pal[2], onclick: function () { enterVehicle(v.id); } },
+        wm,
+        h('div', { class: 'g3top' }, h('span', { class: 'g4st' }, logoEl(v, 'glogo sticker', 28), badge), odo ? h('span', { class: 'g4km' }, nf.format(odo) + ' km') : null),
+        h('div', { class: 'g3bot' }, h('div', { class: 'gname' }, v.name), plate ? h('div', { class: 'g4plate' }, plate) : null)));
     });
+    if (canWrite) grid.append(h('button', { class: 'gadd3', type: 'button', onclick: function () { openVeh(null); } }, h('span', { class: 'plus', 'aria-hidden': 'true' }, '+'), h('span', null, 'Ajouter')));
+    out.push(grid);
     box.replaceChildren.apply(box, out);
   }
   /* ---------- paramètres : stations et carburants ---------- */
-  var settings = { stations: null, fuels: null, doers: null };
+  var settings = { stations: null, fuels: null, doers: null, doccats: null, photocats: null };
+  var library = [];
   var settingsPage = null;
   var DEFAULT_FUELS = ['SP98', 'SP95', 'SP95 E10', 'E85', 'Gazole', 'Autre'];
   function ciHas(list, name) { var n = norm(name); return list.some(function (x) { return norm(x) === n; }); }
@@ -1314,9 +1440,19 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     fuels: { title: 'Carburants', one: 'carburant', many: 'carburants', add: 'Ajouter un carburant', newT: 'Nouveau carburant', lbl: 'Nom du carburant', ph: 'SP95 E10', done: 'Carburant ajouté', gone: 'Carburant retiré de la liste', icon: 'can' },
     doers: { title: 'Réalisé par', one: 'garage ou personne', many: 'garages et personnes', add: 'Ajouter un garage ou une personne', newT: 'Nouveau garage ou personne', lbl: 'Nom du garage ou de la personne', ph: 'Garage Dupont', done: 'Ajouté à la liste', gone: 'Retiré de la liste', icon: 'place' }
   };
-  function listFor(key) { return key === 'stations' ? stationList() : key === 'fuels' ? fuelList() : doerList(); }
+  var DEFAULT_DOCCATS = ['Assurance', 'Carte grise', 'Contrôle technique', 'Permis', 'Autre'];
+  var DEFAULT_PHOTOCATS = ['Véhicule', 'Dommages', 'Autre'];
+  SET_LABELS.doccats = { title: 'Types de documents', one: 'catégorie', many: 'catégories', add: 'Ajouter une catégorie', newT: 'Nouvelle catégorie de documents', lbl: 'Nom de la catégorie', ph: 'Carte grise', done: 'Catégorie ajoutée', gone: 'Catégorie retirée de la liste', icon: 'doc' };
+  SET_LABELS.photocats = { title: 'Types de photos', one: 'catégorie', many: 'catégories', add: 'Ajouter une catégorie', newT: 'Nouvelle catégorie de photos', lbl: 'Nom de la catégorie', ph: 'Véhicule', done: 'Catégorie ajoutée', gone: 'Catégorie retirée de la liste', icon: 'photo' };
+  function catList(type) {
+    var key = type === 'doc' ? 'doccats' : 'photocats';
+    if (settings[key] && Array.isArray(settings[key].items)) return settings[key].items.slice();
+    return (type === 'doc' ? DEFAULT_DOCCATS : DEFAULT_PHOTOCATS).slice();
+  }
+  function listFor(key) { return key === 'stations' ? stationList() : key === 'fuels' ? fuelList() : key === 'doccats' ? catList('doc') : key === 'photocats' ? catList('photo') : doerList(); }
   function usageCount(key, name) {
     var n = norm(name), c = 0;
+    if (key === 'doccats' || key === 'photocats') { library.forEach(function (r) { if (r.type === (key === 'doccats' ? 'doc' : 'photo') && norm(r.category) === n) c++; }); return c; }
     entries.forEach(function (e) {
       if (key === 'doers') { if (e.doneBy && norm(e.doneBy) === n) c++; return; }
       if (e.kind !== 'carburant') return;
@@ -1336,7 +1472,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     if (!Drive.clientId() || !Drive.connected()) return Drive.clientId() ? 'Non connecté' : 'Non configuré';
     return st.last ? fmtStamp(st.last) : 'Pas encore synchronisé';
   }
-  var APP_VERSION = '4.8', APP_DATE = '2026-10-29';
+  var APP_VERSION = '5.0', APP_DATE = '2026-10-30';
   function renderAboutPage(box) {
     var d = new Date(APP_DATE + 'T12:00:00');
     box.replaceChildren(h('div', { class: 'gtitle' }, 'À propos'),
@@ -1374,7 +1510,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
           h('span', { class: 'sico' }, svgIcon(icon, 24)), h('div', { style: 'flex:1;min-width:0' }, h('div', { class: 'sname' }, name), h('div', { class: 'smeta' }, meta)),
           h('span', { class: 'gchev', 'aria-hidden': 'true' }, '›'));
       };
-      ['fuels', 'stations', 'doers'].forEach(function (k) {
+      ['fuels', 'stations', 'doers', 'doccats', 'photocats'].forEach(function (k) {
         var L = SET_LABELS[k];
         rows.push(h('button', { class: 'srow', type: 'button', id: 'row_' + k, onclick: function () { openSettingsPage(k); } },
           h('span', { class: 'sico' }, svgIcon(L.icon, 24)), h('div', { style: 'flex:1;min-width:0' }, h('div', { class: 'sname' }, L.title), h('div', { class: 'smeta' }, plural(listFor(k).length, L.one, L.many))),
@@ -1389,7 +1525,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     if (settingsPage === 'sync') { renderSyncPage(box); return; }
     if (settingsPage === 'about') { renderAboutPage(box); return; }
     var key = settingsPage, L = SET_LABELS[key];
-    var items = listFor(key); if (key !== 'fuels') items = items.sort(function (a, b) { return a.localeCompare(b, 'fr', { sensitivity: 'base' }); });
+    var items = listFor(key); if (key !== 'fuels' && key !== 'doccats' && key !== 'photocats') items = items.sort(function (a, b) { return a.localeCompare(b, 'fr', { sensitivity: 'base' }); });
     var out = [h('div', { class: 'gtitle' }, L.title)];
     items.forEach(function (name) {
       var u = usageCount(key, name);
@@ -1398,7 +1534,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
         var cur = listFor(key).filter(function (x) { return norm(x) !== norm(name); });
         try { await saveList(key, cur); toast(L.gone); } catch (e) { toast(errText(e)); }
       });
-      out.push(h('div', { class: 'irow' }, h('div', { style: 'min-width:0' }, h('div', { class: 'in' }, name), u ? h('div', { class: 'im' }, key === 'doers' ? plural(u, 'ligne', 'lignes') : plural(u, 'plein enregistré', 'pleins enregistrés')) : null), canWrite ? del : null));
+      out.push(h('div', { class: 'irow' }, h('div', { style: 'min-width:0' }, h('div', { class: 'in' }, name), u ? h('div', { class: 'im' }, key === 'doers' ? plural(u, 'ligne', 'lignes') : key === 'doccats' ? plural(u, 'document', 'documents') : key === 'photocats' ? plural(u, 'photo', 'photos') : plural(u, 'plein enregistré', 'pleins enregistrés')) : null), canWrite ? del : null));
     });
     if (!items.length) out.push(h('p', { class: 'muted', style: 'padding:14px 0' }, 'La liste est vide.'));
     out.push(h('p', { class: 'fnote', style: 'margin-top:14px' }, key === 'doers' ? 'Retirer un nom de la liste ne modifie pas les lignes déjà enregistrées. La liste n\'est pas limitative : vous pouvez aussi saisir un nom directement dans une ligne.' : 'Retirer un élément de la liste ne modifie jamais les pleins déjà enregistrés.'));
@@ -1681,6 +1817,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   }
   function renderBar() {
     var bar = $('#bar'), btn = $('#btnAdd');
+    var wr = document.querySelector('.wrap'); if (wr) wr.classList.toggle('nobar', screen === 'garage' && vehicles.length > 0);
     if (!ready() || !canWrite) { bar.hidden = true; return; }
     bar.hidden = false;
     var b2 = $('#btnAdd2'); b2.hidden = true;
@@ -1688,10 +1825,12 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       if (!settingsPage || settingsPage === 'sync' || settingsPage === 'about') { bar.hidden = true; return; }
       btn.textContent = SET_LABELS[settingsPage].add; btn.onclick = openItem; return;
     }
-    if (screen === 'garage') { btn.textContent = 'Ajouter un véhicule'; btn.onclick = function () { openVeh(null); }; return; }
+    if (screen === 'garage') { if (vehicles.length) { bar.hidden = true; return; } btn.textContent = 'Ajouter un véhicule'; btn.onclick = function () { openVeh(null); }; return; }
     if (vehicles.length && view === 'journal' && isVelo(filter)) { b2.hidden = false; b2.textContent = '⚡ Recharge'; b2.onclick = function () { openEntry(null, 'recharge'); }; }
     if (vehicles.length && view === 'rappels') { btn.textContent = 'Ajouter un rappel'; btn.onclick = function () { openRem(null); }; }
     else if (vehicles.length && view === 'stats') { var bk = isVelo(filter); btn.textContent = bk ? 'Ajouter une recharge' : 'Ajouter un plein'; btn.onclick = function () { openEntry(null, bk ? 'recharge' : 'carburant'); }; }
+    else if (vehicles.length && view === 'docs') { btn.textContent = 'Ajouter un document'; btn.onclick = function () { openLib(null, 'doc'); }; }
+    else if (vehicles.length && view === 'photos') { btn.textContent = 'Ajouter des photos'; btn.onclick = function () { $('#libPick').click(); }; }
     else if (vehicles.length) { btn.textContent = 'Ajouter une ligne'; btn.onclick = function () { openEntry(null); }; }
     else { btn.textContent = 'Ajouter un véhicule'; btn.onclick = function () { openVeh(null); }; }
   }
@@ -1711,6 +1850,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     if (view !== 'stats') $('#fstats').hidden = true;
     if (view === 'rappels' && vehicles.length) { $('#kinds').hidden = true; $('#stats').hidden = true; renderReminders(); }
     else if (view === 'stats' && vehicles.length) { $('#kinds').hidden = true; $('#stats').hidden = true; $('#list').replaceChildren(); $('#list').className = ''; renderFuelStats(); }
+    else if ((view === 'docs' || view === 'photos') && vehicles.length) { $('#stats').hidden = true; renderLibrary(); }
     else { renderKinds(); renderStats(); renderList(); }
     renderBar();
   }
@@ -2056,6 +2196,8 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     $('#tabJ').setAttribute('aria-selected', String(view === 'journal'));
     $('#tabR').setAttribute('aria-selected', String(view === 'rappels'));
     $('#tabS').setAttribute('aria-selected', String(view === 'stats'));
+    $('#tabD').setAttribute('aria-selected', String(view === 'docs'));
+    $('#tabP').setAttribute('aria-selected', String(view === 'photos'));
     var n = loaded.r ? dueCount() : 0, b = $('#remBadge');
     b.hidden = n === 0; b.textContent = String(n);
   }
@@ -2078,7 +2220,7 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
         h('button', { class: 'linkbtn', type: 'button', onclick: function () { openRem(r); } }, 'Modifier')) : null);
   }
   function renderReminders() {
-    var box = $('#list');
+    var box = $('#list'); box.className = '';
     if (!loaded.r) { box.replaceChildren(h('p', { class: 'muted center' }, 'Chargement des rappels…')); return; }
     var odo = odoMap(), today = ymd(new Date());
     var vs = filter === 'all' ? vehicles : vehicles.filter(function (v) { return v.id === filter; });
@@ -2408,6 +2550,27 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
     $('#tabJ').addEventListener('click', function () { view = 'journal'; render(); });
     $('#tabR').addEventListener('click', function () { view = 'rappels'; render(); });
     $('#tabS').addEventListener('click', function () { view = 'stats'; render(); });
+    $('#tabD').addEventListener('click', function () { view = 'docs'; render(); });
+    $('#tabP').addEventListener('click', function () { view = 'photos'; render(); });
+    document.querySelectorAll('.seg .ti').forEach(function (el) { el.append(svgIcon(el.dataset.i, 20)); });
+    $('#libForm').addEventListener('submit', saveLib);
+    $('#btnCancelLib').addEventListener('click', function () { closeSheet('#libSheet'); libEd = null; });
+    $('#btnLibPick').addEventListener('click', function () { $('#libFile').accept = libEd && libEd.type === 'photo' ? 'image/jpeg,image/png,image/webp' : 'application/pdf,image/jpeg,image/png,image/webp'; $('#libFile').click(); });
+    $('#libFile').addEventListener('change', function (ev) {
+      var files = Array.prototype.slice.call(ev.target.files || []); ev.target.value = '';
+      if (!libEd) return;
+      var ok = files.filter(function (f) { var t = assetType(f); return t && !(libEd.type === 'photo' && t === 'application/pdf'); });
+      var bad = files.filter(function (f) { return ok.indexOf(f) < 0; });
+      libEd.add = libEd.add.concat(ok); renderLibFiles();
+      $('#libErr').textContent = bad.length ? 'Format non accepté pour ' + bad.map(function (f) { return f.name; }).join(', ') + '.' : '';
+    });
+    $('#libPick').addEventListener('change', function (ev) {
+      var files = Array.prototype.slice.call(ev.target.files || []); ev.target.value = '';
+      var ok = files.filter(function (f) { var t = assetType(f); return t && t !== 'application/pdf'; });
+      if (files.length && ok.length < files.length) toast('Format non accepté pour ' + (files.length - ok.length) + ' fichier(s). Utilisez un JPEG, un PNG ou un WebP.');
+      if (ok.length) openLib(null, 'photo', ok);
+    });
+    $('#viewEdit').addEventListener('click', function () { var r = viewRec; closeView(); if (r) openLib(r, r.type); });
     $('#fVehicle').addEventListener('change', syncKinds);
     $('#vType').addEventListener('change', syncVehType);
     var rz; window.addEventListener('resize', function () { clearTimeout(rz); rz = setTimeout(function () { if (view === 'stats' && ready()) renderFuelStats(); }, 200); });
@@ -2448,7 +2611,9 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
   }
   var viewUrl = null;
   function closeView() { closeSheet('#viewSheet'); if (viewUrl) { URL.revokeObjectURL(viewUrl); viewUrl = null; } $('#viewBody').replaceChildren(); }
-  async function openInvoice(f) {
+  var viewRec = null;
+  async function openInvoice(f, rec) {
+    viewRec = rec || null; $('#viewEdit').hidden = !(rec && canWrite);
     $('#viewTitle').textContent = f.name || 'Facture'; $('#viewErr').textContent = '';
     $('#viewBody').replaceChildren(h('p', { class: 'muted' }, 'Chargement…'));
     $('#viewSave').hidden = true; $('#viewOpen').hidden = true;
@@ -2465,6 +2630,185 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
       $('#viewBody').replaceChildren();
       $('#viewErr').textContent = (e && e.message) || 'Impossible de récupérer ce fichier.';
     }
+  }
+
+
+  /* ---------- documents et photos ---------- */
+  var libEd = null, thumbs = {};
+  var CATC = ['#3B82F6', '#6C5CE7', '#F2683C', '#0E9F8E', '#F5A300', '#E5484D', '#7C8DA0'];
+  var libCatFilter = { doc: 'all', photo: 'all' };
+  function vName(id) { var v = vehicles.filter(function (x) { return x.id === id; })[0]; return v ? v.name : 'Véhicule'; }
+  function libDest(type, vid, cat) { return type === 'doc' ? ['Documents', vName(vid), cat || 'Autre'] : ['Photos', vName(vid)]; }
+  function catColor(type, cat) { var i = -1; catList(type).forEach(function (c, k) { if (norm(c) === norm(cat)) i = k; }); return i < 0 ? CATC[6] : CATC[i % 6]; }
+  function expiryPill(r) {
+    if (!r.expires) return null;
+    var d = daysBetween(ymd(new Date()), r.expires), lbl, col;
+    if (d < 0) { lbl = 'Expiré'; col = 'var(--st-late)'; }
+    else if (d <= 60) { lbl = d === 0 ? "Aujourd'hui" : d === 1 ? 'Demain' : 'Dans ' + d + ' jours'; col = 'var(--st-soon)'; }
+    else if (d < 365) { lbl = 'Dans ' + Math.round(d / 30) + ' mois'; col = 'var(--st-ok)'; }
+    else { lbl = 'Valide'; col = 'var(--st-ok)'; }
+    return h('span', { class: 'pill', style: '--k:' + col }, lbl);
+  }
+  function loadThumb(img, holder, f) {
+    var go = function (u) { img.src = u; holder.append(img); };
+    if (thumbs[f.id]) { go(thumbs[f.id]); return; }
+    Drive.fetchBlob(f.id, true).then(function (b) { thumbs[f.id] = URL.createObjectURL(b); go(thumbs[f.id]); }).catch(function () {});
+  }
+  function renderLibrary() {
+    var type = view === 'docs' ? 'doc' : 'photo', box = $('#list'), kinds = $('#kinds');
+    box.className = 'lib';
+    if (!ready()) { box.replaceChildren(h('p', { class: 'muted center' }, 'Chargement…')); kinds.hidden = true; return; }
+    if (!loaded.l) { box.replaceChildren(h('p', { class: 'muted center' }, 'Chargement…')); kinds.hidden = true; return; }
+    var all = library.filter(function (r) { return r.type === type && (filter === 'all' || r.vehicleId === filter); });
+    var cats = catList(type);
+    all.forEach(function (r) { if (r.category && !ciHas(cats, r.category)) cats.push(r.category); });
+    var sel = libCatFilter[type];
+    if (sel !== 'all' && !ciHas(cats, sel)) sel = libCatFilter[type] = 'all';
+    var defs = [['all', type === 'doc' ? 'Tous' : 'Toutes', all.length]];
+    cats.forEach(function (c) { var n = all.filter(function (r) { return norm(r.category) === norm(c); }).length; if (n || sel === c) defs.push([c, c, n]); });
+    kinds.hidden = false;
+    kinds.replaceChildren.apply(kinds, defs.map(function (d) {
+      return h('button', { class: 'fchip', type: 'button', 'aria-pressed': String(sel === d[0]), onclick: function () { libCatFilter[type] = d[0]; render(); } }, d[1], h('i', null, String(d[2])));
+    }));
+    var list = all.filter(function (r) { return sel === 'all' || norm(r.category) === norm(sel); })
+      .sort(function (a, b) { return String(b.date || '').localeCompare(String(a.date || '')) || (b.createdAt || 0) - (a.createdAt || 0); });
+    if (!list.length) {
+      box.replaceChildren(emptyCard(type === 'doc' ? 'Aucun document' : 'Aucune photo',
+        type === 'doc' ? "Rangez ici l'assurance, la carte grise, le contrôle technique… Les fichiers sont classés dans votre Google Drive par véhicule et par catégorie." : 'Gardez ici quelques photos du véhicule. Elles sont classées dans votre Google Drive, dossier Photos.',
+        canWrite ? [h('button', { class: 'btn primary', type: 'button', onclick: function () { if (type === 'doc') openLib(null, 'doc'); else $('#libPick').click(); } }, type === 'doc' ? 'Ajouter un document' : 'Ajouter des photos')] : []));
+      return;
+    }
+    var out = [], groups = [], idx = {};
+    list.forEach(function (r) {
+      var key = type === 'doc' ? (r.category || 'Autre') : String(r.date || '').slice(0, 7);
+      var gk = type === 'doc' ? norm(key) : key;
+      if (!(gk in idx)) { idx[gk] = groups.length; groups.push({ key: key, items: [] }); }
+      groups[idx[gk]].items.push(r);
+    });
+    if (type === 'doc') groups.sort(function (a, b) { var ia = cats.findIndex(function (c) { return norm(c) === norm(a.key); }), ib = cats.findIndex(function (c) { return norm(c) === norm(b.key); }); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib); });
+    groups.forEach(function (g) {
+      var label = type === 'doc' ? g.key : (g.key ? new Date(g.key + '-15T12:00:00').toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }) : 'Sans date');
+      out.push(h('div', { class: 'lgroup' }, h('span', null, label), h('span', null, String(g.items.length))));
+      if (type === 'doc') {
+        g.items.forEach(function (r) {
+          var files = r.files || [], first = files[0];
+          var sub = [r.date ? fmtDate(r.date) : '', files.length > 1 ? files.length + ' fichiers' : (first && first.type === 'application/pdf' ? 'PDF' : first ? 'Image' : 'Aucun fichier'), filter === 'all' ? vName(r.vehicleId) : ''].filter(Boolean).join(' · ');
+          var main = h('button', { class: 'lrow', type: 'button', 'aria-label': r.title || r.category, onclick: function () { if (files.length === 1) openInvoice(files[0], r); else openLib(r, 'doc'); } },
+            h('span', { class: 'lic', style: 'background:' + catColor('doc', r.category) }, svgIcon('doc', 22)),
+            h('span', { class: 'lbody' }, h('div', { class: 'lt' }, r.title || r.category || 'Document'), h('div', { class: 'ls' }, sub)),
+            h('span', { class: 'lside' }, expiryPill(r), canWrite ? h('span', { class: 'linkbtn', role: 'button', onclick: function (ev) { ev.stopPropagation(); openLib(r, 'doc'); } }, 'Modifier') : null));
+          out.push(main);
+        });
+      } else {
+        var grid = h('div', { class: 'pgrid' });
+        g.items.forEach(function (r) {
+          var f = (r.files || [])[0];
+          var b = h('button', { class: 'pth', type: 'button', 'aria-label': r.title || ('Photo du ' + (r.date ? fmtDate(r.date) : '')), onclick: function () { if (f) openInvoice(f, r); else openLib(r, 'photo'); } }, svgIcon('photo', 26));
+          if (f) loadThumb(h('img', { alt: '' }), b, f);
+          if (r.title) b.append(h('span', { class: 'pcap' }, r.title));
+          grid.append(b);
+        });
+        out.push(grid);
+      }
+    });
+    box.replaceChildren.apply(box, out);
+  }
+  function renderLibFiles() {
+    var box = $('#lFileList'), items = [];
+    libEd.keep.forEach(function (f) {
+      items.push(h('div', { class: 'file' }, h('span', null, f.name || 'Fichier'),
+        h('button', { class: 'linkbtn', type: 'button', onclick: function () { openInvoice(f, null); } }, 'Ouvrir'),
+        h('button', { class: 'linkbtn', type: 'button', 'aria-label': 'Retirer ' + (f.name || 'le fichier'), onclick: function () { libEd.keep = libEd.keep.filter(function (x) { return x.id !== f.id; }); libEd.drop.push(f.id); renderLibFiles(); } }, 'Retirer')));
+    });
+    libEd.add.forEach(function (f, i) {
+      items.push(h('div', { class: 'file' }, h('span', null, f.name + ' (à envoyer)'),
+        h('button', { class: 'linkbtn', type: 'button', 'aria-label': 'Retirer ' + f.name, onclick: function () { libEd.add.splice(i, 1); renderLibFiles(); } }, 'Retirer')));
+    });
+    box.replaceChildren.apply(box, items);
+  }
+  function fillLibCats(type, current) {
+    var cats = catList(type);
+    if (current && !ciHas(cats, current)) cats.push(current);
+    var sel = $('#lCat'); sel.replaceChildren.apply(sel, cats.map(function (c) { return h('option', { value: c }, c); }));
+    if (current) sel.value = current;
+    else { var f = libCatFilter[type]; if (f !== 'all' && ciHas(cats, f)) sel.value = f; }
+  }
+  function openLib(r, type, preset) {
+    if (!canWrite || !db) return;
+    if (!vehicles.length) { openVeh(null); return; }
+    libEd = { id: r ? r.id : null, type: type, keep: r ? (r.files || []).slice() : [], add: preset ? preset.slice() : [], drop: [], origDest: r ? libDest(type, r.vehicleId, r.category).join('/') : null };
+    var photo = type === 'photo';
+    $('#libTitle').textContent = r ? (photo ? 'Modifier la photo' : 'Modifier le document') : (photo ? (libEd.add.length > 1 ? 'Nouvelles photos' : 'Nouvelle photo') : 'Nouveau document');
+    $('#lTitleLbl').textContent = photo ? 'Légende (facultatif)' : 'Titre';
+    $('#lTitle').placeholder = photo ? 'Pare-chocs avant' : 'Attestation 2026';
+    $('#lExpField').hidden = photo;
+    $('#lHint').textContent = photo ? 'JPEG, PNG ou WebP, 20 Mo maximum par photo.' : 'PDF, JPEG, PNG ou WebP, 20 Mo maximum par fichier.';
+    $('#btnLibPick').textContent = photo ? 'Ajouter une photo' : 'Joindre un PDF ou une photo';
+    $('#lFilesLbl').textContent = photo ? 'Photos' : 'Fichiers';
+    var vs = $('#lVehicle'); vs.replaceChildren.apply(vs, vehicles.map(function (v) { return h('option', { value: v.id }, v.name); }));
+    vs.value = r ? r.vehicleId : (filter !== 'all' ? filter : vehicles[0].id); if (!vs.value) vs.selectedIndex = 0;
+    fillLibCats(type, r ? r.category : null);
+    $('#lTitle').value = r ? (r.title || '') : '';
+    $('#lDate').value = r && r.date ? r.date : ymd(new Date());
+    $('#lExp').value = r && r.expires ? r.expires : '';
+    $('#lNotes').value = r ? (r.notes || '') : '';
+    $('#libErr').textContent = '';
+    $('#btnDelLib').hidden = !r;
+    if (r) armDelete($('#btnDelLib'), 'Supprimer', deleteLib);
+    renderLibFiles();
+    openSheet('#libSheet');
+  }
+  async function saveLib(ev) {
+    ev.preventDefault();
+    if (busy || !libEd) return;
+    var err = $('#libErr'); err.textContent = '';
+    var type = libEd.type, photo = type === 'photo';
+    var vid = $('#lVehicle').value, cat = $('#lCat').value || 'Autre', title = $('#lTitle').value.trim(), date = $('#lDate').value, exp = photo ? '' : $('#lExp').value;
+    if (!vid) { err.textContent = 'Choisissez un véhicule.'; return; }
+    if (!date) { err.textContent = 'Indiquez la date.'; return; }
+    if (!photo && !title) title = cat;
+    if (!photo && exp && exp < date) { err.textContent = "La date de fin de validité est avant la date du document."; return; }
+    if (!libEd.keep.length && !libEd.add.length) { err.textContent = photo ? 'Ajoutez au moins une photo.' : 'Joignez au moins un fichier.'; return; }
+    busy = true; $('#btnSaveLib').disabled = true;
+    var dest = libDest(type, vid, cat), up = [], ledger = libEd;
+    try {
+      var notes = $('#lNotes').value.trim();
+      async function sendOne(f, n) {
+        var r = await assets.upload(f, { type: assetType(f), label: [date, vName(vid), title || (photo ? 'photo' : cat), n > 0 ? String(n) : ''].filter(Boolean).join(' '), dest: dest });
+        var o = { id: r.id, name: f.name, type: r.contentType }; up.push(o); return o;
+      }
+      if (photo && !ledger.id) {
+        for (var i = 0; i < ledger.add.length; i++) {
+          var o = await sendOne(ledger.add[i], ledger.add.length > 1 ? i + 1 : 0);
+          await db.collection('library').doc().set({ vehicleId: vid, type: 'photo', category: cat, title: ledger.add.length === 1 ? title : (title ? title + ' ' + (i + 1) : ''), date: date, notes: notes, files: [o], createdAt: Date.now() });
+        }
+      } else {
+        var added = [];
+        for (var j = 0; j < ledger.add.length; j++) added.push(await sendOne(ledger.add[j], ledger.add.length > 1 ? j + 1 : 0));
+        var data = { vehicleId: vid, type: type, category: cat, title: title, date: date, expires: exp, notes: notes, files: ledger.keep.concat(added) };
+        if (ledger.id && ledger.origDest !== dest.join('/')) {
+          for (var k = 0; k < ledger.keep.length; k++) { var br = await Store.blob.get(ledger.keep[k].id); if (br && !br.deleted) { br.dest = dest; await Store.blob.put(br); } }
+        }
+        if (ledger.id) await db.collection('library').doc(ledger.id).update(data);
+        else { data.createdAt = Date.now(); await db.collection('library').doc().set(data); }
+      }
+      for (var d = 0; d < ledger.drop.length; d++) { try { await assets.delete(ledger.drop[d]); } catch (x) {} }
+      closeSheet('#libSheet'); libEd = null;
+      toast(photo ? 'Photo enregistrée' : 'Document enregistré');
+    } catch (e) {
+      err.textContent = errText(e);
+    } finally { busy = false; $('#btnSaveLib').disabled = false; }
+  }
+  async function deleteLib() {
+    if (busy || !libEd || !libEd.id) return;
+    busy = true;
+    try {
+      var rec = library.filter(function (x) { return x.id === libEd.id; })[0];
+      await db.collection('library').doc(libEd.id).delete();
+      if (rec) for (var i = 0; i < (rec.files || []).length; i++) { try { await assets.delete(rec.files[i].id); } catch (x) {} }
+      closeSheet('#libSheet'); libEd = null; toast('Supprimé');
+    } catch (e) { $('#libErr').textContent = errText(e); }
+    finally { busy = false; }
   }
 
   /* ---------- synchronisation ---------- */
@@ -2552,9 +2896,13 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
         loaded.e = true; render();
       }, function () { status = 'error'; render(); });
       db.collection('settings').onSnapshot(function (snap) {
-        var o = { stations: null, fuels: null, doers: null };
-        snap.docs.forEach(function (d) { if (d.id === 'stations' || d.id === 'fuels' || d.id === 'doers') o[d.id] = d.data(); });
+        var o = { stations: null, fuels: null, doers: null, doccats: null, photocats: null };
+        snap.docs.forEach(function (d) { if (d.id in o) o[d.id] = d.data(); });
         settings = o; render();
+      }, function () {});
+      db.collection('library').onSnapshot(function (snap) {
+        library = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });
+        loaded.l = true; render();
       }, function () {});
       db.collection('reminders').onSnapshot(function (snap) {
         reminders = snap.docs.map(function (d) { return Object.assign({ id: d.id }, d.data()); });

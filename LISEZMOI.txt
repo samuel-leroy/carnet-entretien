@@ -1,8 +1,22 @@
-CARNETS D'ENTRETIENS - version 4.8 (29 octobre 2026)
+CARNETS D'ENTRETIENS - version 5.0 (30 octobre 2026)
 
-NOUVEAUTE : recharges de vélo électrique
-- Quand on déplie une recharge, on voit maintenant : kilomètres parcourus depuis la dernière recharge, batterie consommée (%), consommation en % par km, autonomie estimée (km pour 100 %).
-- Les anciennes infos (batterie au départ / à la fin, charge ajoutée) restent dans le titre de la ligne.
+NOUVEAU : DOCUMENTS ET PHOTOS
+- Deux nouveaux onglets dans chaque véhicule : Journal, Rappels, Stats, Docs, Photos.
+- Docs : assurance, carte grise, contrôle technique, permis… classés par catégorie. Un document peut avoir plusieurs fichiers (PDF ou images), une date et une date de fin de validité (pastille « Expiré » / « Dans 2 mois » / « Valide »).
+- Photos : grille groupée par mois, plein écran au toucher, catégorie et légende facultative. Plusieurs photos peuvent être ajoutées d'un coup.
+- Les catégories se modifient dans le menu (Types de documents, Types de photos).
+- Google Drive : dans « Carnet entretien véhicules », les dossiers se créent tout seuls :
+    Documents / <véhicule> / <catégorie>
+    Photos / <véhicule>
+  Si vous changez la catégorie ou le véhicule d'un document, le fichier est déplacé dans le bon dossier à la synchro suivante.
+- Les factures restent dans le dossier « Factures ».
+
+AUTRES CHANGEMENTS
+- Accueil : « Clé en main, on chouchoute qui ? » sur une ligne, sans ligne d'information.
+- Onglet Rappels : la ligne pointillée qui traversait le texte a disparu.
+
+IMPORTANT SI VOUS UTILISEZ PLUSIEURS TELEPHONES
+Mettez à jour tous les appareils (ouvrez l'application deux fois sur chacun) avant d'ajouter des documents ou des photos. Une ancienne version ne connaît pas ces données et ne les verrait pas.
 
 MISE A JOUR (vos données sont conservées)
 1. Faites d'abord un export JSON complet (menu > Exporter) par sécurité.

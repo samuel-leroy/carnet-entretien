@@ -4,8 +4,9 @@
 (function () {
   'use strict';
 
-  var COLS = ['vehicles', 'entries', 'reminders', 'settings'];
+  var COLS = ['vehicles', 'entries', 'reminders', 'settings', 'library'];
   var ALLOWED = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'application/pdf'];
+  var extra = new Map(); // éléments d'un type inconnu de cette version : conservés tels quels pour ne rien perdre à la synchro
   var idb = null, mem = {}, subs = [], localFns = [], pending = {}, queued = false, lastTs = 0;
   COLS.forEach(function (c) { mem[c] = new Map(); });
 
@@ -138,7 +139,7 @@
       if (blob.size > 20 * 1024 * 1024) throw { code: 'too_large' };
       var out = await shrink(blob, type);
       var rec = { id: hex(16), blob: out, name: blob.name || 'facture', type: out.type || type, size: out.size,
-        label: (options && options.label) || '', synced: false, deleted: false, createdAt: Date.now() };
+        label: (options && options.label) || '', dest: (options && Array.isArray(options.dest)) ? options.dest.slice() : null, synced: false, deleted: false, createdAt: Date.now() };
       await blobPut(rec);
       fireLocal();
       return { id: rec.id, url: '', sizeBytes: rec.size, contentType: rec.type };
@@ -188,12 +189,18 @@
       COLS.forEach(function (c) {
         mem[c].forEach(function (r) { out.push({ k: r.k, c: r.c, id: r.id, data: r.data, updatedAt: r.updatedAt, deleted: !!r.deleted }); });
       });
+      extra.forEach(function (r) { out.push(r); });
       out.sort(function (a, b) { return a.k < b.k ? -1 : a.k > b.k ? 1 : 0; });
       return out;
     },
     mergeRemote: async function (list) {
       var changed = [];
       (list || []).forEach(function (r) {
+        if (r && r.c && !mem[r.c] && r.id && typeof r.updatedAt === 'number') {
+          var ex = extra.get(r.c + '/' + r.id);
+          if (!ex || r.updatedAt > ex.updatedAt) extra.set(r.c + '/' + r.id, { k: r.c + '/' + r.id, c: r.c, id: r.id, data: r.data, updatedAt: r.updatedAt, deleted: !!r.deleted });
+          return;
+        }
         if (!r || !mem[r.c] || !r.id || typeof r.updatedAt !== 'number') return;
         var cur = mem[r.c].get(r.id);
         if (!cur || r.updatedAt > cur.updatedAt) {

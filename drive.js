@@ -1,6 +1,6 @@
 /* Carnet d'entretien : synchronisation avec Google Drive.
    - Portée « drive.file » : l'application ne voit que les fichiers qu'elle a elle-même créés.
-   - Dossier « Carnet entretien véhicules » : carnet-db.json (données) et « Factures » (PDF et photos).
+   - Dossier « Carnet entretien véhicules » : carnet-db.json (données), « Factures », « Documents / véhicule / catégorie » et « Photos / véhicule ».
    - Fusion élément par élément : la modification la plus récente l'emporte, les suppressions sont propagées. */
 (function () {
   'use strict';
@@ -108,12 +108,27 @@
     var tail = enc.encode('\r\n--' + b + '--');
     return { body: new Blob([head, blob, tail]), type: 'multipart/related; boundary=' + b };
   }
+  function cleanSeg(s) { return String(s == null ? '' : s).replace(/[\\\/:*?"<>|']+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 80) || 'Divers'; }
+  async function ensurePath(m, segs) {
+    var parent = m.rootId, key = '';
+    m.paths = m.paths || {};
+    for (var i = 0; i < segs.length; i++) {
+      var name = cleanSeg(segs[i]); key += '/' + name;
+      if (!m.paths[key]) {
+        var g = await findOne("name='" + name + "' and mimeType='" + FOLDER + "' and '" + parent + "' in parents and trashed=false");
+        m.paths[key] = g ? g.id : await createFolder(name, parent); saveMeta(m);
+      }
+      parent = m.paths[key];
+    }
+    return parent;
+  }
+  function destKey(d) { return d.map(cleanSeg).join('/'); }
   async function ensureFolders() {
     var m = meta();
     if (!m.rootId) {
       var f = await findOne("name='" + ROOT + "' and mimeType='" + FOLDER + "' and trashed=false");
       m.rootId = f ? f.id : await createFolder(ROOT);
-      m.factId = null; m.dbId = null; saveMeta(m);
+      m.factId = null; m.dbId = null; m.paths = {}; saveMeta(m);
     }
     if (!m.factId) {
       var g = await findOne("name='" + FACT + "' and mimeType='" + FOLDER + "' and '" + m.rootId + "' in parents and trashed=false");
@@ -167,15 +182,27 @@
       }
       if (!rec.synced && rec.blob) {
         var ex = await findOne("appProperties has { key='assetId' and value='" + rec.id + "' } and trashed=false");
-        var id = ex ? ex.id : await uploadFile(rec, m.factId);
+        var parent = rec.dest && rec.dest.length ? await ensurePath(m, rec.dest) : m.factId;
+        var id = ex ? ex.id : await uploadFile(rec, parent);
         var cur = await Store.blob.get(rec.id);
-        if (cur) { cur.driveId = id; cur.synced = true; await Store.blob.put(cur); }
+        if (cur) { cur.driveId = id; cur.synced = true; cur.driveDest = rec.dest && rec.dest.length ? destKey(rec.dest) : ''; await Store.blob.put(cur); }
+      } else if (rec.synced && rec.driveId && rec.dest && rec.dest.length && rec.driveDest !== destKey(rec.dest)) {
+        // le fichier a changé de véhicule ou de catégorie : on le déplace dans le bon dossier
+        var np = await ensurePath(m, rec.dest);
+        try {
+          var pr = await (await api(API + '/' + rec.driveId + '?fields=parents')).json();
+          var old = (pr.parents || []).join(',');
+          if (old !== np) await api(API + '/' + rec.driveId + '?addParents=' + np + (old ? '&removeParents=' + old : '') + '&fields=id', { method: 'PATCH' });
+          var c2 = await Store.blob.get(rec.id);
+          if (c2) { c2.driveDest = destKey(rec.dest); await Store.blob.put(c2); }
+        } catch (e) { if (!(e && e.status === 404)) throw e; }
       }
     }
   }
-  async function fetchBlob(id) {
+  async function fetchBlob(id, quiet) {
     var rec = await Store.blob.get(id);
     if (rec && rec.blob) return rec.blob;
+    if (quiet && (!meta().connected || !tokenOk())) throw { message: 'hors appareil' };
     if (!meta().connected) throw { message: "Ce fichier n'est pas sur cet appareil. Connectez Google Drive (bouton Synchro) pour le récupérer." };
     await getToken(true);
     var f = rec && rec.driveId ? { id: rec.driveId } : await findOne("appProperties has { key='assetId' and value='" + id + "' } and trashed=false");
@@ -205,7 +232,7 @@
     try {
       try { await once(interactive); }
       catch (e) {
-        if (e && e.status === 404) { var m = meta(); m.rootId = m.factId = m.dbId = null; saveMeta(m); await once(interactive); }
+        if (e && e.status === 404) { var m = meta(); m.rootId = m.factId = m.dbId = null; m.paths = {}; saveMeta(m); await once(interactive); }
         else throw e;
       }
       set('idle');
