@@ -1,4 +1,4 @@
-CARNETS D'ENTRETIENS - version 5.0 (30 octobre 2026)
+CARNETS D'ENTRETIENS - version 5.0.1 (30 octobre 2026)
 
 NOUVEAU : DOCUMENTS ET PHOTOS
 - Deux nouveaux onglets dans chaque véhicule : Journal, Rappels, Stats, Docs, Photos.
@@ -10,6 +10,8 @@ NOUVEAU : DOCUMENTS ET PHOTOS
     Photos / <véhicule>
   Si vous changez la catégorie ou le véhicule d'un document, le fichier est déplacé dans le bon dossier à la synchro suivante.
 - Les factures restent dans le dossier « Factures ».
+
+5.0.1 : « Ajouter des photos » ouvre maintenant l'explorateur de fichiers (et non plus Google Photos), pour choisir librement les fichiers à importer.
 
 AUTRES CHANGEMENTS
 - Accueil : « Clé en main, on chouchoute qui ? » sur une ligne, sans ligne d'information.

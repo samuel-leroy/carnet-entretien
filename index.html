@@ -689,7 +689,7 @@ h1{background:linear-gradient(90deg,#0B7F73,#E8663D);-webkit-background-clip:tex
   </form>
 </div>
 <input id="libFile" type="file" multiple hidden>
-<input id="libPick" type="file" multiple accept="image/jpeg,image/png,image/webp" hidden>
+<input id="libPick" type="file" multiple accept="image/jpeg,image/png,image/webp,application/pdf" hidden>
 
 <script src="store.js"></script>
 <script src="drive.js"></script>
@@ -1472,7 +1472,7 @@ h1{background:linear-gradient(90deg,#0B7F73,#E8663D);-webkit-background-clip:tex
     if (!Drive.clientId() || !Drive.connected()) return Drive.clientId() ? 'Non connecté' : 'Non configuré';
     return st.last ? fmtStamp(st.last) : 'Pas encore synchronisé';
   }
-  var APP_VERSION = '5.0', APP_DATE = '2026-10-30';
+  var APP_VERSION = '5.0.1', APP_DATE = '2026-10-30';
   function renderAboutPage(box) {
     var d = new Date(APP_DATE + 'T12:00:00');
     box.replaceChildren(h('div', { class: 'gtitle' }, 'À propos'),
@@ -2555,7 +2555,7 @@ h1{background:linear-gradient(90deg,#0B7F73,#E8663D);-webkit-background-clip:tex
     document.querySelectorAll('.seg .ti').forEach(function (el) { el.append(svgIcon(el.dataset.i, 20)); });
     $('#libForm').addEventListener('submit', saveLib);
     $('#btnCancelLib').addEventListener('click', function () { closeSheet('#libSheet'); libEd = null; });
-    $('#btnLibPick').addEventListener('click', function () { $('#libFile').accept = libEd && libEd.type === 'photo' ? 'image/jpeg,image/png,image/webp' : 'application/pdf,image/jpeg,image/png,image/webp'; $('#libFile').click(); });
+    $('#btnLibPick').addEventListener('click', function () { $('#libFile').accept = 'application/pdf,image/jpeg,image/png,image/webp'; $('#libFile').click(); });
     $('#libFile').addEventListener('change', function (ev) {
       var files = Array.prototype.slice.call(ev.target.files || []); ev.target.value = '';
       if (!libEd) return;
