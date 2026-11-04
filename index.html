@@ -115,6 +115,7 @@ h1{font-size:clamp(22px,8vw,32px);white-space:nowrap;line-height:1;text-transfor
 input,select,textarea{width:100%;min-height:44px;font:16px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px}
 textarea{min-height:76px;resize:vertical}
 .field{margin-bottom:12px;min-width:0}
+#kmCostRow.fuel #kmField{grid-column:1 / -1}
 .grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
 .hint{margin-top:6px;font-size:13px;color:var(--muted)}
 .err{margin:8px 0;min-height:1em;font-size:14px;color:var(--danger)}
@@ -443,11 +444,11 @@ h1{background:linear-gradient(90deg,#0B7F73,#E8663D);-webkit-background-clip:tex
       <div class="field"><label for="fDate">Date</label><input id="fDate" type="date"></div>
     </div>
     <div class="field"><label for="fTitle">Description</label><input id="fTitle" type="text" autocomplete="off" placeholder="Vidange, filtre à huile, filtre à air"></div>
-    <div class="grid2">
-      <div class="field"><label for="fKm">Kilométrage</label><input id="fKm" type="text" inputmode="numeric" autocomplete="off" placeholder="84 500"></div>
+    <div class="grid2" id="kmCostRow">
+      <div class="field" id="kmField"><label for="fKm">Kilométrage</label><input id="fKm" type="text" inputmode="numeric" autocomplete="off" placeholder="84 500"></div>
       <div class="field"><label for="fCost">Montant (€)</label><input id="fCost" type="text" inputmode="decimal" autocomplete="off" placeholder="129,90"></div>
+  <div class="field" id="litersField" hidden><label for="fLiters">Litres</label><input id="fLiters" type="text" inputmode="decimal" autocomplete="off" placeholder="42,3"></div>
     </div>
-    <div class="field" id="litersField" hidden><label for="fLiters">Litres</label><input id="fLiters" type="text" inputmode="decimal" autocomplete="off" placeholder="42,3"></div>
     <div id="rechFields" hidden>
       <div class="grid2">
         <div class="field"><label for="fBatStart">Batterie au départ (%)</label><input id="fBatStart" type="text" inputmode="numeric" autocomplete="off" placeholder="20"></div>
@@ -1472,7 +1473,7 @@ h1{background:linear-gradient(90deg,#0B7F73,#E8663D);-webkit-background-clip:tex
     if (!Drive.clientId() || !Drive.connected()) return Drive.clientId() ? 'Non connecté' : 'Non configuré';
     return st.last ? fmtStamp(st.last) : 'Pas encore synchronisé';
   }
-  var APP_VERSION = '5.0.4', APP_DATE = '2026-10-30';
+  var APP_VERSION = '5.0.5', APP_DATE = '2026-10-30';
   function renderAboutPage(box) {
     var d = new Date(APP_DATE + 'T12:00:00');
     box.replaceChildren(h('div', { class: 'gtitle' }, 'À propos'),
@@ -1875,7 +1876,7 @@ h1{background:linear-gradient(90deg,#0B7F73,#E8663D);-webkit-background-clip:tex
   /* --- lignes --- */
   function syncKind() {
     var f = $('#fKind').value === 'carburant', r = $('#fKind').value === 'recharge';
-    $('#litersField').hidden = !f; $('#fuelFields').hidden = !f; $('#rechFields').hidden = !r;
+    $('#litersField').hidden = !f; $('#kmCostRow').classList.toggle('fuel', !!f); $('#fuelFields').hidden = !f; $('#rechFields').hidden = !r;
     $('#doerField').hidden = f || r;
     var dcnt = {}; entries.forEach(function (e) { if (e.doneBy) dcnt[norm(e.doneBy)] = (dcnt[norm(e.doneBy)] || 0) + 1; });
     var dl = $('#doerList'); dl.replaceChildren.apply(dl, doerList().sort(function (a, b) { return (dcnt[norm(b)] || 0) - (dcnt[norm(a)] || 0) || a.localeCompare(b, 'fr', { sensitivity: 'base' }); }).map(function (n) { return h('option', { value: n }); }));
