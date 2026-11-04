@@ -248,6 +248,31 @@
     }, ms);
   }
 
+  /* Renouvellement automatique de la session Google (le jeton dure 1 h) :
+     1) tentative silencieuse au démarrage / retour dans l'appli ;
+     2) si le navigateur la bloque, le premier appui dans l'appli renouvelle la session puis synchronise. */
+  var renewing = false, armed = false;
+  function renewAndSync() {
+    if (renewing || tokenOk() || idleStatus() !== 'pending') return;
+    renewing = true;
+    var done = false;
+    function finish(ok) {
+      if (done) return; done = true; renewing = false;
+      if (ok) sync(false); else armGesture();
+    }
+    var to = setTimeout(function () { finish(false); }, 8000);
+    getToken(true).then(function () { clearTimeout(to); finish(true); }, function () { clearTimeout(to); finish(false); });
+  }
+  function armGesture() {
+    if (armed) return; armed = true;
+    function go() {
+      document.removeEventListener('click', go, true); document.removeEventListener('touchend', go, true); armed = false;
+      if (tokenOk() || idleStatus() !== 'pending') return;
+      getToken(true).then(function () { sync(false); }, function () {});
+    }
+    document.addEventListener('click', go, true); document.addEventListener('touchend', go, true);
+  }
+
   window.Drive = {
     state: function () { return st; },
     onState: function (fn) { fns.push(fn); },
@@ -271,9 +296,9 @@
       Store.onLocalChange(function () { schedule(4000); });
       window.addEventListener('online', function () { schedule(1000); });
       window.addEventListener('offline', function () { set(idleStatus()); });
-      document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') schedule(1500); });
+      document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') { if (idleStatus() === 'pending') renewAndSync(); else schedule(1500); } });
       set(idleStatus());
-      if (idleStatus() === 'idle') schedule(1200);
+      if (idleStatus() === 'idle') schedule(1200); else if (idleStatus() === 'pending') renewAndSync();
     }
   };
 })();
