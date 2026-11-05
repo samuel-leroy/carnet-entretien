@@ -259,8 +259,8 @@ details.tbl th:first-child,details.tbl td:first-child{text-align:left}
 /* v3 */
 .gtitle{font:600 13px var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:20px 0 10px}
 .gcard{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px;cursor:pointer;font:inherit;min-height:84px}
-.ghome{display:flex;justify-content:center;padding:72px 0 28px}
-.ghome img{width:150px;height:150px;opacity:.92;pointer-events:none;user-select:none;mix-blend-mode:multiply;-webkit-mask-image:linear-gradient(to right,transparent,#000 16%,#000 84%,transparent),linear-gradient(to bottom,transparent,#000 16%,#000 84%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(to right,transparent,#000 16%,#000 84%,transparent),linear-gradient(to bottom,transparent,#000 16%,#000 84%,transparent);mask-composite:intersect}
+.ghome{display:flex;justify-content:center;padding:34px 0 60px}
+.ghome img{width:122px;height:122px;opacity:.92;pointer-events:none;user-select:none;mix-blend-mode:multiply;-webkit-mask-image:linear-gradient(to right,transparent,#000 16%,#000 84%,transparent),linear-gradient(to bottom,transparent,#000 16%,#000 84%,transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(to right,transparent,#000 16%,#000 84%,transparent),linear-gradient(to bottom,transparent,#000 16%,#000 84%,transparent);mask-composite:intersect}
 .gcard:active{transform:scale(.99)}
 .glogo{flex:none;width:60px;height:60px;border-radius:14px;background:var(--bg);border:1px solid var(--line);display:grid;place-items:center;overflow:hidden;color:var(--muted)}
 .glogo img{width:100%;height:100%;object-fit:contain;display:block}
@@ -1398,7 +1398,7 @@ h1{background:linear-gradient(90deg,#0B7F73,#E8663D);-webkit-background-clip:tex
     });
     if (canWrite) grid.append(h('button', { class: 'gadd3', type: 'button', onclick: function () { openVeh(null); } }, h('span', { class: 'plus', 'aria-hidden': 'true' }, '+'), h('span', null, 'Ajouter')));
     out.push(grid);
-    out.push(h('div', { class: 'ghome', 'aria-hidden': 'true' }, h('img', { src: 'icon-192.png', alt: '', width: 150, height: 150, draggable: 'false' })));
+    out.push(h('div', { class: 'ghome', 'aria-hidden': 'true' }, h('img', { src: 'icon-192.png', alt: '', width: 122, height: 122, draggable: 'false' })));
     box.replaceChildren.apply(box, out);
   }
   /* ---------- paramètres : stations et carburants ---------- */
@@ -1476,7 +1476,7 @@ h1{background:linear-gradient(90deg,#0B7F73,#E8663D);-webkit-background-clip:tex
     if (!Drive.clientId() || !Drive.connected()) return Drive.clientId() ? 'Non connecté' : 'Non configuré';
     return st.last ? fmtStamp(st.last) : 'Pas encore synchronisé';
   }
-  var APP_VERSION = '5.0.8', APP_DATE = '2026-11-05';
+  var APP_VERSION = '5.0.9', APP_DATE = '2026-11-05';
   function renderAboutPage(box) {
     var d = new Date(APP_DATE + 'T12:00:00');
     box.replaceChildren(h('div', { class: 'gtitle' }, 'À propos'),
