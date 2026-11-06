@@ -61,7 +61,7 @@
     return loadGIS().then(function () {
       return new Promise(function (resolve, reject) {
         var client = google.accounts.oauth2.initTokenClient({
-          client_id: cid, scope: SCOPE,
+          client_id: cid, scope: SCOPE, hint: meta().email || undefined,
           callback: function (r) {
             if (!r || r.error) { reject({ code: 'auth', message: (r && (r.error_description || r.error)) || 'Connexion refusée.' }); return; }
             token = r.access_token; tokenExp = Date.now() + (Number(r.expires_in) || 3600) * 1000;
@@ -226,6 +226,16 @@
     }
     m = meta(); m.last = Date.now(); saveMeta(m);
   }
+  /* Mémorise le compte Google utilisé : il sert d'indice pour renouveler la session sans redemander le choix du compte. */
+  async function rememberAccount() {
+    try {
+      if (meta().email || !token) return;
+      var r = await fetch('https://www.googleapis.com/drive/v3/about?fields=user(emailAddress)', { headers: { Authorization: 'Bearer ' + token } });
+      if (!r.ok) return;
+      var j = await r.json(), em = j && j.user && j.user.emailAddress;
+      if (em) { var m = meta(); m.email = em; saveMeta(m); }
+    } catch (e) {}
+  }
   async function sync(interactive) {
     if (running) { again = true; return; }
     running = true; set('syncing');
@@ -236,6 +246,7 @@
         else throw e;
       }
       set('idle');
+      rememberAccount();
     } catch (e) { fail(e); }
     finally { running = false; if (again) { again = false; schedule(1500); } }
     return st.status;

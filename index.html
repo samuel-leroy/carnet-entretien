@@ -1476,7 +1476,7 @@ h1{background:linear-gradient(90deg,#0B7F73,#E8663D);-webkit-background-clip:tex
     if (!Drive.clientId() || !Drive.connected()) return Drive.clientId() ? 'Non connecté' : 'Non configuré';
     return st.last ? fmtStamp(st.last) : 'Pas encore synchronisé';
   }
-  var APP_VERSION = '5.0.9', APP_DATE = '2026-11-05';
+  var APP_VERSION = '5.0.10', APP_DATE = '2026-11-06';
   function renderAboutPage(box) {
     var d = new Date(APP_DATE + 'T12:00:00');
     box.replaceChildren(h('div', { class: 'gtitle' }, 'À propos'),
