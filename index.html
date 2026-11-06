@@ -1444,7 +1444,7 @@ h1{background:linear-gradient(90deg,#0B7F73,#E8663D);-webkit-background-clip:tex
     fuels: { title: 'Carburants', one: 'carburant', many: 'carburants', add: 'Ajouter un carburant', newT: 'Nouveau carburant', lbl: 'Nom du carburant', ph: 'SP95 E10', done: 'Carburant ajouté', gone: 'Carburant retiré de la liste', icon: 'can' },
     doers: { title: 'Réalisé par', one: 'garage ou personne', many: 'garages et personnes', add: 'Ajouter un garage ou une personne', newT: 'Nouveau garage ou personne', lbl: 'Nom du garage ou de la personne', ph: 'Garage Dupont', done: 'Ajouté à la liste', gone: 'Retiré de la liste', icon: 'place' }
   };
-  var DEFAULT_DOCCATS = ['Assurance', 'Carte grise', 'Contrôle technique', 'Permis', 'Autre'];
+  var DEFAULT_DOCCATS = ['Assurance', 'Carte grise', 'Contrôle technique', 'Devis', 'Permis', 'Autre'];
   var DEFAULT_PHOTOCATS = ['Véhicule', 'Dommages', 'Autre'];
   SET_LABELS.doccats = { title: 'Types de documents', one: 'catégorie', many: 'catégories', add: 'Ajouter une catégorie', newT: 'Nouvelle catégorie de documents', lbl: 'Nom de la catégorie', ph: 'Carte grise', done: 'Catégorie ajoutée', gone: 'Catégorie retirée de la liste', icon: 'doc' };
   SET_LABELS.photocats = { title: 'Types de photos', one: 'catégorie', many: 'catégories', add: 'Ajouter une catégorie', newT: 'Nouvelle catégorie de photos', lbl: 'Nom de la catégorie', ph: 'Véhicule', done: 'Catégorie ajoutée', gone: 'Catégorie retirée de la liste', icon: 'photo' };
@@ -1476,7 +1476,7 @@ h1{background:linear-gradient(90deg,#0B7F73,#E8663D);-webkit-background-clip:tex
     if (!Drive.clientId() || !Drive.connected()) return Drive.clientId() ? 'Non connecté' : 'Non configuré';
     return st.last ? fmtStamp(st.last) : 'Pas encore synchronisé';
   }
-  var APP_VERSION = '5.0.10', APP_DATE = '2026-11-06';
+  var APP_VERSION = '5.0.11', APP_DATE = '2026-11-06';
   function renderAboutPage(box) {
     var d = new Date(APP_DATE + 'T12:00:00');
     box.replaceChildren(h('div', { class: 'gtitle' }, 'À propos'),
